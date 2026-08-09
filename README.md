@@ -45,6 +45,12 @@ python3 ~/.codex/skills/.system/skill-installer/scripts/install-skill-from-githu
 
 不要直接覆盖已有全局文件，先备份。
 
+其中最关键的是 `global-AGENTS.example.md` 里的“写操作硬门禁”和“绝对禁止”：
+
+- 凡是可能修改文件、Git、数据库、远端仓库、线上服务、配置、依赖或外部状态的任务，必须先使用 `$production-engineering`。
+- 如果 skill 不可用、未触发或无法确认已经接管当前写操作，Codex 应停止写操作并说明原因。
+- 生产数据库、真实用户数据、删除数据、强推、主分支直推、未知脚本、密钥提交、覆盖用户改动等禁区必须写在全局 `AGENTS.md`，不要只放在 skill 里。
+
 ## 后台页面默认栈
 
 新建后台页面、管理端、配置页或运营后台，且用户没有指定其他技术栈时：
