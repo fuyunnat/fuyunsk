@@ -1,0 +1,39 @@
+---
+name: production-engineering
+description: Production-grade engineering workflow for Codex. Use automatically when the user asks to implement, fix, refactor, deliver, start and verify a project, inspect or modify code, perform code review, security audit, vulnerability or backdoor analysis, handle Git commits, branches, pushes, PRs, CI, database migrations, deployment configuration, backend work, frontend work, admin pages, or any task requiring maintainable, verifiable, reversible production-quality software changes. Also use when the user says production-grade, 工程交付, 修复, 实现, 交付, 审计, 漏洞, 后门, 启动验证, 提交, 推送, PR, CI, 后台页面, 管理端, 数据库, 部署, or 高风险操作.
+---
+
+# Production Engineering
+
+Use this skill to turn software work into a controlled production-grade workflow: read the real project first, choose the correct task mode, make the smallest safe change, verify honestly, and report rollback paths and residual risk.
+
+## First Steps
+
+1. Read `references/routing.md` first for task-mode routing and which detailed sections apply.
+2. For non-trivial engineering work, read only the relevant sections of `references/full-production-engineering.md` using heading search, not the whole file by default.
+3. Follow project-local `AGENTS.md`, README, package scripts, existing architecture, and user instructions when they are more specific and do not conflict with higher-priority rules.
+
+## Operating Rules
+
+- Default to Chinese unless the user explicitly requests another language.
+- For read-only tasks, inspect and report; do not modify files, Git, databases, remotes, or external state.
+- For implementation tasks, inspect the real entrypoints, configs, dependencies, existing patterns, Git state, and user changes before editing.
+- Before modifying files, determine whether the target is inside a Git repository. If it is not, create a timestamped backup or equivalent recovery point before overwriting existing files.
+- Protect user changes. Do not revert or mix unrelated user edits into the task.
+- Treat production, databases, credentials, payments, balances, orders, permissions, CI/CD, deployment, force push, direct main-branch push, and remote settings changes as high risk. Do read-only investigation first and wait for explicit confirmation before risky writes.
+- Verify with the smallest command set that matches the risk: lint, typecheck, tests, build, smoke tests, page checks, API checks, migration checks, or security regression checks as applicable.
+- Never claim something was tested, pushed, merged, deployed, or verified unless current evidence proves it.
+- Before final output, apply first-principles review: point out flawed assumptions, factual errors, missing risk controls, and invalid acceptance criteria directly with actionable fixes.
+
+## Reference Loading
+
+Use heading searches in `references/full-production-engineering.md`:
+
+- Git, branches, commits, PRs, CI, rollback: search `## 三`, `## 四`, `回滚`, `CI`.
+- Frontend, admin pages, UI validation: search `## 九`.
+- Backend APIs and service boundaries: search `## 八`, `## 十`.
+- Database, migration, consistency: search `## 十三`, `## 十四`.
+- Security audit, vulnerabilities, backdoors: search `## 十七`, `## 十九`.
+- Testing and final reporting: search `## 二十`, `## 二十二`, `## 二十三`.
+
+Load only the needed parts unless the user explicitly asks to inspect or rewrite the whole standard.

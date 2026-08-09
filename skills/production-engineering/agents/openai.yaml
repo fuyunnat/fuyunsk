@@ -1,0 +1,6 @@
+interface:
+  display_name: "Production Engineering"
+  short_description: "Production-grade coding workflow"
+  default_prompt: "Use $production-engineering to implement, verify, and report a production-grade code change."
+policy:
+  allow_implicit_invocation: true
