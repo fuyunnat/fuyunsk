@@ -20,6 +20,14 @@ python3 ~/.codex/skills/.system/skill-installer/scripts/install-skill-from-githu
 
 安装后，下一轮对话开始时 Codex 就能发现这个 skill。
 
+如果你要把这个仓库发给朋友，推荐直接让 AI 读取并执行：
+
+- [docs/ai-installation.md](docs/ai-installation.md)
+
+如果你要配置“个性化自定义提示词”，直接复制或合并：
+
+- [docs/personal-custom-instructions.md](docs/personal-custom-instructions.md)
+
 ## 触发方式
 
 最稳的方式是显式触发：
@@ -40,8 +48,8 @@ python3 ~/.codex/skills/.system/skill-installer/scripts/install-skill-from-githu
 重要说明：
 
 - Skill 的“自动触发”依赖 Codex 当前版本和宿主环境的匹配机制，不能保证在所有客户端、所有模型、所有表达里 100% 自动触发。
-- 想要最稳，直接在任务里写 `$production-engineering`。
-- 想要仓库级硬约束，把 `global-AGENTS.example.md` 的关键内容合并到全局或项目 `AGENTS.md`，让写操作必须先路由到这个 skill。
+- 想要当前聊天最稳，直接在任务里写 `$production-engineering`。
+- 想要长期默认生效，把 `docs/personal-custom-instructions.md` 合并到 Codex 个性化自定义提示词，或把 `global-AGENTS.example.md` 的关键内容合并到全局或项目 `AGENTS.md`，让写操作必须先路由到这个 skill。
 
 ## 更稳的全局路由
 

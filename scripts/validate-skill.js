@@ -37,6 +37,8 @@ const requiredFiles = [
   'README.md',
   'AGENTS.md',
   'global-AGENTS.example.md',
+  'docs/ai-installation.md',
+  'docs/personal-custom-instructions.md',
   '.gitignore',
   'skills/production-engineering/SKILL.md',
   'skills/production-engineering/agents/openai.yaml',
@@ -92,6 +94,22 @@ assertIncludes('global-AGENTS.example.md', [
   '写操作硬门禁',
   '禁止使用 `rm`',
   '禁止把未经验证的功能、测试、部署、推送、CI 或生产状态说成已经完成',
+]);
+
+assertIncludes('docs/ai-installation.md', [
+  'https://github.com/fuyunnat/fuyunsk/tree/main/skills/production-engineering',
+  'docs/personal-custom-instructions.md',
+  '不要引入 Ponytail',
+  '以后我是否还需要每次手动写 `$production-engineering`',
+]);
+
+assertIncludes('docs/personal-custom-instructions.md', [
+  '$production-engineering',
+  '~/.codex/skills/production-engineering/SKILL.md',
+  '~/.codex/skills/production-engineering/references/routing.md',
+  '必须停止写操作',
+  'Vue 3 + Vite',
+  'Ant Design Vue',
 ]);
 
 assertIncludes('.gitignore', ['work/']);
