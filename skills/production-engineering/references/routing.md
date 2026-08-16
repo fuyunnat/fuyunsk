@@ -20,12 +20,23 @@ Use this file first after the skill triggers.
 7. Review diffs for unrelated changes, secrets, large files, generated artifacts, and accidental formatting.
 8. Final response: what changed, verification evidence, rollback path, unverified areas, remaining risk.
 
+## Bug Report Workflow
+
+When the user reports a bug, error, abnormal UI, failing API, broken command, or unexpected behavior:
+
+1. Do not start with broad code edits.
+2. First locate likely relevant files, functions, routes, configs, logs, tests, or call chains.
+3. Before editing, state the observed symptom, likely root cause, evidence, files to change, smallest fix, and old behavior that must remain unchanged.
+4. If the user says "directly fix" or the bug blocks execution, locate and fix in one pass, but still report root cause, evidence, validation, and residual risk.
+5. Do not refactor unrelated code, format the whole repo, or expand scope unless the evidence requires it.
+
 ## Detailed Reference Map
 
 Read targeted sections from `full-production-engineering.md`:
 
 - Global priority and task modes: `## 零`, `## 一`, `## 二`.
 - Git gate and delivery: `## 三`, `## 四`.
+- Bug-first diagnosis: `Bug 修复前置规则`.
 - Risk and requirement boundaries: `## 五`, `## 六`.
 - Module/file size and comments: `## 七`.
 - Backend: `## 八`.
