@@ -1,6 +1,8 @@
 # fuyunsk
 
-个人 Codex skill 仓库。当前包含 `production-engineering`，用于生产级工程交付、代码审计、修复、验证、Git/PR/CI、数据库、部署和后台页面开发流程。
+个人 Codex skill 仓库。当前只维护自家的 `production-engineering`，用于生产级工程交付、代码审计、修复、验证、Git/PR/CI、数据库、部署和后台页面开发流程。
+
+本仓库不依赖 Ponytail 或其他第三方 skill。设计目标是让朋友安装后能直接使用同一套生产工程规则，并且在 skill 自动触发不稳定时，仍然可以通过 `AGENTS.md` 兜底。
 
 ## 安装方式
 
@@ -57,6 +59,17 @@ python3 ~/.codex/skills/.system/skill-installer/scripts/install-skill-from-githu
 - 如果 skill 不可用、未触发或无法确认已经接管当前写操作，Codex 应停止写操作并说明原因。
 - 生产数据库、真实用户数据、删除数据、强推、主分支直推、未知脚本、密钥提交、覆盖用户改动等禁区必须写在全局 `AGENTS.md`，不要只放在 skill 里。
 
+## 仓库级兜底
+
+本仓库根目录提供了 `AGENTS.md`，用于约束维护这个 skill 仓库时的行为：
+
+- 只维护自家的 `production-engineering`。
+- 不引入、复制或依赖第三方 skill、hooks 或命令。
+- `SKILL.md` 保持轻量，完整规范继续放在 `references/full-production-engineering.md`。
+- 任务状态文件放在 `work/`，并通过 `.gitignore` 排除，避免误提交。
+
+如果你要把这套规则给其他项目使用，应优先复制或合并 `global-AGENTS.example.md`，不要直接复制本仓库的维护规则。
+
 ## Bug 修复用法
 
 遇到 Bug、报错、页面异常、接口不通或行为不符合预期时，推荐这样写：
@@ -78,3 +91,14 @@ python3 ~/.codex/skills/.system/skill-installer/scripts/install-skill-from-githu
 - 普通 `.vue` / `.js`，不是 TypeScript 项目
 
 二开已有项目时，永远优先跟随真实项目栈。
+
+## 自检
+
+修改本仓库后，至少运行：
+
+```bash
+node scripts/validate-skill.js
+git diff --check
+```
+
+自检会确认关键文件存在，并检查触发词、删除策略、上下文状态、GitHub 提交规则、后台默认栈和第三方 skill 隔离规则没有丢。
