@@ -42,6 +42,7 @@ const requiredFiles = [
   '.gitignore',
   'skills/production-engineering/SKILL.md',
   'skills/production-engineering/agents/openai.yaml',
+  'skills/production-engineering/references/code-risk-review.md',
   'skills/production-engineering/references/frontend-interface-quality.md',
   'skills/production-engineering/references/routing.md',
   'skills/production-engineering/references/full-production-engineering.md',
@@ -61,17 +62,32 @@ assertIncludes('skills/production-engineering/SKILL.md', [
   '后台页面',
   'Move deletions to the system trash/recycle bin',
   'references/routing.md',
+  'references/code-risk-review.md',
   'references/frontend-interface-quality.md',
   'references/full-production-engineering.md',
 ]);
 
 assertIncludes('skills/production-engineering/references/routing.md', [
   'Bug Report Workflow',
+  'Code Risk Review Workflow',
+  'code-risk-review.md',
   'Admin Frontend Default',
   'frontend-interface-quality.md',
   'Vue 3 + Vite',
   'Ant Design Vue',
   'ordinary `.vue` / `.js`',
+]);
+
+assertIncludes('skills/production-engineering/references/code-risk-review.md', [
+  'Code Risk Review',
+  '有没有问题',
+  '帮我看看代码',
+  'Duplicate requests',
+  'Concurrency',
+  'Authentication',
+  'Timeout',
+  'Exception handling',
+  'Sensitive information leakage',
 ]);
 
 assertIncludes('skills/production-engineering/references/frontend-interface-quality.md', [
@@ -106,6 +122,7 @@ assertIncludes('AGENTS.md', [
 assertIncludes('global-AGENTS.example.md', [
   '$production-engineering',
   '写操作硬门禁',
+  '空值、重复请求、并发、权限、超时、异常处理和敏感信息泄露',
   '禁止使用 `rm`',
   '禁止把未经验证的功能、测试、部署、推送、CI 或生产状态说成已经完成',
 ]);
@@ -121,6 +138,7 @@ assertIncludes('docs/personal-custom-instructions.md', [
   '$production-engineering',
   '~/.codex/skills/production-engineering/SKILL.md',
   '~/.codex/skills/production-engineering/references/routing.md',
+  '~/.codex/skills/production-engineering/references/code-risk-review.md',
   '必须停止写操作',
   'Vue 3 + Vite',
   'Ant Design Vue',

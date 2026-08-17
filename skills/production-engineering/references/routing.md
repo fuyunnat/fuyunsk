@@ -30,6 +30,15 @@ When the user reports a bug, error, abnormal UI, failing API, broken command, or
 4. If the user says "directly fix" or the bug blocks execution, locate and fix in one pass, but still report root cause, evidence, validation, and residual risk.
 5. Do not refactor unrelated code, format the whole repo, or expand scope unless the evidence requires it.
 
+## Code Risk Review Workflow
+
+When the user asks "有没有问题", "帮我看看代码", "查隐藏 Bug", code review, bug diagnosis, security audit, vulnerability review, or backdoor review:
+
+1. Read `code-risk-review.md`.
+2. Make the vague request concrete by checking null/empty values, duplicate requests, concurrency, permissions, timeouts, exception handling, and sensitive information leakage when applicable.
+3. Lead with confirmed findings and evidence. If no confirmed issue is found, state the reviewed scope and unverified areas; do not claim the whole system is risk-free after a narrow scan.
+4. Keep audit and review tasks read-only unless the user explicitly asks to fix.
+
 ## Detailed Reference Map
 
 Read targeted sections from `full-production-engineering.md`:
@@ -37,6 +46,7 @@ Read targeted sections from `full-production-engineering.md`:
 - Global priority and task modes: `## 零`, `## 一`, `## 二`.
 - Git gate and delivery: `## 三`, `## 四`.
 - Bug-first diagnosis: `Bug 修复前置规则`.
+- Hidden bug and code risk review: `code-risk-review.md`.
 - Risk and requirement boundaries: `## 五`, `## 六`.
 - Module/file size and comments: `## 七`.
 - Backend: `## 八`.

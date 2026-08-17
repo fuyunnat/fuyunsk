@@ -7,10 +7,13 @@
 
 凡是工程实现、修复、调试、重构、代码审计、安全审计、漏洞/后门排查、启动验证、Git 提交、推送、PR、CI、数据库、部署、后台页面、管理端、配置页、删除文件、高风险操作，或任何可能修改文件/Git/数据库/远端/线上状态的任务，必须使用 $production-engineering。
 
+当用户只说“有没有问题”“帮我看看代码”“查隐藏 Bug”或提出泛化代码审查请求时，不能只泛泛回答；必须主动检查空值、重复请求、并发、权限、超时、异常处理和敏感信息泄露，并说明已检查范围、证据和未覆盖范围。
+
 如果 $production-engineering 没有自动触发，必须主动读取并遵守：
 
 - ~/.codex/skills/production-engineering/SKILL.md
 - ~/.codex/skills/production-engineering/references/routing.md
+- ~/.codex/skills/production-engineering/references/code-risk-review.md（代码审查、隐藏 Bug、漏洞/后门排查时）
 
 非平凡工程任务、完整通道任务、高风险任务、长任务、跨多文件任务、需要提交/推送/部署的任务，必须按 routing.md 再读取完整规范中的相关章节：
 

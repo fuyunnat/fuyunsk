@@ -6,6 +6,8 @@
 
 前端界面质量规则已吸收通用 Web Interface Guidelines 思路，但改写成自家 `production-engineering` 参考文件：`skills/production-engineering/references/frontend-interface-quality.md`。不安装第三方 skill，不运行第三方安装脚本。
 
+隐藏 Bug 审查规则已吸收“把泛化问题变成具体检查项”的思路，放在 `skills/production-engineering/references/code-risk-review.md`。当用户说“有没有问题”“帮我看看代码”“查隐藏 Bug”时，skill 会要求重点检查空值、重复请求、并发、权限、超时、异常处理和敏感信息泄露。
+
 ## 安装方式
 
 在 Codex 里直接对它说：
@@ -89,6 +91,14 @@ python3 ~/.codex/skills/.system/skill-installer/scripts/install-skill-from-githu
 ```
 
 这个 skill 会要求 Codex 先定位相关文件、函数、接口、配置、日志或调用链，再进行最小修改，避免一上来大范围重构。
+
+如果是想找隐藏 Bug 或做代码审查，也可以写：
+
+```text
+用 $production-engineering 检查这段代码有没有隐藏 Bug，重点看空值、重复请求、并发、权限、超时、异常处理和敏感信息泄露。
+```
+
+即使用户只说“有没有问题”或“帮我看看代码”，skill 也会把检查范围自动具体化，避免只给泛泛结论。
 
 ## 后台页面默认栈
 
