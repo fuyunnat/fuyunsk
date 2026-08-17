@@ -43,6 +43,7 @@ const requiredFiles = [
   'skills/production-engineering/SKILL.md',
   'skills/production-engineering/agents/openai.yaml',
   'skills/production-engineering/references/code-risk-review.md',
+  'skills/production-engineering/references/context-memory-continuity.md',
   'skills/production-engineering/references/frontend-interface-quality.md',
   'skills/production-engineering/references/routing.md',
   'skills/production-engineering/references/full-production-engineering.md',
@@ -63,6 +64,7 @@ assertIncludes('skills/production-engineering/SKILL.md', [
   'Move deletions to the system trash/recycle bin',
   'references/routing.md',
   'references/code-risk-review.md',
+  'references/context-memory-continuity.md',
   'references/frontend-interface-quality.md',
   'references/full-production-engineering.md',
 ]);
@@ -70,7 +72,9 @@ assertIncludes('skills/production-engineering/SKILL.md', [
 assertIncludes('skills/production-engineering/references/routing.md', [
   'Bug Report Workflow',
   'Code Risk Review Workflow',
+  'Context Memory Workflow',
   'code-risk-review.md',
+  'context-memory-continuity.md',
   'Admin Frontend Default',
   'frontend-interface-quality.md',
   'Vue 3 + Vite',
@@ -88,6 +92,17 @@ assertIncludes('skills/production-engineering/references/code-risk-review.md', [
   'Timeout',
   'Exception handling',
   'Sensitive information leakage',
+]);
+
+assertIncludes('skills/production-engineering/references/context-memory-continuity.md', [
+  'Context Memory Continuity',
+  'TencentDB Agent Memory',
+  'work/task-state.md',
+  'Layered Memory Model',
+  'Progressive Disclosure',
+  'Traceability',
+  'External Memory Systems',
+  'Do not install, start, configure, or call any external memory server',
 ]);
 
 assertIncludes('skills/production-engineering/references/frontend-interface-quality.md', [
@@ -123,6 +138,8 @@ assertIncludes('global-AGENTS.example.md', [
   '$production-engineering',
   '写操作硬门禁',
   '空值、重复请求、并发、权限、超时、异常处理和敏感信息泄露',
+  'work/task-state.md',
+  '不得默认安装、启动、调用或通过外部记忆系统',
   '禁止使用 `rm`',
   '禁止把未经验证的功能、测试、部署、推送、CI 或生产状态说成已经完成',
 ]);
@@ -139,6 +156,7 @@ assertIncludes('docs/personal-custom-instructions.md', [
   '~/.codex/skills/production-engineering/SKILL.md',
   '~/.codex/skills/production-engineering/references/routing.md',
   '~/.codex/skills/production-engineering/references/code-risk-review.md',
+  '~/.codex/skills/production-engineering/references/context-memory-continuity.md',
   '必须停止写操作',
   'Vue 3 + Vite',
   'Ant Design Vue',

@@ -8,6 +8,8 @@
 
 隐藏 Bug 审查规则已吸收“把泛化问题变成具体检查项”的思路，放在 `skills/production-engineering/references/code-risk-review.md`。当用户说“有没有问题”“帮我看看代码”“查隐藏 Bug”时，skill 会要求重点检查空值、重复请求、并发、权限、超时、异常处理和敏感信息泄露。
 
+上下文记忆规则已吸收 TencentDB Agent Memory 的分层记忆、按需召回、证据可追溯和权限边界思路，放在 `skills/production-engineering/references/context-memory-continuity.md`。本仓库不默认安装或调用 TencentDB Agent Memory；只有用户明确要求集成外部记忆系统并确认风险时，才允许另行处理。
+
 ## 安装方式
 
 在 Codex 里直接对它说：
@@ -99,6 +101,16 @@ python3 ~/.codex/skills/.system/skill-installer/scripts/install-skill-from-githu
 ```
 
 即使用户只说“有没有问题”或“帮我看看代码”，skill 也会把检查范围自动具体化，避免只给泛泛结论。
+
+## 上下文续航用法
+
+长任务、分阶段开发、需要提交推送、或担心 AI 开发到一半忘事时，推荐这样写：
+
+```text
+用 $production-engineering 继续这个任务，并维护 work/task-state.md，按阶段记录目标、决策、改动、验证、PR 状态和回滚方式。
+```
+
+这个 skill 会把任务记忆分层处理：状态文件只放可恢复摘要和证据路径，不塞长日志；继续任务时先读状态、Git、diff 和最新用户要求，再继续执行。
 
 ## 后台页面默认栈
 

@@ -39,12 +39,23 @@ When the user asks "有没有问题", "帮我看看代码", "查隐藏 Bug", cod
 3. Lead with confirmed findings and evidence. If no confirmed issue is found, state the reviewed scope and unverified areas; do not claim the whole system is risk-free after a narrow scan.
 4. Keep audit and review tasks read-only unless the user explicitly asks to fix.
 
+## Context Memory Workflow
+
+When the user mentions context loss, compaction, handoff, repeated work, long-running development, "别忘了", "继续开发", "上下文不见了", or "AI 忘记事情了":
+
+1. Read `context-memory-continuity.md`.
+2. Maintain `work/task-state.md` or an equivalent ignored task-state file for active task memory.
+3. Use layered memory: short task summary and decisions in the state file, evidence paths for raw logs/diffs/reports, and current real files/Git/runtime as the source of truth.
+4. Do not install, start, call, or route through external memory systems unless the user explicitly asks for that integration and approves the operational risk.
+5. After compaction or continuation, read task state, current Git status, current diff, and the newest user request before acting.
+
 ## Detailed Reference Map
 
 Read targeted sections from `full-production-engineering.md`:
 
 - Global priority and task modes: `## 零`, `## 一`, `## 二`.
 - Git gate and delivery: `## 三`, `## 四`.
+- Context memory and task-state continuity: `context-memory-continuity.md`, plus `上下文续航`.
 - Bug-first diagnosis: `Bug 修复前置规则`.
 - Hidden bug and code risk review: `code-risk-review.md`.
 - Risk and requirement boundaries: `## 五`, `## 六`.

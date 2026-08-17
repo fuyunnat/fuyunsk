@@ -9,11 +9,16 @@
 
 当用户只说“有没有问题”“帮我看看代码”“查隐藏 Bug”或提出泛化代码审查请求时，不能只泛泛回答；必须主动检查空值、重复请求、并发、权限、超时、异常处理和敏感信息泄露，并说明已检查范围、证据和未覆盖范围。
 
+当任务较长、跨阶段、需要提交/推送/部署、用户说“别忘了/继续开发/上下文不见了/AI 忘记事情了”时，必须维护 work/task-state.md 或等价任务状态文件；状态文件只记录恢复任务所需摘要、证据路径、决策、改动、验证、PR/CI、回滚和剩余风险，不记录密钥、隐私数据或完整敏感日志。
+
+不得默认安装、启动、调用或通过外部记忆系统、Memory Proxy、数据库、Hook、插件或网络服务来处理用户任务；只有用户明确要求集成并确认数据、权限、凭证、网络和保留风险后，才可以另行处理。
+
 如果 $production-engineering 没有自动触发，必须主动读取并遵守：
 
 - ~/.codex/skills/production-engineering/SKILL.md
 - ~/.codex/skills/production-engineering/references/routing.md
 - ~/.codex/skills/production-engineering/references/code-risk-review.md（代码审查、隐藏 Bug、漏洞/后门排查时）
+- ~/.codex/skills/production-engineering/references/context-memory-continuity.md（长任务、上下文续航、继续开发、任务交接时）
 
 非平凡工程任务、完整通道任务、高风险任务、长任务、跨多文件任务、需要提交/推送/部署的任务，必须按 routing.md 再读取完整规范中的相关章节：
 
