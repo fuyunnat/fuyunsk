@@ -20,16 +20,49 @@ Use this file first after the skill triggers.
 7. Review diffs for unrelated changes, secrets, large files, generated artifacts, and accidental formatting.
 8. Final response: what changed, verification evidence, rollback path, unverified areas, remaining risk.
 
+## Bug Report Workflow
+
+When the user reports a bug, error, abnormal UI, failing API, broken command, or unexpected behavior:
+
+1. Do not start with broad code edits.
+2. First locate likely relevant files, functions, routes, configs, logs, tests, or call chains.
+3. Before editing, state the observed symptom, likely root cause, evidence, files to change, smallest fix, and old behavior that must remain unchanged.
+4. If the user says "directly fix" or the bug blocks execution, locate and fix in one pass, but still report root cause, evidence, validation, and residual risk.
+5. Do not refactor unrelated code, format the whole repo, or expand scope unless the evidence requires it.
+
+## Code Risk Review Workflow
+
+When the user asks "有没有问题", "帮我看看代码", "查隐藏 Bug", code review, bug diagnosis, security audit, vulnerability review, or backdoor review:
+
+1. Read `code-risk-review.md`.
+2. Make the vague request concrete by checking null/empty values, duplicate requests, concurrency, permissions, timeouts, exception handling, and sensitive information leakage when applicable.
+3. Lead with confirmed findings and evidence. If no confirmed issue is found, state the reviewed scope and unverified areas; do not claim the whole system is risk-free after a narrow scan.
+4. Keep audit and review tasks read-only unless the user explicitly asks to fix.
+
+## Context Memory Workflow
+
+When the user mentions context loss, compaction, handoff, repeated work, long-running development, "别忘了", "继续开发", "上下文不见了", or "AI 忘记事情了":
+
+1. Read `context-memory-continuity.md`.
+2. Maintain `work/task-state.md` or an equivalent ignored task-state file for active task memory.
+3. Use layered memory: short task summary and decisions in the state file, evidence paths for raw logs/diffs/reports, and current real files/Git/runtime as the source of truth.
+4. Do not install, start, call, or route through external memory systems unless the user explicitly asks for that integration and approves the operational risk.
+5. After compaction or continuation, read task state, current Git status, current diff, and the newest user request before acting.
+
 ## Detailed Reference Map
 
 Read targeted sections from `full-production-engineering.md`:
 
 - Global priority and task modes: `## 零`, `## 一`, `## 二`.
 - Git gate and delivery: `## 三`, `## 四`.
+- Context memory and task-state continuity: `context-memory-continuity.md`, plus `上下文续航`.
+- Bug-first diagnosis: `Bug 修复前置规则`.
+- Hidden bug and code risk review: `code-risk-review.md`.
 - Risk and requirement boundaries: `## 五`, `## 六`.
 - Module/file size and comments: `## 七`.
 - Backend: `## 八`.
 - Frontend/admin pages: `## 九`.
+- Detailed frontend interface quality and UI review: `frontend-interface-quality.md`.
 - API compatibility: `## 十`.
 - Performance/capacity: `## 十一`.
 - Feature flags and rollback: `## 十二`.
@@ -53,3 +86,5 @@ For newly created admin pages, management consoles, configuration pages, or oper
 - Use Vue Router for multiple pages, menu navigation, details pages, or permission routes.
 - Use ordinary `.vue` / `.js`; do not convert the admin project to TypeScript unless explicitly requested.
 - For existing projects, always follow the real current stack instead of this default.
+
+For frontend pages, admin pages, management consoles, configuration pages, operations dashboards, shared UI components, or UI review tasks, also read `frontend-interface-quality.md`.
