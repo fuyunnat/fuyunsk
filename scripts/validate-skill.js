@@ -61,7 +61,6 @@ assertIncludes('skills/production-engineering/SKILL.md', [
   'debug',
   'admin pages',
   '后台页面',
-  '已使用 $production-engineering，并已读取 SKILL.md / routing.md',
   'Move deletions to the system trash/recycle bin',
   'references/routing.md',
   'references/code-risk-review.md',
@@ -138,7 +137,6 @@ assertIncludes('AGENTS.md', [
 assertIncludes('global-AGENTS.example.md', [
   '$production-engineering',
   '写操作硬门禁',
-  '已使用 $production-engineering，并已读取 SKILL.md / routing.md',
   '空值、重复请求、并发、权限、超时、异常处理和敏感信息泄露',
   'work/task-state.md',
   '不得默认安装、启动、调用或通过外部记忆系统',
@@ -155,7 +153,6 @@ assertIncludes('docs/ai-installation.md', [
 
 assertIncludes('docs/personal-custom-instructions.md', [
   '$production-engineering',
-  '已使用 $production-engineering，并已读取 SKILL.md / routing.md',
   '~/.codex/skills/production-engineering/SKILL.md',
   '~/.codex/skills/production-engineering/references/routing.md',
   '~/.codex/skills/production-engineering/references/code-risk-review.md',
