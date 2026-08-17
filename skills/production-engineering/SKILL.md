@@ -11,8 +11,9 @@ Use this skill to turn software work into a controlled production-grade workflow
 
 1. Read `references/routing.md` first for task-mode routing and which detailed sections apply.
 2. For non-trivial engineering work, read only the relevant sections of `references/full-production-engineering.md` using heading search, not the whole file by default.
-3. If the user explicitly asks for the full standard, maximum rigor, or no omissions, read `references/full-production-engineering.md` directly.
-4. Follow project-local `AGENTS.md`, README, package scripts, existing architecture, and user instructions when they are more specific and do not conflict with higher-priority rules.
+3. For frontend pages, admin pages, management consoles, configuration pages, operations dashboards, shared UI components, or UI review tasks, also read `references/frontend-interface-quality.md`.
+4. If the user explicitly asks for the full standard, maximum rigor, or no omissions, read `references/full-production-engineering.md` directly.
+5. Follow project-local `AGENTS.md`, README, package scripts, existing architecture, and user instructions when they are more specific and do not conflict with higher-priority rules.
 
 ## Operating Rules
 
@@ -37,7 +38,7 @@ For the most reliable use, invoke this skill explicitly with `$production-engine
 Use heading searches in `references/full-production-engineering.md`:
 
 - Git, branches, commits, PRs, CI, rollback: search `## 三`, `## 四`, `回滚`, `CI`.
-- Frontend, admin pages, UI validation: search `## 九`.
+- Frontend, admin pages, UI validation: read `references/frontend-interface-quality.md`, then search `## 九`.
 - Backend APIs and service boundaries: search `## 八`, `## 十`.
 - Database, migration, consistency: search `## 十三`, `## 十四`.
 - Security audit, vulnerabilities, backdoors: search `## 十七`, `## 十九`.

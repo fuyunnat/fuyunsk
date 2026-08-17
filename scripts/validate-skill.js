@@ -42,6 +42,7 @@ const requiredFiles = [
   '.gitignore',
   'skills/production-engineering/SKILL.md',
   'skills/production-engineering/agents/openai.yaml',
+  'skills/production-engineering/references/frontend-interface-quality.md',
   'skills/production-engineering/references/routing.md',
   'skills/production-engineering/references/full-production-engineering.md',
 ];
@@ -60,15 +61,28 @@ assertIncludes('skills/production-engineering/SKILL.md', [
   '后台页面',
   'Move deletions to the system trash/recycle bin',
   'references/routing.md',
+  'references/frontend-interface-quality.md',
   'references/full-production-engineering.md',
 ]);
 
 assertIncludes('skills/production-engineering/references/routing.md', [
   'Bug Report Workflow',
   'Admin Frontend Default',
+  'frontend-interface-quality.md',
   'Vue 3 + Vite',
   'Ant Design Vue',
   'ordinary `.vue` / `.js`',
+]);
+
+assertIncludes('skills/production-engineering/references/frontend-interface-quality.md', [
+  'Frontend Interface Quality',
+  'Vercel',
+  'Icon-only buttons',
+  'Do not use clickable `div` or `span`',
+  'Never block paste',
+  'Do not use `transition: all`',
+  'Large lists and tables',
+  'Vue 3 + Vite + Ant Design Vue',
 ]);
 
 assertIncludes('skills/production-engineering/references/full-production-engineering.md', [

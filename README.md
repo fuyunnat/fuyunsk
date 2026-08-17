@@ -4,6 +4,8 @@
 
 本仓库不依赖 Ponytail 或其他第三方 skill。设计目标是让朋友安装后能直接使用同一套生产工程规则，并且在 skill 自动触发不稳定时，仍然可以通过 `AGENTS.md` 兜底。
 
+前端界面质量规则已吸收通用 Web Interface Guidelines 思路，但改写成自家 `production-engineering` 参考文件：`skills/production-engineering/references/frontend-interface-quality.md`。不安装第三方 skill，不运行第三方安装脚本。
+
 ## 安装方式
 
 在 Codex 里直接对它说：
@@ -99,6 +101,14 @@ python3 ~/.codex/skills/.system/skill-installer/scripts/install-skill-from-githu
 - 普通 `.vue` / `.js`，不是 TypeScript 项目
 
 二开已有项目时，永远优先跟随真实项目栈。
+
+涉及前端页面、后台页面、管理端、配置页、运营后台、共享 UI 组件或 UI 审查时，skill 会额外读取：
+
+```text
+skills/production-engineering/references/frontend-interface-quality.md
+```
+
+这份参考补充键盘可操作、focus、表单、URL 状态、长文本、表格、动画、图片、性能、响应式和可访问性检查。
 
 ## 自检
 

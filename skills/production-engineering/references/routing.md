@@ -41,6 +41,7 @@ Read targeted sections from `full-production-engineering.md`:
 - Module/file size and comments: `## 七`.
 - Backend: `## 八`.
 - Frontend/admin pages: `## 九`.
+- Detailed frontend interface quality and UI review: `frontend-interface-quality.md`.
 - API compatibility: `## 十`.
 - Performance/capacity: `## 十一`.
 - Feature flags and rollback: `## 十二`.
@@ -64,3 +65,5 @@ For newly created admin pages, management consoles, configuration pages, or oper
 - Use Vue Router for multiple pages, menu navigation, details pages, or permission routes.
 - Use ordinary `.vue` / `.js`; do not convert the admin project to TypeScript unless explicitly requested.
 - For existing projects, always follow the real current stack instead of this default.
+
+For frontend pages, admin pages, management consoles, configuration pages, operations dashboards, shared UI components, or UI review tasks, also read `frontend-interface-quality.md`.
