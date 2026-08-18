@@ -4,6 +4,8 @@ Use this file when writing or editing engineering documentation, README files, r
 
 The goal is not to make text decorative. The goal is to make it sound like a responsible maintainer or product engineer wrote it: concrete, restrained, useful, and credible.
 
+Apply this proactively for the content types above. Users normally will not say "remove AI style"; the writer must perform this quality pass by default whenever producing repository documentation, engineering copy, PR/release text, customer-facing notes, or admin/product UI copy. A user explicitly mentioning "AI 味" only makes this rule more urgent; it is not required for the rule to apply.
+
 ## Default Standard
 
 Before finalizing text, remove obvious AI-style writing:

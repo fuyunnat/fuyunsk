@@ -97,7 +97,7 @@ Rules:
 
 ### Content writing lane
 
-Use in addition to read-only, quick, standard, or full lane when writing or editing README files, engineering docs, repository descriptions, installation guides, PR descriptions, release notes, customer-facing technical notes, admin UI copy, product settings copy, or text the user says has "AI 味".
+Use in addition to read-only, quick, standard, or full lane when writing or editing README files, engineering docs, repository descriptions, installation guides, PR descriptions, release notes, customer-facing technical notes, admin UI copy, or product settings copy. Apply this lane proactively; users do not need to say "AI 味" for it to apply.
 
 Rules:
 

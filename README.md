@@ -62,7 +62,7 @@ scripts/validate-skill.js                 # 仓库自检脚本
 
 ### 内容写作质量
 
-`references/content-writing-quality.md` 约束 README、自述文件、安装说明、PR 描述、发布说明、客户技术说明和后台页面文案，要求保留事实、去掉聊天痕迹和模板化表达，避免明显的 AI 味。
+`references/content-writing-quality.md` 约束 README、自述文件、安装说明、PR 描述、发布说明、客户技术说明和后台页面文案。凡是生成或修改这类内容，默认主动保留事实、去掉聊天痕迹和模板化表达，避免明显的 AI 味；不需要用户专门提出“去 AI 味”。
 
 ### 执行成本控制
 

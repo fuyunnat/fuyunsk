@@ -59,7 +59,7 @@ When the user mentions context loss, compaction, handoff, repeated work, long-ru
 
 ## Content Writing Quality Workflow
 
-When the task writes or edits README files, engineering documentation, repository descriptions, installation guides, changelogs, release notes, PR descriptions, customer-facing technical notes, admin UI copy, product settings copy, or the user says the text has "AI 味":
+When the task writes or edits README files, engineering documentation, repository descriptions, installation guides, changelogs, release notes, PR descriptions, customer-facing technical notes, admin UI copy, or product settings copy, always apply this workflow proactively. The user does not need to ask for "去 AI 味"; that phrase is only an extra signal.
 
 1. Read `content-writing-quality.md`.
 2. Preserve accurate technical facts, commands, paths, limits, and verification evidence.

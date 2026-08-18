@@ -96,6 +96,7 @@ assertIncludes('skills/production-engineering/references/routing.md', [
 assertIncludes('skills/production-engineering/references/content-writing-quality.md', [
   'Content Writing Quality',
   'README files',
+  'Apply this proactively',
   'AI-style writing',
   'Self-referential phrasing',
   'README And Repository Documentation',
@@ -187,6 +188,7 @@ assertIncludes('global-AGENTS.example.md', [
   '空值、重复请求、并发、权限、超时、异常处理和敏感信息泄露',
   'AI 味太重',
   '内容写作质量规则',
+  '默认主动读取',
   'work/task-state.md',
   '不得默认安装、启动、调用或通过外部记忆系统',
   '禁止使用 `rm`',
@@ -212,6 +214,7 @@ assertIncludes('docs/personal-custom-instructions.md', [
   '~/.codex/skills/production-engineering/references/context-memory-continuity.md',
   '~/.codex/skills/production-engineering/references/content-writing-quality.md',
   'AI 味太重',
+  '默认主动读取',
   '必须停止写操作',
   'Vue 3 + Vite',
   'Ant Design Vue',
