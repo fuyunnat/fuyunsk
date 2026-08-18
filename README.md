@@ -25,6 +25,7 @@ skills/production-engineering/
   references/context-memory-continuity.md
   references/content-writing-quality.md
   references/frontend-interface-quality.md
+  references/project-understanding.md
 
 docs/
   ai-installation.md                      # 给协作者或 AI 的安装说明
@@ -68,6 +69,10 @@ scripts/validate-skill.js                 # 仓库自检脚本
 
 `references/task-lanes.md` 用于在读取完整规范前判断 read-only、quick、standard、full、frontend/UI、context 等任务车道。它不会删减或削弱完整规范，只负责让简单任务少读少跑，高风险任务自动升级到完整规则。
 
+### 项目理解和架构拆解
+
+`references/project-understanding.md` 用于“先看懂项目”“拆一下这个仓库”“我想接手这个项目”这类只读任务。它要求 Codex 先给出项目本质、主流程、核心约束和最值得优先理解的机制，再按单个问题继续深入；不默认写文件、不安装第三方 skill，也不把普通修 bug 拖成完整架构报告。
+
 ## 安装
 
 在 Codex 中直接安装：
@@ -104,6 +109,7 @@ python3 ~/.codex/skills/.system/skill-installer/scripts/install-skill-from-githu
 
 - 修复这个 Bug。
 - 检查代码有没有隐藏问题。
+- 拆一下这个仓库的架构，先给我全局理解。
 - 启动项目并验证。
 - 提交代码并开 PR。
 - 优化 README，让文档表达更专业。

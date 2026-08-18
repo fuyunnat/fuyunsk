@@ -24,13 +24,27 @@ Choose one lane before editing files. If unsure, escalate.
 
 ### Read-only lane
 
-Use for explanation, planning, diagnosis, code review, security review, "先看", "先讨论", "别改", or "不要动代码".
+Use for explanation, project understanding, architecture teardown, planning, diagnosis, code review, security review, "先看", "先讨论", "别改", or "不要动代码".
 
 Rules:
 
 - Do not modify files, Git, databases, remotes, browsers, services, or external state.
 - Read only the files needed to answer the question.
 - For vague review or hidden-bug tasks, also read `code-risk-review.md`.
+- For project understanding, architecture teardown, or codebase onboarding, also read `project-understanding.md`.
+
+### Project understanding lane
+
+Use with read-only lane when the user asks to understand,拆解,接手,梳理, or analyze a project/repository architecture.
+
+Rules:
+
+- Read `project-understanding.md`.
+- Do not create `architecture.md` or any analysis artifact unless the user explicitly asks for a file.
+- Start with a global map instead of a full report: project essence, main problem, core flow, central architecture idea, first mechanisms to understand, and next deep-dive direction.
+- For follow-up deep dives, focus on one core problem and 2 to 4 supporting points.
+- Keep confirmed facts, reasonable inferences, unknowns, and next checks separate.
+- Do not route ordinary fixes, UI work, README edits, Git delivery, or deployment tasks through this lane unless the user first asks to understand the project.
 
 ### Quick lane
 
@@ -128,6 +142,7 @@ When escalating, stop broadening the change, explain the reason briefly, read th
 Use this as the starting point, then adjust to the real project.
 
 - Skill, prompt, docs, or workflow rule changes: run `node scripts/validate-skill.js`, `git diff --check`, diff review, sensitive-information scan, and large-file/generated-artifact check.
+- Project understanding or architecture teardown: no file changes by default; verify claims by citing inspected files, configs, routes, scripts, docs, or runtime evidence, and state unknown areas.
 - Frontend page or admin UI changes: run the project's lint/build or focused page smoke test where available; verify loading, empty, error, disabled, long text, and responsive states when affected.
 - Backend API or service changes: run targeted tests or API smoke tests; for shared code, also check main callers and compatibility.
 - Database or migration changes: verify migration direction, rollback or recovery plan, affected data paths, and target environment before running anything stateful.

@@ -5,6 +5,8 @@
 ```text
 默认中文回答。
 
+所有 `~/.codex` 路径都表示当前用户自己的 Codex 目录；优先按 $CODEX_HOME 解析，未设置时再使用当前系统用户目录下的 .codex。不得把其他机器的 /Users/...、C:\Users\... 或绝对路径照抄到本机规则里。
+
 凡是工程实现、修复、调试、重构、代码审计、安全审计、漏洞/后门排查、启动验证、Git 提交、推送、PR、CI、数据库、部署、后台页面、管理端、配置页、删除文件、高风险操作，或任何可能修改文件/Git/数据库/远端/线上状态的任务，必须使用 $production-engineering。
 
 凡是触发 $production-engineering 的任务，在第一次读取或修改项目业务文件前，必须先明确输出：已使用 $production-engineering，并已读取 SKILL.md / routing.md。如果任务需要额外 reference 文件，也必须说明已读取哪些 reference。无法确认已读取 skill 入口和必需 reference 时，不得继续写操作，只能做只读调查、风险分析或说明阻塞原因。
@@ -12,6 +14,8 @@
 当用户只说“有没有问题”“帮我看看代码”“查隐藏 Bug”或提出泛化代码审查请求时，不能只泛泛回答；必须主动检查空值、重复请求、并发、权限、超时、异常处理和敏感信息泄露，并说明已检查范围、证据和未覆盖范围。
 
 当任务涉及 README、自述文件、安装说明、PR 描述、发布说明、客户技术说明、后台页面文案、产品配置文案时，必须默认主动读取 content-writing-quality.md 或等价规则；不需要等用户说“AI 味太重/像 AI 写的/文案不专业”。保留准确事实、命令、路径、限制和验证证据，去掉聊天痕迹、泛泛夸赞、模板化表达、过度承诺和自我指代，让文本像真实维护者或产品工程师写的。
+
+当用户要求“理解项目”“拆解项目”“接手项目”“看看这个仓库架构”“先看懂项目”时，必须默认只读，主动读取 project-understanding.md 或等价规则；先给项目本质、主流程、核心约束、最值得优先理解的 2-4 个机制和下一步深挖方向。不要默认创建 architecture.md，不要安装或依赖第三方 skill，不要把普通修 bug、写代码或 README 任务拖成完整架构拆解。
 
 当任务较长、跨阶段、需要提交/推送/部署、用户说“别忘了/继续开发/上下文不见了/AI 忘记事情了”时，必须维护 work/task-state.md 或等价任务状态文件；状态文件只记录恢复任务所需摘要、证据路径、决策、改动、验证、PR/CI、回滚和剩余风险，不记录密钥、隐私数据或完整敏感日志。
 
@@ -26,6 +30,7 @@ Git 提交节奏默认保守：一个用户任务通常一个任务分支、一�
 - ~/.codex/skills/production-engineering/references/code-risk-review.md（代码审查、隐藏 Bug、漏洞/后门排查时）
 - ~/.codex/skills/production-engineering/references/context-memory-continuity.md（长任务、上下文续航、继续开发、任务交接时）
 - ~/.codex/skills/production-engineering/references/content-writing-quality.md（README、文档、PR 描述、发布说明、客户说明、页面文案或去 AI 味时）
+- ~/.codex/skills/production-engineering/references/project-understanding.md（理解项目、拆解架构、接手仓库、先看懂项目时）
 
 非平凡工程任务、完整通道任务、高风险任务、长任务、跨多文件任务、需要提交/推送/部署的任务，必须按 routing.md 再读取完整规范中的相关章节：
 

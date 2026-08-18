@@ -46,6 +46,7 @@ const requiredFiles = [
   'skills/production-engineering/references/content-writing-quality.md',
   'skills/production-engineering/references/context-memory-continuity.md',
   'skills/production-engineering/references/frontend-interface-quality.md',
+  'skills/production-engineering/references/project-understanding.md',
   'skills/production-engineering/references/routing.md',
   'skills/production-engineering/references/task-lanes.md',
   'skills/production-engineering/references/full-production-engineering.md',
@@ -73,6 +74,7 @@ assertIncludes('skills/production-engineering/SKILL.md', [
   'references/code-risk-review.md',
   'references/context-memory-continuity.md',
   'references/frontend-interface-quality.md',
+  'references/project-understanding.md',
   'references/full-production-engineering.md',
 ]);
 
@@ -81,16 +83,30 @@ assertIncludes('skills/production-engineering/references/routing.md', [
   'Code Risk Review Workflow',
   'Context Memory Workflow',
   'Content Writing Quality Workflow',
+  'Project Understanding Workflow',
   'Execution Cost Control Workflow',
   'code-risk-review.md',
   'content-writing-quality.md',
   'context-memory-continuity.md',
+  'project-understanding.md',
   'task-lanes.md',
   'Admin Frontend Default',
   'frontend-interface-quality.md',
   'Vue 3 + Vite',
   'Ant Design Vue',
   'ordinary `.vue` / `.js`',
+]);
+
+assertIncludes('skills/production-engineering/references/project-understanding.md', [
+  'Project Understanding',
+  'architecture teardown',
+  'read-only by default',
+  'Do not create `architecture.md`',
+  'Confirmed',
+  'Reasonable inference',
+  'Unknown',
+  'Next check',
+  'Do not copy third-party skill text wholesale',
 ]);
 
 assertIncludes('skills/production-engineering/references/content-writing-quality.md', [
@@ -148,6 +164,8 @@ assertIncludes('skills/production-engineering/references/task-lanes.md', [
   'Standard implementation lane',
   'Full lane',
   'one clear final commit per user task',
+  'Project understanding lane',
+  'project-understanding.md',
   'Content writing lane',
   'Escalation',
   'Verification Matrix',
@@ -157,6 +175,7 @@ assertIncludes('skills/production-engineering/references/task-lanes.md', [
 assertIncludes('README.md', [
   'production-engineering',
   'content-writing-quality.md',
+  'project-understanding.md',
   'task-lanes.md',
   '不会删减或削弱完整规范',
   '避免明显的 AI 味',
@@ -193,6 +212,7 @@ assertIncludes('global-AGENTS.example.md', [
   '一个用户任务通常一个任务分支、一个 PR、一个清晰最终提交',
   'AI 味太重',
   '内容写作质量规则',
+  '项目理解规则',
   '默认主动读取',
   'work/task-state.md',
   '不得默认安装、启动、调用或通过外部记忆系统',
@@ -202,6 +222,8 @@ assertIncludes('global-AGENTS.example.md', [
 
 assertIncludes('docs/ai-installation.md', [
   'https://github.com/fuyunnat/fuyunsk/tree/main/skills/production-engineering',
+  '优先使用 `$CODEX_HOME`',
+  '不得把其他人的 `/Users/...`',
   'content-writing-quality.md',
   'task-lanes.md',
   'docs/personal-custom-instructions.md',
@@ -211,6 +233,8 @@ assertIncludes('docs/ai-installation.md', [
 
 assertIncludes('docs/personal-custom-instructions.md', [
   '$production-engineering',
+  '所有 `~/.codex` 路径都表示当前用户自己的 Codex 目录',
+  '不得把其他机器的 /Users/...',
   '已使用 $production-engineering，并已读取 SKILL.md / routing.md',
   '“已完成”不是完成',
   '~/.codex/skills/production-engineering/SKILL.md',
@@ -218,6 +242,7 @@ assertIncludes('docs/personal-custom-instructions.md', [
   '~/.codex/skills/production-engineering/references/code-risk-review.md',
   '~/.codex/skills/production-engineering/references/context-memory-continuity.md',
   '~/.codex/skills/production-engineering/references/content-writing-quality.md',
+  '~/.codex/skills/production-engineering/references/project-understanding.md',
   '一个用户任务通常一个任务分支、一个 PR、一个清晰最终提交',
   'AI 味太重',
   '默认主动读取',
