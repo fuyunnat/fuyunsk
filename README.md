@@ -1,125 +1,133 @@
 # fuyunsk
 
-个人 Codex skill 仓库。当前只维护自家的 `production-engineering`，用于生产级工程交付、代码审计、修复、验证、Git/PR/CI、数据库、部署和后台页面开发流程。
+`fuyunsk` 是一个个人维护的 Codex skill 仓库，当前聚焦于 `production-engineering`：一套面向工程实现、修复、审计、验证、GitHub 交付、数据库/部署变更和后台页面开发的生产级执行规范。
 
-本仓库不依赖 Ponytail 或其他第三方 skill。设计目标是让朋友安装后能直接使用同一套生产工程规则，并且在 skill 自动触发不稳定时，仍然可以通过 `AGENTS.md` 兜底。
+该仓库不依赖第三方 skill、hooks 或代理框架。规则以轻量入口、按需路由和完整规范分层组织，便于安装、审查、同步和回滚。
 
-前端界面质量规则已吸收通用 Web Interface Guidelines 思路，但改写成自家 `production-engineering` 参考文件：`skills/production-engineering/references/frontend-interface-quality.md`。不安装第三方 skill，不运行第三方安装脚本。
+## 设计目标
 
-隐藏 Bug 审查规则已吸收“把泛化问题变成具体检查项”的思路，放在 `skills/production-engineering/references/code-risk-review.md`。当用户说“有没有问题”“帮我看看代码”“查隐藏 Bug”时，skill 会要求重点检查空值、重复请求、并发、权限、超时、异常处理和敏感信息泄露。
+- 将工程任务从“直接改代码”约束为“先读真实项目、判断风险、最小修改、验证、汇报、可回滚”的闭环。
+- 在 skill 自动触发不稳定时，通过全局或项目 `AGENTS.md` 提供兜底路由。
+- 把高风险规则写成硬门禁：用户改动保护、密钥保护、删除进回收站、禁止主线直推、禁止伪造验证结果。
+- 对长任务维护可恢复状态，降低上下文压缩、模型切换或任务中断造成的遗漏。
+- 对前端后台页面补充界面质量规则，避免只实现功能、不处理状态和细节。
 
-上下文记忆规则已吸收 TencentDB Agent Memory 的分层记忆、按需召回、证据可追溯和权限边界思路，放在 `skills/production-engineering/references/context-memory-continuity.md`。本仓库不默认安装或调用 TencentDB Agent Memory；只有用户明确要求集成外部记忆系统并确认风险时，才允许另行处理。
+## 目录结构
 
-执行成本控制规则放在 `skills/production-engineering/references/task-lanes.md`。它不会删减或削弱完整规范，只负责先判断 read-only、quick、standard、full、frontend/UI、context 等车道，让简单任务少读少跑，高风险任务自动升级到完整规则。
+```text
+skills/production-engineering/
+  SKILL.md                                # skill 入口和触发说明
+  agents/openai.yaml                      # agent 元数据
+  references/routing.md                   # 任务模式和 reference 路由
+  references/task-lanes.md                # 执行成本控制和任务车道
+  references/full-production-engineering.md
+  references/code-risk-review.md
+  references/context-memory-continuity.md
+  references/frontend-interface-quality.md
 
-## 安装方式
+docs/
+  ai-installation.md                      # 给协作者或 AI 的安装说明
+  personal-custom-instructions.md         # 可合并到 Codex 个性化提示词
 
-在 Codex 里直接对它说：
+global-AGENTS.example.md                  # 全局 AGENTS.md 参考模板
+scripts/validate-skill.js                 # 仓库自检脚本
+```
+
+## 核心能力
+
+### 工程交付
+
+`production-engineering` 会要求 Codex 在修改前读取真实项目状态、识别 Git/恢复边界、保护用户已有改动，并在完成后执行与风险匹配的验证。
+
+适用场景包括：
+
+- 功能实现、Bug 修复、重构和启动验证。
+- 代码审查、安全审计、漏洞和后门排查。
+- Git 分支、提交、推送、PR、CI 和回滚说明。
+- 数据库、配置、部署、依赖和生产风险相关任务。
+- 后台页面、管理端、配置页和运营后台开发。
+
+### 风险审查
+
+`references/code-risk-review.md` 将“有没有问题”“帮我看看代码”这类泛化请求转换为具体检查项，包括空值、重复请求、并发、权限、超时、异常处理和敏感信息泄露。
+
+### 上下文续航
+
+`references/context-memory-continuity.md` 规定长任务使用 `work/task-state.md` 或等价状态文件记录目标、决策、改动、验证、PR 状态和回滚方式。状态文件只保存恢复所需摘要和证据路径，不记录密钥、隐私数据、生产凭证或完整敏感日志。
+
+### 前端界面质量
+
+`references/frontend-interface-quality.md` 补充后台页面和管理端的界面要求，覆盖表格、筛选区、表单、弹窗、loading、empty、error、disabled、权限不足、登录失效、响应式和可访问性。
+
+### 执行成本控制
+
+`references/task-lanes.md` 用于在读取完整规范前判断 read-only、quick、standard、full、frontend/UI、context 等任务车道。它不会删减或削弱完整规范，只负责让简单任务少读少跑，高风险任务自动升级到完整规则。
+
+## 安装
+
+在 Codex 中直接安装：
 
 ```text
 安装这个 skill：https://github.com/fuyunnat/fuyunsk/tree/main/skills/production-engineering
 ```
 
-如果你想用命令安装，可以在本机执行：
+也可以使用本地命令安装：
 
 ```bash
 python3 ~/.codex/skills/.system/skill-installer/scripts/install-skill-from-github.py --repo fuyunnat/fuyunsk --path skills/production-engineering
 ```
 
-安装后，下一轮对话开始时 Codex 就能发现这个 skill。
+安装后，重新开始一轮对话即可被 Codex 发现。
 
-如果你要把这个仓库发给朋友，推荐直接让 AI 读取并执行：
+协作者安装时可参考：
 
 - [docs/ai-installation.md](docs/ai-installation.md)
 
-如果你要配置“个性化自定义提示词”，直接复制或合并：
+个性化提示词可参考：
 
 - [docs/personal-custom-instructions.md](docs/personal-custom-instructions.md)
 
-## 触发方式
+## 使用方式
 
-最稳的方式是显式触发：
+推荐显式触发：
 
 ```text
-用 $production-engineering 修这个问题
+用 $production-engineering 修复这个问题，并验证后提交到仓库。
 ```
 
-也可以自然表达。以下任务会尽量自动触发：
+自然语言也可能触发，例如：
 
-- 实现、修复、重构、交付代码
-- 启动项目并验证
-- 代码评审、安全审计、漏洞或后门排查
-- Git 提交、分支、推送、PR、CI
-- 数据库迁移、部署配置、高风险操作
-- 后台页面、管理端、配置页、运营后台
+- 修复这个 Bug。
+- 检查代码有没有隐藏问题。
+- 启动项目并验证。
+- 提交代码并开 PR。
+- 做一个后台配置页。
 
-重要说明：
+自动触发依赖 Codex 宿主环境的 skill 匹配机制。对稳定性要求高的任务，应在请求中明确写出 `$production-engineering`，并要求 Codex 在读取或修改项目业务文件前输出：
 
-- Skill 的“自动触发”依赖 Codex 当前版本和宿主环境的匹配机制，不能保证在所有客户端、所有模型、所有表达里 100% 自动触发。
-- 想要当前聊天最稳，直接在任务里写 `$production-engineering`。
-- 想要长期默认生效，把 `docs/personal-custom-instructions.md` 合并到 Codex 个性化自定义提示词，或把 `global-AGENTS.example.md` 的关键内容合并到全局或项目 `AGENTS.md`，让写操作必须先路由到这个 skill。
-- 触发 `$production-engineering` 后，AI 必须在第一次读取或修改项目业务文件前明确说明已使用该 skill，并说明已读取 `SKILL.md` / `routing.md` 以及本次额外 reference。没有这句报备，用户可以直接判定它没有按本仓库最稳规则开始。
+```text
+已使用 $production-engineering，并已读取 SKILL.md / routing.md。
+```
 
-## 更稳的全局路由
+## 全局兜底
 
-如果想让 Codex 更稳定地自动使用这个 skill，可以把 `global-AGENTS.example.md` 里的内容合并到自己的：
+若需要更稳定的默认约束，可将 `global-AGENTS.example.md` 的关键内容合并到：
 
 ```text
 ~/.codex/AGENTS.md
 ```
 
-不要直接覆盖已有全局文件，先备份。
+合并前应先备份已有文件。全局 `AGENTS.md` 适合放置不能依赖 skill 自动触发的硬门禁，例如：
 
-其中最关键的是 `global-AGENTS.example.md` 里的“写操作硬门禁”和“绝对禁止”：
+- 写操作必须先路由到 `$production-engineering`。
+- skill 不可用或未接管时停止写操作。
+- 禁止永久删除文件，删除必须进入系统回收站或可恢复位置。
+- 禁止提交密钥、覆盖用户改动、强推、主分支直推或伪造验证结果。
+- 高风险任务必须先只读调查、说明风险和回滚方式，再等待明确确认。
 
-- 凡是可能修改文件、Git、数据库、远端仓库、线上服务、配置、依赖或外部状态的任务，必须先使用 `$production-engineering`。
-- 如果 skill 不可用、未触发或无法确认已经接管当前写操作，Codex 应停止写操作并说明原因。
-- 生产数据库、真实用户数据、删除数据、强推、主分支直推、未知脚本、密钥提交、覆盖用户改动等禁区必须写在全局 `AGENTS.md`，不要只放在 skill 里。
+## 默认后台前端栈
 
-## 仓库级兜底
-
-本仓库根目录提供了 `AGENTS.md`，用于约束维护这个 skill 仓库时的行为：
-
-- 只维护自家的 `production-engineering`。
-- 不引入、复制或依赖第三方 skill、hooks 或命令。
-- `SKILL.md` 保持轻量，完整规范继续放在 `references/full-production-engineering.md`。
-- 任务状态文件放在 `work/`，并通过 `.gitignore` 排除，避免误提交。
-
-如果你要把这套规则给其他项目使用，应优先复制或合并 `global-AGENTS.example.md`，不要直接复制本仓库的维护规则。
-
-## Bug 修复用法
-
-遇到 Bug、报错、页面异常、接口不通或行为不符合预期时，推荐这样写：
-
-```text
-用 $production-engineering 先定位这个 Bug 的原因，说明证据和最小修改方案，再修复并验证。
-```
-
-这个 skill 会要求 Codex 先定位相关文件、函数、接口、配置、日志或调用链，再进行最小修改，避免一上来大范围重构。
-
-改完代码后，`已完成` 不等于可以直接使用。skill 会要求先做与风险匹配的验证，再以审查者视角检查本次 diff 是否影响旧功能、权限、异常路径、边界条件、并发/重复提交、敏感信息、无关改动和回滚方式；发现问题继续修复并重新验证。
-
-如果是想找隐藏 Bug 或做代码审查，也可以写：
-
-```text
-用 $production-engineering 检查这段代码有没有隐藏 Bug，重点看空值、重复请求、并发、权限、超时、异常处理和敏感信息泄露。
-```
-
-即使用户只说“有没有问题”或“帮我看看代码”，skill 也会把检查范围自动具体化，避免只给泛泛结论。
-
-## 上下文续航用法
-
-长任务、分阶段开发、需要提交推送、或担心 AI 开发到一半忘事时，推荐这样写：
-
-```text
-用 $production-engineering 继续这个任务，并维护 work/task-state.md，按阶段记录目标、决策、改动、验证、PR 状态和回滚方式。
-```
-
-这个 skill 会把任务记忆分层处理：状态文件只放可恢复摘要和证据路径，不塞长日志；继续任务时先读状态、Git、diff 和最新用户要求，再继续执行。
-
-## 后台页面默认栈
-
-新建后台页面、管理端、配置页或运营后台，且用户没有指定其他技术栈时：
+新建后台页面、管理端、配置页或运营后台，且用户没有指定其他技术栈时，默认使用：
 
 - Vue 3 + Vite
 - Ant Design Vue
@@ -127,23 +135,25 @@ python3 ~/.codex/skills/.system/skill-installer/scripts/install-skill-from-githu
 - Vue Router
 - 普通 `.vue` / `.js`，不是 TypeScript 项目
 
-二开已有项目时，永远优先跟随真实项目栈。
+二次开发已有项目时，始终以真实项目栈为准，不为了套默认选型迁移现有项目。
 
-涉及前端页面、后台页面、管理端、配置页、运营后台、共享 UI 组件或 UI 审查时，skill 会额外读取：
+## 维护规则
 
-```text
-skills/production-engineering/references/frontend-interface-quality.md
-```
+维护本仓库时应遵守根目录 [AGENTS.md](AGENTS.md)：
 
-这份参考补充键盘可操作、focus、表单、URL 状态、长文本、表格、动画、图片、性能、响应式和可访问性检查。
+- `SKILL.md` 保持轻量，只负责入口和路由。
+- 详细规范放在 `references/`。
+- 不压缩、不删减 `full-production-engineering.md`，除非用户明确要求。
+- 不新增第三方依赖；自检脚本优先使用 Node.js 标准库。
+- `work/` 用于任务状态和临时记录，默认不提交。
 
 ## 自检
 
-修改本仓库后，至少运行：
+修改本仓库后至少执行：
 
 ```bash
 node scripts/validate-skill.js
 git diff --check
 ```
 
-自检会确认关键文件存在，并检查触发词、删除策略、上下文状态、GitHub 提交规则、后台默认栈和第三方 skill 隔离规则没有丢。
+自检会确认关键文件、触发词、删除策略、上下文状态、GitHub 提交规则、后台默认栈、执行成本控制和第三方隔离规则没有丢失。
