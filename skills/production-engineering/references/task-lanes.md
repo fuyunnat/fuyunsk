@@ -95,6 +95,18 @@ Rules:
 - Do not store secrets, private data, full logs, real user data, production credentials, or sensitive config.
 - After continuation or compaction, reread state, current files, Git status, current diff, and the newest user request before acting.
 
+### Content writing lane
+
+Use in addition to read-only, quick, standard, or full lane when writing or editing README files, engineering docs, repository descriptions, installation guides, PR descriptions, release notes, customer-facing technical notes, admin UI copy, product settings copy, or text the user says has "AI 味".
+
+Rules:
+
+- Read `content-writing-quality.md`.
+- Preserve facts, commands, paths, constraints, validation evidence, and rollback notes.
+- Remove generic AI-style filler, overclaiming, chat residue, and self-referential prompting language.
+- Match the target reader and document type.
+- Do not invent product claims, test results, customer impact, security guarantees, or compatibility promises.
+
 ## Escalation
 
 Escalate from quick to standard or full lane if any of these appear:

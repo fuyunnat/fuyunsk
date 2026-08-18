@@ -43,6 +43,7 @@ const requiredFiles = [
   'skills/production-engineering/SKILL.md',
   'skills/production-engineering/agents/openai.yaml',
   'skills/production-engineering/references/code-risk-review.md',
+  'skills/production-engineering/references/content-writing-quality.md',
   'skills/production-engineering/references/context-memory-continuity.md',
   'skills/production-engineering/references/frontend-interface-quality.md',
   'skills/production-engineering/references/routing.md',
@@ -61,11 +62,14 @@ assertIncludes('skills/production-engineering/SKILL.md', [
   'fix',
   'debug',
   'admin pages',
+  'README or engineering documentation',
   '后台页面',
+  'AI 味',
   '已使用 $production-engineering，并已读取 SKILL.md / routing.md',
   'Move deletions to the system trash/recycle bin',
   'references/routing.md',
   'references/task-lanes.md',
+  'references/content-writing-quality.md',
   'references/code-risk-review.md',
   'references/context-memory-continuity.md',
   'references/frontend-interface-quality.md',
@@ -76,8 +80,10 @@ assertIncludes('skills/production-engineering/references/routing.md', [
   'Bug Report Workflow',
   'Code Risk Review Workflow',
   'Context Memory Workflow',
+  'Content Writing Quality Workflow',
   'Execution Cost Control Workflow',
   'code-risk-review.md',
+  'content-writing-quality.md',
   'context-memory-continuity.md',
   'task-lanes.md',
   'Admin Frontend Default',
@@ -85,6 +91,18 @@ assertIncludes('skills/production-engineering/references/routing.md', [
   'Vue 3 + Vite',
   'Ant Design Vue',
   'ordinary `.vue` / `.js`',
+]);
+
+assertIncludes('skills/production-engineering/references/content-writing-quality.md', [
+  'Content Writing Quality',
+  'README files',
+  'AI-style writing',
+  'Self-referential phrasing',
+  'README And Repository Documentation',
+  'Technical And Customer-Facing Notes',
+  'PR Descriptions And Release Notes',
+  'UI And Admin Copy',
+  'Final Check',
 ]);
 
 assertIncludes('skills/production-engineering/references/code-risk-review.md', [
@@ -128,6 +146,7 @@ assertIncludes('skills/production-engineering/references/task-lanes.md', [
   'Quick lane',
   'Standard implementation lane',
   'Full lane',
+  'Content writing lane',
   'Escalation',
   'Verification Matrix',
   'node scripts/validate-skill.js',
@@ -135,8 +154,10 @@ assertIncludes('skills/production-engineering/references/task-lanes.md', [
 
 assertIncludes('README.md', [
   'production-engineering',
+  'content-writing-quality.md',
   'task-lanes.md',
   '不会删减或削弱完整规范',
+  '避免明显的 AI 味',
   '简单任务少读少跑',
 ]);
 
@@ -164,6 +185,8 @@ assertIncludes('global-AGENTS.example.md', [
   '已使用 $production-engineering，并已读取 SKILL.md / routing.md',
   '“已完成”不是完成',
   '空值、重复请求、并发、权限、超时、异常处理和敏感信息泄露',
+  'AI 味太重',
+  '内容写作质量规则',
   'work/task-state.md',
   '不得默认安装、启动、调用或通过外部记忆系统',
   '禁止使用 `rm`',
@@ -172,6 +195,8 @@ assertIncludes('global-AGENTS.example.md', [
 
 assertIncludes('docs/ai-installation.md', [
   'https://github.com/fuyunnat/fuyunsk/tree/main/skills/production-engineering',
+  'content-writing-quality.md',
+  'task-lanes.md',
   'docs/personal-custom-instructions.md',
   '不要引入 Ponytail',
   '以后我是否还需要每次手动写 `$production-engineering`',
@@ -185,6 +210,8 @@ assertIncludes('docs/personal-custom-instructions.md', [
   '~/.codex/skills/production-engineering/references/routing.md',
   '~/.codex/skills/production-engineering/references/code-risk-review.md',
   '~/.codex/skills/production-engineering/references/context-memory-continuity.md',
+  '~/.codex/skills/production-engineering/references/content-writing-quality.md',
+  'AI 味太重',
   '必须停止写操作',
   'Vue 3 + Vite',
   'Ant Design Vue',

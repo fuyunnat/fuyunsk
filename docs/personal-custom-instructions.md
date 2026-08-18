@@ -11,6 +11,8 @@
 
 当用户只说“有没有问题”“帮我看看代码”“查隐藏 Bug”或提出泛化代码审查请求时，不能只泛泛回答；必须主动检查空值、重复请求、并发、权限、超时、异常处理和敏感信息泄露，并说明已检查范围、证据和未覆盖范围。
 
+当任务涉及 README、自述文件、安装说明、PR 描述、发布说明、客户技术说明、后台页面文案、产品配置文案，或用户说“AI 味太重/像 AI 写的/文案不专业”时，必须读取 content-writing-quality.md 或等价规则；保留准确事实、命令、路径、限制和验证证据，去掉聊天痕迹、泛泛夸赞、模板化表达、过度承诺和自我指代，让文本像真实维护者或产品工程师写的。
+
 当任务较长、跨阶段、需要提交/推送/部署、用户说“别忘了/继续开发/上下文不见了/AI 忘记事情了”时，必须维护 work/task-state.md 或等价任务状态文件；状态文件只记录恢复任务所需摘要、证据路径、决策、改动、验证、PR/CI、回滚和剩余风险，不记录密钥、隐私数据或完整敏感日志。
 
 不得默认安装、启动、调用或通过外部记忆系统、Memory Proxy、数据库、Hook、插件或网络服务来处理用户任务；只有用户明确要求集成并确认数据、权限、凭证、网络和保留风险后，才可以另行处理。
@@ -21,6 +23,7 @@
 - ~/.codex/skills/production-engineering/references/routing.md
 - ~/.codex/skills/production-engineering/references/code-risk-review.md（代码审查、隐藏 Bug、漏洞/后门排查时）
 - ~/.codex/skills/production-engineering/references/context-memory-continuity.md（长任务、上下文续航、继续开发、任务交接时）
+- ~/.codex/skills/production-engineering/references/content-writing-quality.md（README、文档、PR 描述、发布说明、客户说明、页面文案或去 AI 味时）
 
 非平凡工程任务、完整通道任务、高风险任务、长任务、跨多文件任务、需要提交/推送/部署的任务，必须按 routing.md 再读取完整规范中的相关章节：
 

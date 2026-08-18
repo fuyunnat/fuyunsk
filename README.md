@@ -23,6 +23,7 @@ skills/production-engineering/
   references/full-production-engineering.md
   references/code-risk-review.md
   references/context-memory-continuity.md
+  references/content-writing-quality.md
   references/frontend-interface-quality.md
 
 docs/
@@ -58,6 +59,10 @@ scripts/validate-skill.js                 # 仓库自检脚本
 ### 前端界面质量
 
 `references/frontend-interface-quality.md` 补充后台页面和管理端的界面要求，覆盖表格、筛选区、表单、弹窗、loading、empty、error、disabled、权限不足、登录失效、响应式和可访问性。
+
+### 内容写作质量
+
+`references/content-writing-quality.md` 约束 README、自述文件、安装说明、PR 描述、发布说明、客户技术说明和后台页面文案，要求保留事实、去掉聊天痕迹和模板化表达，避免明显的 AI 味。
 
 ### 执行成本控制
 
@@ -101,6 +106,7 @@ python3 ~/.codex/skills/.system/skill-installer/scripts/install-skill-from-githu
 - 检查代码有没有隐藏问题。
 - 启动项目并验证。
 - 提交代码并开 PR。
+- 优化 README，让文档表达更专业。
 - 做一个后台配置页。
 
 自动触发依赖 Codex 宿主环境的 skill 匹配机制。对稳定性要求高的任务，应在请求中明确写出 `$production-engineering`，并要求 Codex 在读取或修改项目业务文件前输出：

@@ -13,6 +13,8 @@ https://github.com/fuyunnat/fuyunsk/tree/main/skills/production-engineering
 2. 安装后确认以下文件存在：
    - `~/.codex/skills/production-engineering/SKILL.md`
    - `~/.codex/skills/production-engineering/references/routing.md`
+   - `~/.codex/skills/production-engineering/references/task-lanes.md`
+   - `~/.codex/skills/production-engineering/references/content-writing-quality.md`
    - `~/.codex/skills/production-engineering/references/full-production-engineering.md`
 3. 把仓库里的 `docs/personal-custom-instructions.md` 内容合并到我的 Codex 个性化自定义提示词或全局 `~/.codex/AGENTS.md`。
 4. 如果写入 `~/.codex/AGENTS.md`，先备份原文件，不能直接覆盖丢失旧规则。
@@ -42,6 +44,8 @@ python3 ~/.codex/skills/.system/skill-installer/scripts/install-skill-from-githu
 ```bash
 test -f ~/.codex/skills/production-engineering/SKILL.md
 test -f ~/.codex/skills/production-engineering/references/routing.md
+test -f ~/.codex/skills/production-engineering/references/task-lanes.md
+test -f ~/.codex/skills/production-engineering/references/content-writing-quality.md
 test -f ~/.codex/skills/production-engineering/references/full-production-engineering.md
 ```
 
