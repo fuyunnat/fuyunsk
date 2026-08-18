@@ -4,7 +4,7 @@ Use this file first after the skill triggers.
 
 ## Task Modes
 
-- **Read-only mode**: understanding a project, explaining code, planning, review, diagnosis, audit, security review, or "先看/先理解/别改/不要动代码". Inspect only; do not modify files, Git, databases, remotes, or external state.
+- **Read-only mode**: understanding a project, architecture teardown, explaining code, planning, review, diagnosis, audit, security review, or "先看/先理解/别改/不要动代码". Inspect only; do not modify files, Git, databases, remotes, or external state.
 - **Implementation mode**: user asks to add, modify, fix, refactor, build, deliver, start and verify, commit, push, or package. Edit only after real project inspection and Git/non-Git recovery checks.
 - **Security audit mode**: user asks for vulnerabilities, backdoors, suspicious logic, unsafe code, or whether the project is secure. Default read-only. Do not run unknown code. Stop and preserve evidence if a suspected backdoor appears.
 - **High-risk mode**: production, database writes, data deletion, credentials, payments, balances, orders, authorization, security policy, CI/CD, deployment config, remote repository settings, force push, direct main branch push, or destructive filesystem work. Do read-only investigation first; risky writes require explicit confirmation.
@@ -67,6 +67,17 @@ When the task writes or edits README files, engineering documentation, repositor
 4. Match the document's real audience: user, maintainer, operator, reviewer, or customer.
 5. Keep the result concrete, restrained, readable, and reviewable.
 
+## Project Understanding Workflow
+
+When the user asks to understand,拆解,接手,梳理, or analyze a project/repository architecture:
+
+1. Read `project-understanding.md`.
+2. Keep the task read-only unless the user explicitly asks to create a file or modify code.
+3. Inspect the real entrypoints, routes, configs, package scripts, service boundaries, storage/runtime clues, and project-local rules before making architecture claims.
+4. First provide a global map: project essence, main problem, core flow, central architecture idea, 2 to 4 mechanisms worth understanding first, and the next best deep-dive direction.
+5. For follow-up deep dives, explain one core problem at a time; do not turn every implementation, bug fix, or README task into a full architecture teardown.
+6. Separate confirmed facts, reasonable inferences, unknowns, and next checks. Do not claim the whole architecture is understood after a narrow scan.
+
 ## Detailed Reference Map
 
 Read targeted sections from `full-production-engineering.md`:
@@ -78,6 +89,7 @@ Read targeted sections from `full-production-engineering.md`:
 - Bug-first diagnosis: `Bug 修复前置规则`.
 - Hidden bug and code risk review: `code-risk-review.md`.
 - Content writing quality, README, docs, PR descriptions, release notes, UI copy, and anti-AI-style editing: `content-writing-quality.md`.
+- Project understanding, architecture teardown, and codebase onboarding: `project-understanding.md`.
 - Risk and requirement boundaries: `## 五`, `## 六`.
 - Module/file size and comments: `## 七`.
 - Backend: `## 八`.

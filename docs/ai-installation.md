@@ -14,6 +14,7 @@ https://github.com/fuyunnat/fuyunsk/tree/main/skills/production-engineering
    - `~/.codex/skills/production-engineering/SKILL.md`
    - `~/.codex/skills/production-engineering/references/routing.md`
    - `~/.codex/skills/production-engineering/references/task-lanes.md`
+   - `~/.codex/skills/production-engineering/references/project-understanding.md`
    - `~/.codex/skills/production-engineering/references/content-writing-quality.md`
    - `~/.codex/skills/production-engineering/references/full-production-engineering.md`
 3. 把仓库里的 `docs/personal-custom-instructions.md` 内容合并到我的 Codex 个性化自定义提示词或全局 `~/.codex/AGENTS.md`。
@@ -33,6 +34,8 @@ https://github.com/fuyunnat/fuyunsk/tree/main/skills/production-engineering
 
 ## 手动命令
 
+下面的 `~/.codex` 表示当前用户自己的 Codex 目录，不是固定机器路径。AI 安装时必须先识别当前环境的 Codex Home：优先使用 `$CODEX_HOME`，未设置时 macOS/Linux 通常是 `$HOME/.codex`；Windows 通常是 `%USERPROFILE%\\.codex` 或当前 Codex 客户端配置的目录。不得把其他人的 `/Users/...`、`C:\\Users\\...` 等绝对路径照抄到自己的机器。
+
 如果 Codex 支持本地命令安装，可以使用：
 
 ```bash
@@ -45,6 +48,7 @@ python3 ~/.codex/skills/.system/skill-installer/scripts/install-skill-from-githu
 test -f ~/.codex/skills/production-engineering/SKILL.md
 test -f ~/.codex/skills/production-engineering/references/routing.md
 test -f ~/.codex/skills/production-engineering/references/task-lanes.md
+test -f ~/.codex/skills/production-engineering/references/project-understanding.md
 test -f ~/.codex/skills/production-engineering/references/content-writing-quality.md
 test -f ~/.codex/skills/production-engineering/references/full-production-engineering.md
 ```
