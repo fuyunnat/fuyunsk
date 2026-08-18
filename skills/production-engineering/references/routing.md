@@ -57,6 +57,16 @@ When the user mentions context loss, compaction, handoff, repeated work, long-ru
 4. Do not install, start, call, or route through external memory systems unless the user explicitly asks for that integration and approves the operational risk.
 5. After compaction or continuation, read task state, current Git status, current diff, and the newest user request before acting.
 
+## Content Writing Quality Workflow
+
+When the task writes or edits README files, engineering documentation, repository descriptions, installation guides, changelogs, release notes, PR descriptions, customer-facing technical notes, admin UI copy, or product settings copy, always apply this workflow proactively. The user does not need to ask for "去 AI 味"; that phrase is only an extra signal.
+
+1. Read `content-writing-quality.md`.
+2. Preserve accurate technical facts, commands, paths, limits, and verification evidence.
+3. Remove chat residue, generic praise, over-broad claims, and filler that does not help the target reader.
+4. Match the document's real audience: user, maintainer, operator, reviewer, or customer.
+5. Keep the result concrete, restrained, readable, and reviewable.
+
 ## Detailed Reference Map
 
 Read targeted sections from `full-production-engineering.md`:
@@ -67,6 +77,7 @@ Read targeted sections from `full-production-engineering.md`:
 - Context memory and task-state continuity: `context-memory-continuity.md`, plus `上下文续航`.
 - Bug-first diagnosis: `Bug 修复前置规则`.
 - Hidden bug and code risk review: `code-risk-review.md`.
+- Content writing quality, README, docs, PR descriptions, release notes, UI copy, and anti-AI-style editing: `content-writing-quality.md`.
 - Risk and requirement boundaries: `## 五`, `## 六`.
 - Module/file size and comments: `## 七`.
 - Backend: `## 八`.
