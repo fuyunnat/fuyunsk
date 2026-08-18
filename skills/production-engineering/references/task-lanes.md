@@ -61,6 +61,7 @@ Rules:
 - Check Git state before editing.
 - Validate with the smallest command set that proves the changed behavior.
 - Commit and push when the user asks for repository delivery or when the task requires the normal GitHub handoff.
+- Default to one clear final commit per user task. Split commits only for genuinely independent, reviewable, and separately reversible changes.
 
 ### Full lane
 
@@ -72,6 +73,7 @@ Rules:
 - Maintain `work/task-state.md` or an equivalent ignored state file for long, staged, pushed, PR, deployment, or context-loss-prone tasks.
 - Use Git recovery gates, diff review, risk explanation, validation evidence, rollback plan, and final delivery reporting.
 - Create or update one task branch and one PR when GitHub delivery applies.
+- Use task-state files, diff review, and the task branch as recovery checkpoints during development; do not create a new commit for every small fix, test retry, wording tweak, or file edit.
 
 ### Frontend/UI lane
 
