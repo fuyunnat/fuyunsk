@@ -46,6 +46,7 @@ const requiredFiles = [
   'skills/production-engineering/references/context-memory-continuity.md',
   'skills/production-engineering/references/frontend-interface-quality.md',
   'skills/production-engineering/references/routing.md',
+  'skills/production-engineering/references/task-lanes.md',
   'skills/production-engineering/references/full-production-engineering.md',
 ];
 
@@ -64,6 +65,7 @@ assertIncludes('skills/production-engineering/SKILL.md', [
   '已使用 $production-engineering，并已读取 SKILL.md / routing.md',
   'Move deletions to the system trash/recycle bin',
   'references/routing.md',
+  'references/task-lanes.md',
   'references/code-risk-review.md',
   'references/context-memory-continuity.md',
   'references/frontend-interface-quality.md',
@@ -74,8 +76,10 @@ assertIncludes('skills/production-engineering/references/routing.md', [
   'Bug Report Workflow',
   'Code Risk Review Workflow',
   'Context Memory Workflow',
+  'Execution Cost Control Workflow',
   'code-risk-review.md',
   'context-memory-continuity.md',
+  'task-lanes.md',
   'Admin Frontend Default',
   'frontend-interface-quality.md',
   'Vue 3 + Vite',
@@ -115,6 +119,25 @@ assertIncludes('skills/production-engineering/references/frontend-interface-qual
   'Do not use `transition: all`',
   'Large lists and tables',
   'Vue 3 + Vite + Ant Design Vue',
+]);
+
+assertIncludes('skills/production-engineering/references/task-lanes.md', [
+  'Execution Cost Control',
+  'full specification remains authoritative',
+  'Do not weaken hard gates',
+  'Quick lane',
+  'Standard implementation lane',
+  'Full lane',
+  'Escalation',
+  'Verification Matrix',
+  'node scripts/validate-skill.js',
+]);
+
+assertIncludes('README.md', [
+  'production-engineering',
+  'task-lanes.md',
+  '不会删减或削弱完整规范',
+  '简单任务少读少跑',
 ]);
 
 assertIncludes('skills/production-engineering/references/full-production-engineering.md', [

@@ -12,13 +12,21 @@ Use this file first after the skill triggers.
 ## Default Workflow
 
 1. Confirm scope and task mode from the newest user request.
-2. Inspect local rules and real project state before assumptions.
-3. If modifying files, check Git state first. If not a Git repo, create a timestamped backup before overwriting existing files.
-4. Define the smallest safe change and what existing behavior must remain unchanged.
-5. Implement only the scoped change.
-6. Verify with commands appropriate to the risk.
-7. Review diffs for unrelated changes, secrets, large files, generated artifacts, and accidental formatting.
-8. Final response: what changed, verification evidence, rollback path, unverified areas, remaining risk.
+2. Read `task-lanes.md` and choose read-only, quick, standard, full, frontend/UI, or context lane.
+3. Inspect local rules and real project state before assumptions.
+4. If modifying files, check Git state first. If not a Git repo, create a timestamped backup before overwriting existing files.
+5. Define the smallest safe change and what existing behavior must remain unchanged.
+6. Implement only the scoped change.
+7. Verify with commands appropriate to the risk and chosen lane.
+8. Review diffs for unrelated changes, secrets, large files, generated artifacts, and accidental formatting.
+9. Final response: lane used, what changed, verification evidence, rollback path, unverified areas, remaining risk.
+
+## Execution Cost Control Workflow
+
+1. Use `task-lanes.md` to avoid loading the whole full specification when a task is genuinely narrow, local, reversible, and low risk.
+2. Do not use execution-cost control to bypass hard gates: user changes, Git recovery, deletion safety, secrets, production, database, auth, payment, deployment, remote, validation truthfulness, and rollback still apply.
+3. Escalate to the stricter lane immediately when the impact is uncertain, shared/high-risk files are touched, tests fail, diffs are unexplained, or the user asks for "最稳", "别出问题", "提交线上", "推送", "PR", "CI", or "部署".
+4. For skill, prompt, docs, or workflow-rule changes, the default validation baseline is `node scripts/validate-skill.js`, `git diff --check`, diff review, sensitive-information scan, and generated/large-file check.
 
 ## Bug Report Workflow
 
@@ -54,6 +62,7 @@ When the user mentions context loss, compaction, handoff, repeated work, long-ru
 Read targeted sections from `full-production-engineering.md`:
 
 - Global priority and task modes: `## 零`, `## 一`, `## 二`.
+- Task lanes and execution cost control: `task-lanes.md`.
 - Git gate and delivery: `## 三`, `## 四`.
 - Context memory and task-state continuity: `context-memory-continuity.md`, plus `上下文续航`.
 - Bug-first diagnosis: `Bug 修复前置规则`.
