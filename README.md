@@ -95,6 +95,8 @@ python3 ~/.codex/skills/.system/skill-installer/scripts/install-skill-from-githu
 
 这个 skill 会要求 Codex 先定位相关文件、函数、接口、配置、日志或调用链，再进行最小修改，避免一上来大范围重构。
 
+改完代码后，`已完成` 不等于可以直接使用。skill 会要求先做与风险匹配的验证，再以审查者视角检查本次 diff 是否影响旧功能、权限、异常路径、边界条件、并发/重复提交、敏感信息、无关改动和回滚方式；发现问题继续修复并重新验证。
+
 如果是想找隐藏 Bug 或做代码审查，也可以写：
 
 ```text
