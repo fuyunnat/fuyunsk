@@ -56,6 +56,7 @@ python3 ~/.codex/skills/.system/skill-installer/scripts/install-skill-from-githu
 - Skill 的“自动触发”依赖 Codex 当前版本和宿主环境的匹配机制，不能保证在所有客户端、所有模型、所有表达里 100% 自动触发。
 - 想要当前聊天最稳，直接在任务里写 `$production-engineering`。
 - 想要长期默认生效，把 `docs/personal-custom-instructions.md` 合并到 Codex 个性化自定义提示词，或把 `global-AGENTS.example.md` 的关键内容合并到全局或项目 `AGENTS.md`，让写操作必须先路由到这个 skill。
+- 触发 `$production-engineering` 后，AI 必须在第一次读取或修改项目业务文件前明确说明已使用该 skill，并说明已读取 `SKILL.md` / `routing.md` 以及本次额外 reference。没有这句报备，用户可以直接判定它没有按本仓库最稳规则开始。
 
 ## 更稳的全局路由
 
@@ -93,6 +94,8 @@ python3 ~/.codex/skills/.system/skill-installer/scripts/install-skill-from-githu
 ```
 
 这个 skill 会要求 Codex 先定位相关文件、函数、接口、配置、日志或调用链，再进行最小修改，避免一上来大范围重构。
+
+改完代码后，`已完成` 不等于可以直接使用。skill 会要求先做与风险匹配的验证，再以审查者视角检查本次 diff 是否影响旧功能、权限、异常路径、边界条件、并发/重复提交、敏感信息、无关改动和回滚方式；发现问题继续修复并重新验证。
 
 如果是想找隐藏 Bug 或做代码审查，也可以写：
 

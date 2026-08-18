@@ -20,6 +20,7 @@ Use this skill to turn software work into a controlled production-grade workflow
 ## Operating Rules
 
 - Default to Chinese unless the user explicitly requests another language.
+- At the start of every task handled by this skill, before reading or modifying project business files, explicitly tell the user: `已使用 $production-engineering，并已读取 SKILL.md / routing.md。` Also list any extra reference files read for this task. If you cannot confirm the skill entry and required references were read, stop write operations and continue only with read-only investigation or risk explanation.
 - For read-only tasks, inspect and report; do not modify files, Git, databases, remotes, or external state.
 - For implementation tasks, inspect the real entrypoints, configs, dependencies, existing patterns, Git state, and user changes before editing.
 - For bug reports and errors, locate the most relevant files, functions, routes, configs, logs, or call chains first; explain the likely cause, evidence, and smallest fix before broad edits.
