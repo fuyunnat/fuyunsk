@@ -10,6 +10,8 @@
 
 上下文记忆规则已吸收 TencentDB Agent Memory 的分层记忆、按需召回、证据可追溯和权限边界思路，放在 `skills/production-engineering/references/context-memory-continuity.md`。本仓库不默认安装或调用 TencentDB Agent Memory；只有用户明确要求集成外部记忆系统并确认风险时，才允许另行处理。
 
+执行成本控制规则放在 `skills/production-engineering/references/task-lanes.md`。它不会删减或削弱完整规范，只负责先判断 read-only、quick、standard、full、frontend/UI、context 等车道，让简单任务少读少跑，高风险任务自动升级到完整规则。
+
 ## 安装方式
 
 在 Codex 里直接对它说：

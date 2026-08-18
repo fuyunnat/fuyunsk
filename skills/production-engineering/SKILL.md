@@ -9,13 +9,14 @@ Use this skill to turn software work into a controlled production-grade workflow
 
 ## First Steps
 
-1. Read `references/routing.md` first for task-mode routing and which detailed sections apply.
-2. For non-trivial engineering work, read only the relevant sections of `references/full-production-engineering.md` using heading search, not the whole file by default.
-3. For code review, hidden bug hunting, vague "有没有问题/看看代码" requests, bug diagnosis, security audit, vulnerability review, or backdoor review, also read `references/code-risk-review.md`.
-4. For long tasks, multi-stage development, context compaction recovery, task handoff, repeated project work, or "AI 忘记事情/上下文不见了" requests, also read `references/context-memory-continuity.md`.
-5. For frontend pages, admin pages, management consoles, configuration pages, operations dashboards, shared UI components, or UI review tasks, also read `references/frontend-interface-quality.md`.
-6. If the user explicitly asks for the full standard, maximum rigor, or no omissions, read `references/full-production-engineering.md` directly.
-7. Follow project-local `AGENTS.md`, README, package scripts, existing architecture, and user instructions when they are more specific and do not conflict with higher-priority rules.
+1. Read `references/routing.md` first for task-mode routing.
+2. Read `references/task-lanes.md` to choose read-only, quick, standard, full, frontend/UI, or context lane before deciding how much extra material to load.
+3. For non-trivial engineering work, read only the relevant sections of `references/full-production-engineering.md` using heading search, not the whole file by default.
+4. For code review, hidden bug hunting, vague "有没有问题/看看代码" requests, bug diagnosis, security audit, vulnerability review, or backdoor review, also read `references/code-risk-review.md`.
+5. For long tasks, multi-stage development, context compaction recovery, task handoff, repeated project work, or "AI 忘记事情/上下文不见了" requests, also read `references/context-memory-continuity.md`.
+6. For frontend pages, admin pages, management consoles, configuration pages, operations dashboards, shared UI components, or UI review tasks, also read `references/frontend-interface-quality.md`.
+7. If the user explicitly asks for the full standard, maximum rigor, or no omissions, read `references/full-production-engineering.md` directly.
+8. Follow project-local `AGENTS.md`, README, package scripts, existing architecture, and user instructions when they are more specific and do not conflict with higher-priority rules.
 
 ## Operating Rules
 
@@ -40,6 +41,7 @@ For the most reliable use, invoke this skill explicitly with `$production-engine
 
 Use heading searches in `references/full-production-engineering.md`:
 
+- Execution cost control, quick/standard/full lane choice, and validation depth: read `references/task-lanes.md`.
 - Git, branches, commits, PRs, CI, rollback: search `## 三`, `## 四`, `回滚`, `CI`.
 - Long tasks, task-state, context continuity, compaction recovery, handoff, and optional external memory systems: read `references/context-memory-continuity.md`, then search `上下文续航`.
 - Code review, hidden bugs, bug diagnosis, vague "有没有问题/看看代码" requests, vulnerability and backdoor review: read `references/code-risk-review.md`, then search `Bug 修复前置规则`, `## 十四`, `## 十七`, `## 十九`.
