@@ -30,7 +30,7 @@ Translate unavoidable terms immediately. For example, explain a task branch as �
 ## Default Workflow
 
 1. Confirm scope and task mode from the newest user request.
-2. For implementation, delivery, high-risk, or uncertain-impact work, read `task-lanes.md` and choose quick, standard, full, frontend/UI, or context lanes. Keep narrow read-only work on the shortest applicable path.
+2. For implementation, delivery, high-risk, or uncertain-impact work, read `task-lanes.md` and choose quick, standard, full, frontend/UI, or context lanes. Add the context lane for every standard/full source-code implementation, any change spanning more than one source-code file, and any multi-stage or interruption-prone task. Keep narrow read-only work on the shortest applicable path.
 3. Inspect local rules and real project state before assumptions.
 4. If modifying files, check Git state first. If not a Git repo, create a timestamped backup before overwriting existing files.
 5. Define the smallest safe change and what existing behavior must remain unchanged.
@@ -68,13 +68,19 @@ When the user asks "有没有问题", "帮我看看代码", "查隐藏 Bug", cod
 
 ## Context Memory Workflow
 
-When the user mentions context loss, compaction, handoff, repeated work, long-running development, "别忘了", "继续开发", "上下文不见了", or "AI 忘记事情了":
+When a standard or full implementation modifies source code, a task changes more than one source-code file, or the user mentions context loss, compaction, handoff, repeated work, long-running development, "别忘了", "继续开发", "上下文不见了", or "AI 忘记事情了":
 
 1. Read `context-memory-continuity.md`.
-2. Maintain `work/task-state.md` or an equivalent ignored task-state file for active task memory.
-3. Use layered memory: short task summary and decisions in the state file, evidence paths for raw logs/diffs/reports, and current real files/Git/runtime as the source of truth.
-4. Do not install, start, call, or route through external memory systems unless the user explicitly asks for that integration and approves the operational risk.
-5. After compaction or continuation, read task state, current Git status, current diff, and the newest user request before acting.
+2. Before the first source-code edit, maintain `work/task-state.md` or an equivalent ignored/project-external task-state file. If `work/` is not ignored, use another safe location instead of silently skipping or changing `.gitignore` only for agent state.
+3. Refresh stale state so the current goal, status, branch, changed/planned files, next step, and prohibitions match the active task.
+4. Codex updates state itself; do not wait for the user to request a status change.
+5. After implementation but before validation, record task active, implementation complete, and verification pending. After current-diff validation passes, record task complete and verification passed.
+6. If validation fails or cannot run, keep the task active or blocked and record verification failed/unavailable, evidence, and the next step. Never treat "tested" as "passed" without a successful result.
+7. Any source-code edit after a passing check invalidates that result for the current diff: return the task to active and verification to pending until revalidation.
+8. Also update after any authorized commit/push/review/merge/deploy action and before final handoff. Do not rewrite it after every tiny edit or test retry.
+9. Use layered memory: short task summary and decisions in the state file, evidence paths for raw logs/diffs/reports, and current real files/Git/runtime as the source of truth.
+10. Do not install, start, call, or route through external memory systems unless the user explicitly asks for that integration and approves the operational risk.
+11. After compaction or continuation, read task state, current Git status, current diff, and the newest user request before acting.
 
 ## Content Writing Quality Workflow
 
