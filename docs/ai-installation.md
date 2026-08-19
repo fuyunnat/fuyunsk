@@ -1,60 +1,62 @@
 # AI 安装教程
 
-把下面这段话发给 Codex，让它按步骤安装并验证本仓库的 `production-engineering` skill。
+把下面整段发给 Codex。用户不需要先了解 skill、Git 或安装目录。
 
 ```text
-请安装并启用这个生产工程 skill：
+请安装并启用这个工程 skill，并让当前任务和后续工程任务都能按规则使用：
 
 https://github.com/fuyunnat/fuyunsk/tree/main/skills/production-engineering
 
 要求：
 
-1. 使用 Codex 的 skill 安装方式，把 `skills/production-engineering` 安装到本机 `~/.codex/skills/production-engineering`。
-2. 安装后确认以下文件存在：
-   - `~/.codex/skills/production-engineering/SKILL.md`
-   - `~/.codex/skills/production-engineering/references/routing.md`
-   - `~/.codex/skills/production-engineering/references/task-lanes.md`
-   - `~/.codex/skills/production-engineering/references/project-understanding.md`
-   - `~/.codex/skills/production-engineering/references/content-writing-quality.md`
-   - `~/.codex/skills/production-engineering/references/full-production-engineering.md`
-3. 把仓库里的 `docs/personal-custom-instructions.md` 内容合并到我的 Codex 个性化自定义提示词或全局 `~/.codex/AGENTS.md`。
-4. 如果写入 `~/.codex/AGENTS.md`，先备份原文件，不能直接覆盖丢失旧规则。
-5. 验证个性化规则里包含 `$production-engineering`、`SKILL.md`、`routing.md` 和“读不到则停止写操作”。
-6. 验证安装后的 skill 能被发现；如果不能确认自动触发，工程类任务必须显式或主动读取该 skill。
-7. 不要引入 Ponytail 或其他第三方 skill、hooks、命令或多平台代理适配。
+1. 先识别当前 Codex 实际使用的用户级 skill 目录，并检查是否已经存在 `production-engineering`。OpenAI 当前文档列出 `$HOME/.agents/skills`；部分现有客户端和内置安装器仍使用 `$CODEX_HOME/skills`，默认通常是 `~/.codex/skills`。以当前客户端的可用 skill 列表、安装器结果和现有目录为准，不要照抄其他人的 `/Users/...` 或 `C:\\Users\\...` 路径。
+2. 使用当前 Codex 自带的 `$skill-installer` 从上述 GitHub 路径安装，并记录 `production-engineering` 的实际完整目录为 `<SKILL_DIR>`。如果同名 skill 已存在，先建立带时间戳的可恢复备份，再原位更新；不得在 `.agents/skills` 和 `.codex/skills` 各装一份。不要安装整个仓库，也不要引入第三方 skill、hooks、代理框架或额外依赖。
+3. 安装后确认 `<SKILL_DIR>/` 下的 `SKILL.md`、`agents/openai.yaml`、`references/routing.md`、`references/task-lanes.md`、`references/context-memory-continuity.md`、`references/content-writing-quality.md` 和 `references/full-production-engineering.md` 都存在。
+4. 检查 `agents/openai.yaml`：`policy.allow_implicit_invocation` 必须是 `true`，`default_prompt` 必须包含 `$production-engineering`。不要声称这等于所有宿主和所有说法都能 100% 自动触发。
+5. 读取我现有的全局 `AGENTS.md` 和客户端个性化自定义提示词。修改前建立带时间戳的可恢复备份。全局 `AGENTS.md` 以仓库的 `global-AGENTS.example.md` 为参考；只有客户端提供独立的个性化提示词输入框时，才使用 `docs/personal-custom-instructions.md`，并把其中的 `<SKILL_DIR>` 替换成第 2 步确认的实际完整目录。不要保留未替换占位符，不要把两份全文重复塞进同一个位置，保留原有规则并去掉重复内容，不能整文件盲目覆盖。
+6. 验证全局硬门禁至少包含：工程写操作路由到 `$production-engineering`；先读取 `SKILL.md` 和 `routing.md`；读不到或无法确认接管时停止写操作；删除进入回收站；保护用户已有改动；本地修改、远端保存、评审、合并和部署分开授权。
+7. 安装完成后不要要求我另开任务。在当前任务中立即读取已安装的 `SKILL.md` 和 `routing.md`，并明确输出：`已使用 $production-engineering，并已读取 SKILL.md / routing.md。`
+8. 用普通话做一次只读验证，例如“看看当前项目有没有问题，先别改”。确认它会先路由到该 skill，且不会因为“看看”而修改文件或 Git。验证过程不得制造业务改动。
+9. 最后检查没有写死安装者路径、没有泄露远端凭证、没有覆盖旧规则，也没有新增计划外文件。
 
 最终请用中文告诉我：
 
 - 安装到了哪里。
-- 个性化自定义提示词或 `AGENTS.md` 改了什么。
-- 是否备份了旧文件，备份路径是什么。
-- 如何验证。
-- 以后我是否还需要每次手动写 `$production-engineering`。
+- 旧规则备份在哪里，合并了哪些硬门禁。
+- 隐式调用配置是否开启，当前任务是否已经读取 skill。
+- 做了什么只读验证，结果是什么。
+- 日常使用是否还需要手动写 `$production-engineering`；如果仍有宿主限制，要直接说明。
 ```
 
-## 手动命令
+## 手动检查
 
-下面的 `~/.codex` 表示当前用户自己的 Codex 目录，不是固定机器路径。AI 安装时必须先识别当前环境的 Codex Home：优先使用 `$CODEX_HOME`，未设置时 macOS/Linux 通常是 `$HOME/.codex`；Windows 通常是 `%USERPROFILE%\\.codex` 或当前 Codex 客户端配置的目录。不得把其他人的 `/Users/...`、`C:\\Users\\...` 等绝对路径照抄到自己的机器。
-
-如果 Codex 支持本地命令安装，可以使用：
+优先让当前 Codex 的 `$skill-installer` 完成安装，不要猜安装脚本或目标目录。安装器应返回实际路径；下面命令只适用于它确认使用 `$HOME/.agents/skills` 的情况。如果安装器返回 `$CODEX_HOME/skills`，把检查路径替换成实际目录，不要两套命令都执行。
 
 ```bash
-python3 ~/.codex/skills/.system/skill-installer/scripts/install-skill-from-github.py --repo fuyunnat/fuyunsk --path skills/production-engineering
+test -f ~/.agents/skills/production-engineering/SKILL.md
+test -f ~/.agents/skills/production-engineering/agents/openai.yaml
+test -f ~/.agents/skills/production-engineering/references/routing.md
+test -f ~/.agents/skills/production-engineering/references/task-lanes.md
+test -f ~/.agents/skills/production-engineering/references/project-understanding.md
+test -f ~/.agents/skills/production-engineering/references/content-writing-quality.md
+test -f ~/.agents/skills/production-engineering/references/full-production-engineering.md
+grep -F 'allow_implicit_invocation: true' ~/.agents/skills/production-engineering/agents/openai.yaml
+grep -F '$production-engineering' ~/.agents/skills/production-engineering/agents/openai.yaml
 ```
 
-安装后检查：
+Windows PowerShell 不需要写复杂脚本。确认安装器返回的实际路径后，使用简单的 `Test-Path` 逐个检查即可；下面展示 OpenAI 当前文档中的用户级目录：
 
-```bash
-test -f ~/.codex/skills/production-engineering/SKILL.md
-test -f ~/.codex/skills/production-engineering/references/routing.md
-test -f ~/.codex/skills/production-engineering/references/task-lanes.md
-test -f ~/.codex/skills/production-engineering/references/project-understanding.md
-test -f ~/.codex/skills/production-engineering/references/content-writing-quality.md
-test -f ~/.codex/skills/production-engineering/references/full-production-engineering.md
+```powershell
+Test-Path "$env:USERPROFILE\.agents\skills\production-engineering\SKILL.md"
+Test-Path "$env:USERPROFILE\.agents\skills\production-engineering\agents\openai.yaml"
+Test-Path "$env:USERPROFILE\.agents\skills\production-engineering\references\routing.md"
 ```
+
+当前路径规则见 OpenAI Docs 的 [Build skills](https://learn.chatgpt.com/docs/build-skills)。Codex 通常会自动发现 skill 变更；如果没有出现，再重启客户端。
 
 ## 重要边界
 
-- Skill 的隐式自动触发依赖 Codex 当前版本和宿主匹配机制，不要声称所有场景 100% 自动触发。
-- 最稳做法是：安装 skill + 个性化自定义提示词短硬门禁 + 全局或项目 `AGENTS.md` 兜底。
-- 当前聊天如果已经开始，可能不会重新加载刚写入的全局文件；用户可以在当前聊天直接说“本聊天从现在开始必须按 `$production-engineering` 执行”。
+- `allow_implicit_invocation: true` 表示允许隐式选择，不等于任何 Codex 版本、任何宿主、任何说法都能 100% 命中。
+- 最稳做法是：安装 skill + 保留隐式调用配置 + 个性化提示词短硬门禁 + 全局或项目 `AGENTS.md` 兜底。
+- 已开始的任务可能不会自动重新加载刚写入的全局文件。安装代理应在当前任务中直接读取已安装的 `SKILL.md` 和 `routing.md`，不应把“另开任务”当成唯一办法。
+- 日常使用时，用户只需要说目标。显式写 `$production-engineering` 主要用于排查自动路由或临时加强约束。

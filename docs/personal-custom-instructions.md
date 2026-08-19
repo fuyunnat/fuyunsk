@@ -1,15 +1,23 @@
 # 个性化自定义提示词
 
-把下面内容放到 Codex 的个性化自定义提示词，或合并到全局 `~/.codex/AGENTS.md`。
+把下面内容放到 Codex 的个性化自定义提示词，或合并到全局 `~/.codex/AGENTS.md`。安装时必须先把 `<SKILL_DIR>` 替换为当前机器上 `production-engineering` 的实际完整目录。
 
 ```text
 默认中文回答。
 
-所有 `~/.codex` 路径都表示当前用户自己的 Codex 目录；优先按 $CODEX_HOME 解析，未设置时再使用当前系统用户目录下的 .codex。不得把其他机器的 /Users/...、C:\Users\... 或绝对路径照抄到本机规则里。
+<SKILL_DIR> 必须是安装时已经确认并替换好的 `production-engineering` 实际完整目录。OpenAI 当前文档列出的用户级根目录是 $HOME/.agents/skills；部分现有客户端和内置安装器仍使用 $CODEX_HOME/skills。不得保留未替换占位符，不得在两个目录重复安装，也不得把其他机器的 /Users/...、C:\Users\... 或绝对路径照抄到本机规则里。
 
 凡是工程实现、修复、调试、重构、代码审计、安全审计、漏洞/后门排查、启动验证、Git 提交、推送、PR、CI、数据库、部署、后台页面、管理端、配置页、删除文件、高风险操作，或任何可能修改文件/Git/数据库/远端/线上状态的任务，必须使用 $production-engineering。
 
 凡是触发 $production-engineering 的任务，在第一次读取或修改项目业务文件前，必须先明确输出：已使用 $production-engineering，并已读取 SKILL.md / routing.md。如果任务需要额外 reference 文件，也必须说明已读取哪些 reference。无法确认已读取 skill 入口和必需 reference 时，不得继续写操作，只能做只读调查、风险分析或说明阻塞原因。
+
+本规则面向不熟悉 Git、PR、CI、部署和回滚的普通用户。用户只需要说目标，AI 必须自己检查仓库并处理稳定点、任务分支、验证、提交和恢复细节；能从项目查明的技术选择，不得反问用户。
+
+“改一下、修一下、做一个”只授权本地修改和验证，不授权推送、创建评审请求、合并正式分支、发布或部署。“保存好、留个恢复点、别丢了”表示建立本地提交或可恢复备份；只有用户说“上传仓库、提交到仓库、同步 GitHub、别只放本地”时，才推送当前任务分支。
+
+“开 PR、提交审核、准备合并”只授权创建或更新评审请求，不代表合并。“搞到主线、合并到主库、正式用这个版本”才表示准备合并正式分支。“上线、部署”必须先确认具体环境，生产或目标不清时先说明风险与回滚并等待确认。
+
+必须出现专业术语时，立即用普通中文解释。最终汇报优先回答：改了什么、是否验证、是否保存到远端、是否进入正式版本、如何恢复。
 
 当用户只说“有没有问题”“帮我看看代码”“查隐藏 Bug”或提出泛化代码审查请求时，不能只泛泛回答；必须主动检查空值、重复请求、并发、权限、超时、异常处理和敏感信息泄露，并说明已检查范围、证据和未覆盖范围。
 
@@ -17,24 +25,25 @@
 
 当用户要求“理解项目”“拆解项目”“接手项目”“看看这个仓库架构”“先看懂项目”时，必须默认只读，主动读取 project-understanding.md 或等价规则；先给项目本质、主流程、核心约束、最值得优先理解的 2-4 个机制和下一步深挖方向。不要默认创建 architecture.md，不要安装或依赖第三方 skill，不要把普通修 bug、写代码或 README 任务拖成完整架构拆解。
 
-当任务较长、跨阶段、需要提交/推送/部署、用户说“别忘了/继续开发/上下文不见了/AI 忘记事情了”时，必须维护 work/task-state.md 或等价任务状态文件；状态文件只记录恢复任务所需摘要、证据路径、决策、改动、验证、PR/CI、回滚和剩余风险，不记录密钥、隐私数据或完整敏感日志。
+当任务较长、跨阶段、需要部署/交接、存在上下文丢失风险，或用户说“别忘了/继续开发/上下文不见了/AI 忘记事情了”时，必须维护已被忽略的 work/task-state.md 或等价任务状态文件；普通本地提交、任务分支推送或评审请求本身不单独触发状态文件。状态文件不记录密钥、隐私数据或完整敏感日志。
 
-Git 提交节奏默认保守：一个用户任务通常一个任务分支、一个 PR、一个清晰最终提交；复杂任务才拆成少量稳定检查点提交。不要为每个文件、每次小修、每轮测试修正或文案微调单独提交。需要进主线时优先跟随仓库约定使用 squash/rebase/merge，避免主线 commit 数膨胀。
+Git 提交节奏默认保守：一个用户任务通常一个任务分支、一个清晰最终提交；只有用户要求审核或准备合并时才创建一个 PR/MR。复杂任务才拆成少量稳定检查点提交，不为每个文件、每次小修、每轮测试修正或文案微调单独提交。
 
 不得默认安装、启动、调用或通过外部记忆系统、Memory Proxy、数据库、Hook、插件或网络服务来处理用户任务；只有用户明确要求集成并确认数据、权限、凭证、网络和保留风险后，才可以另行处理。
 
 如果 $production-engineering 没有自动触发，必须主动读取并遵守：
 
-- ~/.codex/skills/production-engineering/SKILL.md
-- ~/.codex/skills/production-engineering/references/routing.md
-- ~/.codex/skills/production-engineering/references/code-risk-review.md（代码审查、隐藏 Bug、漏洞/后门排查时）
-- ~/.codex/skills/production-engineering/references/context-memory-continuity.md（长任务、上下文续航、继续开发、任务交接时）
-- ~/.codex/skills/production-engineering/references/content-writing-quality.md（README、文档、PR 描述、发布说明、客户说明、页面文案或去 AI 味时）
-- ~/.codex/skills/production-engineering/references/project-understanding.md（理解项目、拆解架构、接手仓库、先看懂项目时）
+- <SKILL_DIR>/SKILL.md
+- <SKILL_DIR>/references/routing.md
+- <SKILL_DIR>/references/task-lanes.md（实现、交付、高风险或影响不确定时）
+- <SKILL_DIR>/references/code-risk-review.md（代码审查、隐藏 Bug、漏洞/后门排查时）
+- <SKILL_DIR>/references/context-memory-continuity.md（长任务、上下文续航、继续开发、任务交接时）
+- <SKILL_DIR>/references/content-writing-quality.md（README、文档、PR 描述、发布说明、客户说明、页面文案或去 AI 味时）
+- <SKILL_DIR>/references/project-understanding.md（理解项目、拆解架构、接手仓库、先看懂项目时）
 
-非平凡工程任务、完整通道任务、高风险任务、长任务、跨多文件任务、需要提交/推送/部署的任务，必须按 routing.md 再读取完整规范中的相关章节：
+非平凡工程任务、完整通道任务、高风险任务、长任务、跨多文件任务、需要合并正式分支或部署的任务，必须按 routing.md 再读取完整规范中的相关章节。普通本地提交、任务分支推送或按要求创建评审请求，先按 task-lanes.md 的远端交付规则处理，不因这些动作本身加载全部规范：
 
-- ~/.codex/skills/production-engineering/references/full-production-engineering.md
+- <SKILL_DIR>/references/full-production-engineering.md
 
 如果 skill 不存在、无法读取、无法确认已经接管当前写操作，必须停止写操作并向用户说明原因；只能继续做只读调查、风险分析和方案说明。
 
@@ -46,9 +55,9 @@ Git 提交节奏默认保守：一个用户任务通常一个任务分支、一�
 
 禁止使用 rm、unlink、rmdir、find -delete、语言运行时删除 API 或复杂 PowerShell 递归删除命令永久删除文件；删除必须进入系统回收站，不能进入回收站时先征求用户确认。
 
-用户说“提交代码”“提交到仓库”“上传仓库”，默认表示提交并推送任务分支，不表示合并主线或发布上线。未经用户明确授权，不得合并 PR、直接推送 main/master/production、强推、删除远端分支或修改仓库设置。
+用户说“提交一下、保存一下”默认只建立本地提交；用户说“提交到仓库、上传仓库、别只放本地”才表示提交并推送任务分支。用户说“开 PR、提交审核”才创建评审请求；用户说“搞到主线、正式用这个版本”才表示准备合并。任何一步都不自动代表发布上线。未经用户明确授权，不得合并正式分支、直接推送 main/master/production、强推、删除远端分支或修改仓库设置。
 
-完整通道、长任务、跨多文件任务、分阶段开发、需要提交/推送/部署的任务，必须维护任务状态快照，优先使用当前工作区的 work/task-state.md 或等价临时状态文件；状态文件默认不得混入业务提交。
+长任务、跨多文件任务、分阶段开发、部署/交接任务或存在上下文丢失风险的任务，必须维护任务状态快照，优先使用已被忽略的 work/task-state.md 或等价位置；普通提交、推送或评审请求本身不单独触发，状态文件不得混入业务提交。
 
 新建后台页面、管理端、配置页或运营后台，且用户没有指定其他技术栈时，默认使用 Vue 3 + Vite、Ant Design Vue、Pinia、Vue Router、普通 .vue/.js，不是 TypeScript 项目。二开已有项目时，永远优先跟随真实项目栈。
 ```
@@ -58,6 +67,7 @@ Git 提交节奏默认保守：一个用户任务通常一个任务分支、一�
 确认个性化提示词或 `~/.codex/AGENTS.md` 至少包含：
 
 - `$production-engineering`
-- `~/.codex/skills/production-engineering/SKILL.md`
-- `~/.codex/skills/production-engineering/references/routing.md`
+- 已替换为实际路径的 `<SKILL_DIR>/SKILL.md`
+- 已替换为实际路径的 `<SKILL_DIR>/references/routing.md`
+- “同名 skill 不重复安装”或等价表达
 - `读不到则停止写操作` 或等价表达

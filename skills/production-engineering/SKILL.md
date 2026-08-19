@@ -1,6 +1,6 @@
 ---
 name: production-engineering
-description: Production-grade engineering workflow for Codex. Use automatically when the user asks to implement, fix, debug, refactor, deliver, start and verify a project, inspect or modify code, understand or tear down a project, handle a bug report, error, broken page, failing API, unexpected behavior, code review, security audit, vulnerability or backdoor analysis, Git commits, branches, pushes, PRs, CI, database migrations, deployment configuration, backend work, frontend work, admin pages, README or engineering documentation, PR descriptions, release notes, admin UI copy, or any task requiring maintainable, verifiable, reversible production-quality software changes. Also use when the user says production-grade, 工程交付, 理解项目, 拆解项目, 接手项目, 看看这个仓库, 架构分析, Bug, 报错, 异常, 修复, 实现, 交付, 审计, 漏洞, 后门, 启动验证, 提交, 推送, PR, CI, README, 自述文件, 文档, 文案, AI 味, 后台页面, 管理端, 数据库, 部署, 最稳, 别出问题, or 高风险操作.
+description: "Use for software implementation, bug fixes, debugging, code or security review, Git commits/push/merge, database or deployment changes, frontend/admin pages, and engineering docs. Requires real-project inspection, scoped changes, verification, rollback, and plain-language delivery. Also matches 修复报错、实现功能、审计代码、提交仓库、后台页面或部署. Do not use for ordinary chat, translation, general writing, or non-engineering questions."
 ---
 
 # Production Engineering
@@ -10,7 +10,7 @@ Use this skill to turn software work into a controlled production-grade workflow
 ## First Steps
 
 1. Read `references/routing.md` first for task-mode routing.
-2. Read `references/task-lanes.md` to choose read-only, quick, standard, full, frontend/UI, or context lane before deciding how much extra material to load.
+2. For implementation, delivery, high-risk, or uncertain-impact tasks, read `references/task-lanes.md` before deciding how much extra material to load. A narrow read-only explanation may skip it unless `routing.md` says otherwise.
 3. For non-trivial engineering work, read only the relevant sections of `references/full-production-engineering.md` using heading search, not the whole file by default.
 4. For code review, hidden bug hunting, vague "有没有问题/看看代码" requests, bug diagnosis, security audit, vulnerability review, or backdoor review, also read `references/code-risk-review.md`.
 5. For long tasks, multi-stage development, context compaction recovery, task handoff, repeated project work, or "AI 忘记事情/上下文不见了" requests, also read `references/context-memory-continuity.md`.
@@ -35,18 +35,26 @@ Use this skill to turn software work into a controlled production-grade workflow
 - Never claim something was tested, pushed, merged, deployed, or verified unless current evidence proves it.
 - Before final output, apply first-principles review: point out flawed assumptions, factual errors, missing risk controls, and invalid acceptance criteria directly with actionable fixes.
 
+## Beginner-First Communication
+
+- The user may describe only the desired outcome. Codex owns branch, commit, test, remote, review, CI, and rollback mechanics unless a real business choice or risky authorization is missing.
+- Do not ask the user to choose technical Git details that can be determined from the repository. Explain unavoidable terms immediately in plain language.
+- A request to change code authorizes local scoped edits and verification, not remote push, review-request creation, main-line merge, release, or deployment.
+- Interpret ordinary phrases through the authorization map in `references/routing.md`; ask only when the wording would materially change remote, production, data, security, or destructive effects.
+- User-facing updates and final reports must answer plainly: what changed, whether it was verified, whether it was saved remotely, whether it entered the formal version, and how to recover.
+
 ## Invocation Reliability
 
-For the most reliable use, invoke this skill explicitly with `$production-engineering`. Implicit invocation depends on the host application's skill matching. For repository-wide enforcement, combine this skill with the provided `global-AGENTS.example.md` or a project `AGENTS.md` that routes engineering write operations to `$production-engineering`.
+Keep implicit invocation enabled through `agents/openai.yaml`, and use the provided `global-AGENTS.example.md` or a project `AGENTS.md` as the hard-gate fallback for engineering write operations. Ordinary users should be able to state the goal without naming the skill. Explicit `$production-engineering` invocation is a diagnostic or one-off fallback when host matching cannot be confirmed, not a per-request requirement.
 
 ## Reference Loading
 
 Use heading searches in `references/full-production-engineering.md`:
 
-- Execution cost control, quick/standard/full lane choice, and validation depth: read `references/task-lanes.md`.
+- Execution cost control, quick/standard/full lane choice, remote delivery overlay, and validation depth: read `references/task-lanes.md` when implementation, delivery, risk, or uncertainty requires it.
 - README, docs, release notes, PR descriptions, customer-facing notes, UI copy, and "AI 味" writing cleanup: read `references/content-writing-quality.md`.
 - Project understanding, architecture teardown, codebase onboarding, and "理解项目/拆解项目/接手项目" requests: read `references/project-understanding.md`.
-- Git, branches, commits, PRs, CI, rollback: search `## 三`, `## 四`, `回滚`, `CI`.
+- Git, branches, commits, remote save, review requests, CI, rollback, and plain-language authorization: read the remote delivery overlay in `references/task-lanes.md`, then search `## 三`, `## 四`, `回滚`, `CI` as needed.
 - Long tasks, task-state, context continuity, compaction recovery, handoff, and optional external memory systems: read `references/context-memory-continuity.md`, then search `上下文续航`.
 - Code review, hidden bugs, bug diagnosis, vague "有没有问题/看看代码" requests, vulnerability and backdoor review: read `references/code-risk-review.md`, then search `Bug 修复前置规则`, `## 十四`, `## 十七`, `## 十九`.
 - Frontend, admin pages, UI validation: read `references/frontend-interface-quality.md`, then search `## 九`.

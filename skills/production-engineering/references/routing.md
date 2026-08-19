@@ -9,24 +9,43 @@ Use this file first after the skill triggers.
 - **Security audit mode**: user asks for vulnerabilities, backdoors, suspicious logic, unsafe code, or whether the project is secure. Default read-only. Do not run unknown code. Stop and preserve evidence if a suspected backdoor appears.
 - **High-risk mode**: production, database writes, data deletion, credentials, payments, balances, orders, authorization, security policy, CI/CD, deployment config, remote repository settings, force push, direct main branch push, or destructive filesystem work. Do read-only investigation first; risky writes require explicit confirmation.
 
+## Beginner-First Interaction
+
+The user should be able to describe the goal in ordinary language. Codex must inspect the repository and decide branch names, stable points, tests, review flow, and rollback mechanics without turning those technical choices into user homework.
+
+Ask the user only when a missing answer changes business behavior or authorizes a risky effect. Do not ask which base branch, rebase mode, merge strategy, CI job, or Git command to use when the repository can answer it.
+
+Interpret common phrases as follows:
+
+- **“改一下 / 修一下 / 做一个”**: inspect, make scoped local changes, and verify them. This does not authorize push, a review request, main-line merge, release, or deployment.
+- **“保存好 / 留个恢复点 / 别丢了”**: create a local Git commit or a recoverable non-Git backup after suitable validation. This does not authorize remote upload unless the user also says the repository or remote should contain it.
+- **“上传仓库 / 提交到仓库 / 同步 GitHub / 别只放本地”**: commit and push the current task branch after validation. Do not create a review request or merge the formal branch unless separately requested.
+- **“开 PR / 提交审核 / 准备合并”**: create or update the repository's review request after checking the branch and diff. This does not authorize merging it.
+- **“搞到主线 / 合并到主库 / 正式用这个版本”**: explicit authorization to prepare and perform the normal merge only after validation, CI/status checks when available, and a plain-language risk summary.
+- **“上线 / 部署”**: identify the exact target environment first. Production or unclear deployment targets require a risk and rollback explanation before execution.
+- **“删除 / 清理”**: use the system trash or a recoverable backup. Broad, ambiguous, cross-disk, production, or data deletion requires exact-target confirmation.
+
+Translate unavoidable terms immediately. For example, explain a task branch as “an isolated copy that does not affect the formal version” and a review request as “a request waiting to be checked and merged; it is not formal yet.”
+
 ## Default Workflow
 
 1. Confirm scope and task mode from the newest user request.
-2. Read `task-lanes.md` and choose read-only, quick, standard, full, frontend/UI, or context lane.
+2. For implementation, delivery, high-risk, or uncertain-impact work, read `task-lanes.md` and choose quick, standard, full, frontend/UI, or context lanes. Keep narrow read-only work on the shortest applicable path.
 3. Inspect local rules and real project state before assumptions.
 4. If modifying files, check Git state first. If not a Git repo, create a timestamped backup before overwriting existing files.
 5. Define the smallest safe change and what existing behavior must remain unchanged.
 6. Implement only the scoped change.
 7. Verify with commands appropriate to the risk and chosen lane.
 8. Review diffs for unrelated changes, secrets, large files, generated artifacts, and accidental formatting.
-9. Final response: lane used, what changed, verification evidence, rollback path, unverified areas, remaining risk.
+9. Final response: explain in plain language what changed, what was verified, whether it was saved remotely, whether it entered the formal version, how to recover, and any remaining risk.
 
 ## Execution Cost Control Workflow
 
 1. Use `task-lanes.md` to avoid loading the whole full specification when a task is genuinely narrow, local, reversible, and low risk.
 2. Do not use execution-cost control to bypass hard gates: user changes, Git recovery, deletion safety, secrets, production, database, auth, payment, deployment, remote, validation truthfulness, and rollback still apply.
-3. Escalate to the stricter lane immediately when the impact is uncertain, shared/high-risk files are touched, tests fail, diffs are unexplained, or the user asks for "最稳", "别出问题", "提交线上", "推送", "PR", "CI", or "部署".
+3. Escalate to the stricter lane immediately when the impact is uncertain, shared/high-risk files are touched, tests fail, diffs are unexplained, or the task changes production, data, auth, permissions, CI/CD configuration, deployment, remote settings, or the formal branch.
 4. For skill, prompt, docs, or workflow-rule changes, the default validation baseline is `node scripts/validate-skill.js`, `git diff --check`, diff review, sensitive-information scan, and generated/large-file check.
+5. Pushing an ordinary task branch or creating a requested review request uses the remote delivery overlay in `task-lanes.md`; those actions alone do not require the entire full lane.
 
 ## Bug Report Workflow
 
@@ -84,7 +103,7 @@ Read targeted sections from `full-production-engineering.md`:
 
 - Global priority and task modes: `## 零`, `## 一`, `## 二`.
 - Task lanes and execution cost control: `task-lanes.md`.
-- Git gate and delivery: `## 三`, `## 四`.
+- Git gate, plain-language authorization, remote delivery, and review workflow: read the remote delivery overlay in `task-lanes.md`, then use `## 三`, `## 四` as needed.
 - Context memory and task-state continuity: `context-memory-continuity.md`, plus `上下文续航`.
 - Bug-first diagnosis: `Bug 修复前置规则`.
 - Hidden bug and code risk review: `code-risk-review.md`.

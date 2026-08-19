@@ -8,7 +8,7 @@ This file absorbs general memory-system ideas from TencentDB Agent Memory withou
 
 The default mechanism is still local, white-box, and recoverable:
 
-- Use `work/task-state.md` or an equivalent ignored task-state file for active task memory.
+- Use `work/task-state.md` only when it is already ignored, or use an equivalent ignored/project-external Codex task-state location. Check the ignore boundary before creating it; do not change the project's `.gitignore` only to hide agent state.
 - Keep the state file short enough to read quickly, but concrete enough to resume safely.
 - Do not commit task-state files unless the project or user explicitly requires that artifact.
 - Never record secrets, tokens, passwords, private keys, production credentials, raw private logs, real user data, or sensitive configuration.
@@ -72,7 +72,7 @@ For long or risky tasks, keep a compact structure like this:
 - Unverified risk:
 ```
 
-Update it at phase boundaries: before edits, after implementation, after validation, after commit/push/PR, and when the task is complete.
+Update it at meaningful phase boundaries: before edits, after implementation, after validation, after an authorized commit/push/review request, and when the task is complete. Do not rewrite it for every small edit or test retry.
 
 ## External Memory Systems
 
@@ -95,8 +95,8 @@ At the end of a long task, the final answer should match the state file:
 
 - What changed.
 - What was verified.
-- Branch, commit, push, PR, and CI state.
-- What did not enter main.
+- Whether there is a local recovery point, a remote task copy, or a review request.
+- Whether the work entered the formal branch.
 - Remaining risk and rollback.
 
 Then mark the local task-state file complete. Do not stage it unless it is intentionally part of the deliverable.
