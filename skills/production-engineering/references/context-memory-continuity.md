@@ -1,6 +1,6 @@
 # Context Memory Continuity
 
-Use this reference for long tasks, multi-stage development, context compaction recovery, task handoff, repeated project work, "别忘了", "继续开发", "上下文不见了", "AI 忘记事情了", or any task that needs durable working memory.
+Use this reference for every standard or full implementation that modifies source code, any task changing more than one source-code file, long tasks, multi-stage development, context compaction recovery, task handoff, repeated project work, "别忘了", "继续开发", "上下文不见了", "AI 忘记事情了", or any task that needs durable working memory.
 
 This file absorbs general memory-system ideas from TencentDB Agent Memory without depending on that project. Do not install, start, configure, or call any external memory server, proxy, database, hook, plugin, or network service unless the user explicitly asks for that integration and confirms the operational risk.
 
@@ -8,7 +8,10 @@ This file absorbs general memory-system ideas from TencentDB Agent Memory withou
 
 The default mechanism is still local, white-box, and recoverable:
 
+- Before the first source-code edit, standard and full implementation lanes must create or refresh task state. A quick-lane task may skip it only when the work is genuinely single-step, touches at most one source-code file, and has no meaningful interruption or handoff risk.
 - Use `work/task-state.md` only when it is already ignored, or use an equivalent ignored/project-external Codex task-state location. Check the ignore boundary before creating it; do not change the project's `.gitignore` only to hide agent state.
+- If `work/` is not ignored, use an existing ignored directory or a writable project-external Codex task-state directory. If no safe location can be confirmed, stop before source-code edits and explain the blocker instead of silently skipping task state.
+- At the start of a new task, replace or refresh stale completed state so it names the active goal, status, branch/stable point, current change boundary, and next step. An old task snapshot does not satisfy the requirement.
 - Keep the state file short enough to read quickly, but concrete enough to resume safely.
 - Do not commit task-state files unless the project or user explicitly requires that artifact.
 - Never record secrets, tokens, passwords, private keys, production credentials, raw private logs, real user data, or sensitive configuration.
@@ -49,14 +52,17 @@ Avoid irreversible summaries such as "everything is done" or "tests passed" with
 
 ## Task-State Template
 
-For long or risky tasks, keep a compact structure like this:
+For every task that requires state, keep a compact structure like this:
 
 ```md
 # Task State
 
 - Latest user goal:
+- Task status: active, blocked, or complete
+- Implementation status: not started, in progress, or complete
+- Verification status: pending, passed, failed, or unavailable
 - Current mode:
-- Current channel:
+- Current lane and reason:
 - Repository/path:
 - Branch and stable point:
 - Existing user changes:
@@ -72,7 +78,21 @@ For long or risky tasks, keep a compact structure like this:
 - Unverified risk:
 ```
 
-Update it at meaningful phase boundaries: before edits, after implementation, after validation, after an authorized commit/push/review request, and when the task is complete. Do not rewrite it for every small edit or test retry.
+## Automatic State Transitions
+
+Codex must update these fields itself. The user does not need to ask it to change task state.
+
+- Before the first source-code edit: task active, implementation in progress, verification pending.
+- After code implementation but before validation: task active, implementation complete, verification pending. Do not call the overall task complete yet.
+- After all required checks for the current diff pass: task complete, implementation complete, verification passed, with commands and result summaries recorded.
+- If a check fails: task active unless genuinely blocked, verification failed, with the failing command/evidence and next repair step recorded.
+- If required validation cannot run: task active or blocked, verification unavailable, with the reason and remaining risk recorded. Do not mark the task complete.
+- If source code changes after a passing check: the previous evidence becomes stale for the new diff. Immediately return task status to active and verification status to pending, then revalidate.
+- "Tested" only describes an attempted action. Use passed, failed, or unavailable to describe the result.
+
+Update state at meaningful phase boundaries: before the first source-code edit, after implementation, after validation, after an authorized commit/push/review request/merge/deploy action, and when the task is complete. Do not rewrite it for every small edit or test retry.
+
+Task state counts as maintained only when its goal, task/implementation/verification statuses, branch, changed/planned files, validation summary, next step, and prohibited operations still match current reality.
 
 ## External Memory Systems
 

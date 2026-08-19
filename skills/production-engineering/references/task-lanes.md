@@ -61,6 +61,7 @@ Rules:
 - Read `routing.md`, this file, target files, and only the nearest necessary context.
 - Do not load the whole full specification by default.
 - Do not create `work/task-state.md`, PR, CI review, or broad regression by default.
+- A genuinely single-step change touching at most one source-code file may skip task state. If the task changes more than one source-code file, becomes multi-step, or may be interrupted, add the context lane and maintain an ignored or project-external state file before further edits.
 - Still check Git or backup boundaries before overwriting.
 - If the user asks to save remotely, apply the remote delivery overlay after validation; remote delivery alone does not turn a quick local change into a full engineering audit.
 
@@ -73,6 +74,7 @@ Rules:
 - Read relevant project files, `routing.md`, this file, and only the relevant reference files.
 - Use heading searches in `full-production-engineering.md` for the sections that match the actual surface.
 - Check Git state before editing.
+- Before the first source-code edit, add the context lane and maintain `work/task-state.md` or an equivalent ignored/project-external state file. A standard task that changes only documentation or one non-code artifact may skip it unless the work is multi-stage or interruption-prone.
 - Validate with the smallest command set that proves the changed behavior.
 - Commit locally when the user asks for a recovery point. Push only when the user asks for repository or remote delivery, or when an explicit project-local policy requires that handoff.
 - Default to one clear final commit per user task. Split commits only for genuinely independent, reviewable, and separately reversible changes.
@@ -84,7 +86,7 @@ Use when any escalation trigger exists.
 Rules:
 
 - Read all directly relevant reference files and the relevant sections of `full-production-engineering.md`.
-- Maintain `work/task-state.md` or an equivalent ignored state file for long, multi-stage, deployment, handoff, or context-loss-prone tasks. A routine commit, task-branch push, or review request alone does not require a state file.
+- For implementation writes, read `context-memory-continuity.md` and maintain `work/task-state.md` or an equivalent ignored/project-external state file before editing, even when the task is not long. A routine commit, task-branch push, or review request with no implementation change still does not require a state file.
 - Use Git recovery gates, diff review, risk explanation, validation evidence, rollback plan, and final delivery reporting.
 - Use one task branch. Create or update one review request only when the user asks for review/merge preparation or an explicit project workflow requires it.
 - Use task-state files, diff review, and the task branch as recovery checkpoints during development; do not create a new commit for every small fix, test retry, wording tweak, or file edit.
@@ -102,12 +104,15 @@ Rules:
 
 ### Context lane
 
-Use in addition to standard or full lane for long work, multi-stage development, handoff, compaction recovery, "继续开发", "别忘了", or context-loss concerns.
+Use in addition to standard or full lane whenever source code is modified. Also use it for quick-lane work that changes more than one source-code file, and for long work, multi-stage development, handoff, compaction recovery, "继续开发", "别忘了", or context-loss concerns.
 
 Rules:
 
 - Read `context-memory-continuity.md`.
 - Keep only recovery-critical facts in the state file.
+- Codex updates task, implementation, and verification status itself at phase boundaries; the user does not need to remind it.
+- After implementation, keep the task active with implementation complete and verification pending. Mark the task complete only after current-diff validation passes. A failed/unavailable check or any later code edit keeps or returns verification to pending/failed and prevents completion.
+- Do not rewrite the file after every tiny edit or test retry.
 - Do not store secrets, private data, full logs, real user data, production credentials, or sensitive config.
 - After continuation or compaction, reread state, current files, Git status, current diff, and the newest user request before acting.
 
