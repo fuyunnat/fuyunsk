@@ -1,6 +1,6 @@
 interface:
   display_name: "Production Engineering"
-  short_description: "Production-grade coding and bug workflow"
-  default_prompt: "Use $production-engineering to diagnose, implement, verify, and report a production-grade code change."
+  short_description: "Safe engineering help in plain language"
+  default_prompt: "Use $production-engineering to handle this engineering task safely, verify the result, and explain every important decision in plain language."
 policy:
   allow_implicit_invocation: true

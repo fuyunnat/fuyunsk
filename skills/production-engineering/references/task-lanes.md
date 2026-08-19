@@ -1,6 +1,6 @@
 # Execution Cost Control
 
-Use this file after `routing.md` and before loading detailed references.
+Use this file after `routing.md` for implementation, delivery, high-risk, or uncertain-impact tasks and before loading detailed references. A narrow read-only explanation does not need this file unless routing requires a specialized lane.
 
 This file controls how much context to load and how much validation to run. The full specification remains authoritative. If this file conflicts with `full-production-engineering.md`, follow the full specification and the higher-priority user, system, and project rules.
 
@@ -62,7 +62,7 @@ Rules:
 - Do not load the whole full specification by default.
 - Do not create `work/task-state.md`, PR, CI review, or broad regression by default.
 - Still check Git or backup boundaries before overwriting.
-- If the user asks to save to GitHub, push the task branch after validation.
+- If the user asks to save remotely, apply the remote delivery overlay after validation; remote delivery alone does not turn a quick local change into a full engineering audit.
 
 ### Standard implementation lane
 
@@ -74,7 +74,7 @@ Rules:
 - Use heading searches in `full-production-engineering.md` for the sections that match the actual surface.
 - Check Git state before editing.
 - Validate with the smallest command set that proves the changed behavior.
-- Commit and push when the user asks for repository delivery or when the task requires the normal GitHub handoff.
+- Commit locally when the user asks for a recovery point. Push only when the user asks for repository or remote delivery, or when an explicit project-local policy requires that handoff.
 - Default to one clear final commit per user task. Split commits only for genuinely independent, reviewable, and separately reversible changes.
 
 ### Full lane
@@ -84,9 +84,9 @@ Use when any escalation trigger exists.
 Rules:
 
 - Read all directly relevant reference files and the relevant sections of `full-production-engineering.md`.
-- Maintain `work/task-state.md` or an equivalent ignored state file for long, staged, pushed, PR, deployment, or context-loss-prone tasks.
+- Maintain `work/task-state.md` or an equivalent ignored state file for long, multi-stage, deployment, handoff, or context-loss-prone tasks. A routine commit, task-branch push, or review request alone does not require a state file.
 - Use Git recovery gates, diff review, risk explanation, validation evidence, rollback plan, and final delivery reporting.
-- Create or update one task branch and one PR when GitHub delivery applies.
+- Use one task branch. Create or update one review request only when the user asks for review/merge preparation or an explicit project workflow requires it.
 - Use task-state files, diff review, and the task branch as recovery checkpoints during development; do not create a new commit for every small fix, test retry, wording tweak, or file edit.
 
 ### Frontend/UI lane
@@ -132,10 +132,23 @@ Escalate from quick to standard or full lane if any of these appear:
 - Existing tests fail or the current state is abnormal.
 - Diff contains unexplained changes.
 - User-owned changes affect the target area.
-- The task touches shared code, public API, global state, routing, request wrappers, auth, permission, security, data, database, production, deployment, dependencies, lockfile, remote repository, or external systems.
-- The user asks for "最稳", "别出问题", "生产级", "提交线上", "推送", "PR", "CI", "部署", or equivalent.
+- The task touches shared code, public API, global state, routing, request wrappers, auth, permission, security, data, database, production, deployment, dependencies, lockfile, remote repository settings, or external systems.
+- The user asks for "最稳", "别出问题", "生产级", production deployment, CI/CD changes, formal-branch merge, or equivalent high-impact handling.
 
 When escalating, stop broadening the change, explain the reason briefly, read the required references, and continue under the stricter lane.
+
+## Remote Delivery Overlay
+
+Apply this overlay to quick, standard, or full lanes when Git or a hosted repository is involved:
+
+- Local implementation does not authorize remote push, review-request creation, formal-branch merge, release, or deployment.
+- “保存好 / 留个恢复点” authorizes a local commit or recoverable backup after suitable validation.
+- “上传仓库 / 提交到仓库 / 别只放本地” authorizes pushing the current task branch after validation. It does not authorize a review request or formal merge.
+- “开 PR / 提交审核 / 准备合并” authorizes creating or updating the repository's review request. It does not authorize merging.
+- “搞到主线 / 正式用这个版本” authorizes the normal merge only after branch, diff, validation, and CI/status checks are explained plainly.
+- Detect the actual hosting provider and use its existing workflow: Pull Request, Merge Request, change request, or equivalent. Do not assume every Git remote is GitHub.
+- Never print a remote URL containing embedded credentials. Redact user information, passwords, and tokens before reporting it.
+- Explain remote state in plain language: local save point, remote task copy, waiting for review, or already in the formal version.
 
 ## Verification Matrix
 
@@ -158,6 +171,6 @@ Final output should stay short, but must include:
 
 - What changed.
 - What was verified.
-- Git branch, commit, push, PR, CI, and main-line status when applicable.
+- Whether the work has a local recovery point, was saved remotely, is waiting for review, or entered the formal version; include technical branch/commit/PR details only as supporting evidence.
 - What was intentionally not run and why.
 - Remaining risk and rollback.
