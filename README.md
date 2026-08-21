@@ -68,6 +68,8 @@ policy:
 
 如果没有出现这句话，说明当前任务没有确认接管。此时不要继续写操作，先检查 skill 安装目录、`agents/openai.yaml` 和全局 `AGENTS.md`。显式写 `$production-engineering` 可以用于排查，但完成全局配置后，日常使用不应要求用户每次手动写 skill 名称。
 
+每个新对话的第一个工程请求还会先执行一个轻量只读恢复命令。脚本先检查当前项目；如果对话从工作区上层目录开始，只会查询 Codex 本地索引中登记的下级项目，不遍历目录树或整台机器。没有未完成状态时不加载完整续航文档；发现唯一未完成任务时会返回其准确路径，发现多个候选时不会擅自选择。
+
 个性化自定义提示词可参考 [docs/personal-custom-instructions.md](docs/personal-custom-instructions.md)。
 
 ## 设计目标
@@ -75,7 +77,9 @@ policy:
 - 将工程任务从“直接改代码”约束为“先读真实项目、判断风险、最小修改、验证、汇报、可回滚”的闭环。
 - 通过 `allow_implicit_invocation: true` 开启隐式调用，并用全局或项目 `AGENTS.md` 为工程写操作提供兜底路由。
 - 把高风险规则写成硬门禁：用户改动保护、密钥保护、删除进回收站、禁止主线直推、禁止伪造验证结果。
-- 对长任务维护可恢复状态，降低上下文压缩、模型切换或任务中断造成的遗漏。
+- 用可发现的任务状态和 Git 指纹处理上下文压缩、新对话、模型切换和任务中断；内置 Memories 只作辅助线索。
+- 数据库更新默认走兼容演进：新增结构、分批回填、新旧并存、受控切换、观察后清理，禁止为了让新代码运行而直接改字段或覆盖历史数据。
+- 只让安全硬门禁保留双重兜底，流程细节由单一 reference 负责，减少重复加载但不削弱规则。
 - 对前端后台页面补充界面质量规则，避免只实现功能、不处理状态和细节。
 
 ## 目录结构
@@ -84,6 +88,8 @@ policy:
 skills/production-engineering/
   SKILL.md                                # skill 入口和触发说明
   agents/openai.yaml                      # agent 元数据
+  scripts/task-state.js                   # 任务状态命令入口
+  scripts/task-state-core.js              # 状态发现、内容指纹和持久化核心
   references/routing.md                   # 任务模式和 reference 路由
   references/task-lanes.md                # 执行成本控制和任务车道
   references/full-production-engineering.md
@@ -99,6 +105,10 @@ docs/
 
 global-AGENTS.example.md                  # 全局 AGENTS.md 参考模板
 scripts/validate-skill.js                 # 仓库自检脚本
+scripts/validate-routing-cases.js         # 普通话路由和授权场景检查
+scripts/validate-repository-hygiene.js    # 密钥、产物和大文件检查
+scripts/validate-task-state.js            # 状态发现、指纹和完成门禁检查
+tests/routing-cases.json                  # 触发、通道、授权和禁止行为样例
 ```
 
 ## 核心能力
@@ -121,7 +131,11 @@ scripts/validate-skill.js                 # 仓库自检脚本
 
 ### 上下文续航
 
-`references/context-memory-continuity.md` 规定：标准或完整通道只要修改源代码，就在首次代码编辑前维护已被忽略的 `work/task-state.md` 或项目外等价位置；超过一个源代码文件、多阶段、长任务和可能中断的任务同样强制维护。只有真正的单步骤快速小改、最多一个源代码文件且没有中断风险时可以跳过。AI 会自动维护任务、实现和验证三项状态：代码改完但未验证时任务仍是进行中，最新代码验证通过后才标记完成，失败、无法验证或验证后再次改代码都会撤销完成状态。状态文件只在实现、验证、远端交付和任务结束等阶段边界更新，不会在每次细节编辑时反复重写；它只保存恢复所需摘要和证据路径，不记录密钥、隐私数据、生产凭证或完整敏感日志，也不进入业务提交。
+`references/context-memory-continuity.md` 规定：每个新对话先按当前项目或工作区查找未完成状态；标准/完整源代码任务、多文件、多阶段、长任务和明确需要继续的规划必须维护状态。优先使用已忽略的 `work/task-state.md`，否则使用 `$CODEX_HOME/task-states/` 下的项目索引和状态文件。索引按项目分文件保存，多个 Codex 任务并行时不会共同覆盖一个索引文件；旧 `index.json` 只读兼容。助手先查精确项目，再查索引中登记的下级项目，不扫描磁盘。它会把未跟踪文件内容也计入 Git 指纹，并禁止普通状态更新绕过“实现完成、验证通过、当前 diff 未变化”这三个完成条件。
+
+### 数据库兼容演进
+
+代码更新不能擅自重命名、删除、复用或改变现有数据库字段，也不能用重建表、清空、全量替换或批量覆盖历史数据来适配新版本。默认做法是先增加兼容结构，再分批回填，让新旧代码和数据在切换期共存；旧字段清理必须作为观察后的独立高风险步骤处理。
 
 ### 前端界面质量
 
@@ -133,7 +147,7 @@ scripts/validate-skill.js                 # 仓库自检脚本
 
 ### 执行成本控制
 
-`references/task-lanes.md` 用于在读取完整规范前判断 read-only、quick、standard、full、frontend/UI、context 等任务车道。它不会删减或削弱完整规范，只负责让简单任务少读少跑，高风险任务自动升级到完整规则。
+`references/task-lanes.md` 是 read-only、quick、standard、full 及附加通道的唯一选择依据。完整规范继续保留全部详细规则，但不能反向扩大授权或把普通跨文件修改、任务分支上传、以及“稳一点”这类口语机械升级为完整通道。
 
 ### 项目理解和架构拆解
 
@@ -170,4 +184,4 @@ node scripts/validate-skill.js
 git diff --check
 ```
 
-自检会确认入口元数据、隐式调用策略、reference 路径、普通话授权边界、删除策略、上下文状态、Git 交付、后台默认栈、硬编码路径和旧规则残留。
+主自检会自动运行路由场景检查和任务状态助手验证，并确认入口元数据、隐式调用策略、常驻规则体积、reference 路径、普通话授权边界、删除策略、新对话恢复、验证指纹、数据库兼容演进、Git 交付、后台默认栈、硬编码路径和旧规则残留。

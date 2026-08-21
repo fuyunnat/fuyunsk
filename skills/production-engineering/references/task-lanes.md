@@ -2,7 +2,7 @@
 
 Use this file after `routing.md` for implementation, delivery, high-risk, or uncertain-impact tasks and before loading detailed references. A narrow read-only explanation does not need this file unless routing requires a specialized lane.
 
-This file controls how much context to load and how much validation to run. The full specification remains authoritative. If this file conflicts with `full-production-engineering.md`, follow the full specification and the higher-priority user, system, and project rules.
+This file is authoritative for lane selection, execution cost, and remote-delivery overlays. `full-production-engineering.md` supplies detailed domain rules after a lane is selected; it must not reclassify the lane, expand authorization, or force unrelated checks. Higher-priority user, system, developer, and project rules still win.
 
 ## Core Rule
 
@@ -14,6 +14,7 @@ Never skip these checks when they apply:
 - Secrets, tokens, passwords, private data, logs, generated artifacts, large files, and dependency output.
 - Trash/recycle-bin deletion policy.
 - Production, database, payments, balances, orders, permissions, auth, security, CI/CD, deployment, remote settings, force push, and direct main-branch push boundaries.
+- Existing database fields and historical data: prefer additive, backward-compatible migration; never use destructive schema replacement or bulk overwrite as an implicit code-update shortcut.
 - Truthful validation and final reporting.
 
 The optimization is only this: load fewer reference files and run smaller validation when the task is genuinely narrow, local, reversible, and low risk.
@@ -74,7 +75,7 @@ Rules:
 - Read relevant project files, `routing.md`, this file, and only the relevant reference files.
 - Use heading searches in `full-production-engineering.md` for the sections that match the actual surface.
 - Check Git state before editing.
-- Before the first source-code edit, add the context lane and maintain `work/task-state.md` or an equivalent ignored/project-external state file. A standard task that changes only documentation or one non-code artifact may skip it unless the work is multi-stage or interruption-prone.
+- Before the first source-code edit, add the context lane and initialize or refresh state through `context-memory-continuity.md`. A standard task that changes only documentation or one non-code artifact may skip new state unless the work is multi-stage or interruption-prone; the conversation-start resume check still runs.
 - Validate with the smallest command set that proves the changed behavior.
 - Commit locally when the user asks for a recovery point. Push only when the user asks for repository or remote delivery, or when an explicit project-local policy requires that handoff.
 - Default to one clear final commit per user task. Split commits only for genuinely independent, reviewable, and separately reversible changes.
@@ -86,7 +87,7 @@ Use when any escalation trigger exists.
 Rules:
 
 - Read all directly relevant reference files and the relevant sections of `full-production-engineering.md`.
-- For implementation writes, read `context-memory-continuity.md` and maintain `work/task-state.md` or an equivalent ignored/project-external state file before editing, even when the task is not long. A routine commit, task-branch push, or review request with no implementation change still does not require a state file.
+- For implementation writes, read `context-memory-continuity.md` and initialize or refresh state before editing, even when the task is not long. A routine commit, task-branch push, or review request with no implementation change still does not require new state.
 - Use Git recovery gates, diff review, risk explanation, validation evidence, rollback plan, and final delivery reporting.
 - Use one task branch. Create or update one review request only when the user asks for review/merge preparation or an explicit project workflow requires it.
 - Use task-state files, diff review, and the task branch as recovery checkpoints during development; do not create a new commit for every small fix, test retry, wording tweak, or file edit.
@@ -104,17 +105,13 @@ Rules:
 
 ### Context lane
 
-Use in addition to standard or full lane whenever source code is modified. Also use it for quick-lane work that changes more than one source-code file, and for long work, multi-stage development, handoff, compaction recovery, "继续开发", "别忘了", or context-loss concerns.
+Use in addition to standard or full lane whenever source code is modified. Also use it for quick work that expands beyond one source-code file, substantial planning that must survive a new conversation, long work, multi-stage development, handoff, compaction recovery, "继续开发", "别忘了", or context-loss concerns.
 
 Rules:
 
-- Read `context-memory-continuity.md`.
-- Keep only recovery-critical facts in the state file.
-- Codex updates task, implementation, and verification status itself at phase boundaries; the user does not need to remind it.
-- After implementation, keep the task active with implementation complete and verification pending. Mark the task complete only after current-diff validation passes. A failed/unavailable check or any later code edit keeps or returns verification to pending/failed and prevents completion.
-- Do not rewrite the file after every tiny edit or test retry.
-- Do not store secrets, private data, full logs, real user data, production credentials, or sensitive config.
-- After continuation or compaction, reread state, current files, Git status, current diff, and the newest user request before acting.
+- Read `context-memory-continuity.md` and use its helper for bounded project/workspace discovery, state transitions, current-diff fingerprints, and completion checks.
+- Keep only recovery-critical facts and evidence pointers; never store secrets or full sensitive logs.
+- On a new conversation or continuation, reread state, current files, Git status/diff, and the newest user request before acting.
 
 ### Content writing lane
 
@@ -138,7 +135,7 @@ Escalate from quick to standard or full lane if any of these appear:
 - Diff contains unexplained changes.
 - User-owned changes affect the target area.
 - The task touches shared code, public API, global state, routing, request wrappers, auth, permission, security, data, database, production, deployment, dependencies, lockfile, remote repository settings, or external systems.
-- The user asks for "最稳", "别出问题", "生产级", production deployment, CI/CD changes, formal-branch merge, or equivalent high-impact handling.
+- The user explicitly requests the full standard, maximum-rigor/no-omissions execution, production deployment, CI/CD changes, formal-branch merge, or equivalent high-impact handling. Ordinary phrases such as "稳一点" or "别出问题" do not override a clearly quick or standard scope by themselves.
 
 When escalating, stop broadening the change, explain the reason briefly, read the required references, and continue under the stricter lane.
 
@@ -159,7 +156,7 @@ Apply this overlay to quick, standard, or full lanes when Git or a hosted reposi
 
 Use this as the starting point, then adjust to the real project.
 
-- Skill, prompt, docs, or workflow rule changes: run `node scripts/validate-skill.js`, `git diff --check`, diff review, sensitive-information scan, and large-file/generated-artifact check.
+- Skill, prompt, docs, or workflow rule changes: run `node scripts/validate-skill.js`, `node skills/production-engineering/scripts/task-state.js self-test`, `git diff --check`, routing-scenario checks, diff review, sensitive-information scan, and large-file/generated-artifact check.
 - Project understanding or architecture teardown: no file changes by default; verify claims by citing inspected files, configs, routes, scripts, docs, or runtime evidence, and state unknown areas.
 - Frontend page or admin UI changes: run the project's lint/build or focused page smoke test where available; verify loading, empty, error, disabled, long text, and responsive states when affected.
 - Backend API or service changes: run targeted tests or API smoke tests; for shared code, also check main callers and compatibility.

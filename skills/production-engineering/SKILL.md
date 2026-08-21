@@ -1,6 +1,6 @@
 ---
 name: production-engineering
-description: "Use for software implementation, bug fixes, debugging, code or security review, Git commits/push/merge, database or deployment changes, frontend/admin pages, and engineering docs. Requires real-project inspection, scoped changes, verification, rollback, and plain-language delivery. Also matches 修复报错、实现功能、审计代码、提交仓库、后台页面或部署. Do not use for ordinary chat, translation, general writing, or non-engineering questions."
+description: "Use for changes or reviews in a real software project: implementation, bug fixing, debugging, code/security review, Git delivery, databases, deployment, admin UI, or engineering docs. Requires real-project inspection, scoped edits, recovery, current-diff verification, and plain-language reporting. Also matches 修复报错、实现功能、审计代码、提交仓库、后台页面、部署. Do not use for generic programming explanations, standalone snippets, ordinary chat, translation, or non-engineering writing."
 ---
 
 # Production Engineering
@@ -9,32 +9,24 @@ Use this skill to turn software work into a controlled production-grade workflow
 
 ## First Steps
 
-1. Read `references/routing.md` first for task-mode routing.
-2. For implementation, delivery, high-risk, or uncertain-impact tasks, read `references/task-lanes.md` before deciding how much extra material to load. A narrow read-only explanation may skip it unless `routing.md` says otherwise.
-3. For non-trivial engineering work, read only the relevant sections of `references/full-production-engineering.md` using heading search, not the whole file by default.
-4. For code review, hidden bug hunting, vague "有没有问题/看看代码" requests, bug diagnosis, security audit, vulnerability review, or backdoor review, also read `references/code-risk-review.md`.
-5. For standard or full implementation that modifies source code, changes spanning more than one source-code file, long tasks, multi-stage development, context compaction recovery, task handoff, repeated project work, or "AI 忘记事情/上下文不见了" requests, also read `references/context-memory-continuity.md`.
-6. For README files, engineering documentation, repository descriptions, installation guides, PR descriptions, release notes, customer-facing technical notes, UI copy, or "AI 味/像 AI 写的" wording concerns, also read `references/content-writing-quality.md`.
-7. For frontend pages, admin pages, management consoles, configuration pages, operations dashboards, shared UI components, or UI review tasks, also read `references/frontend-interface-quality.md`.
-8. For project understanding, architecture teardown, repository onboarding, or "先理解这个项目" requests, also read `references/project-understanding.md`.
-9. If the user explicitly asks for the full standard, maximum rigor, or no omissions, read `references/full-production-engineering.md` directly.
-10. Follow project-local `AGENTS.md`, README, package scripts, existing architecture, and user instructions when they are more specific and do not conflict with higher-priority rules.
+1. Read `references/routing.md` first.
+2. For implementation, delivery, high-risk, or uncertain-impact work, read `references/task-lanes.md`; it is authoritative for quick/standard/full lane selection and execution cost.
+3. Read only the specialized references selected by `routing.md`. Use heading search in `references/full-production-engineering.md` for detailed rules; do not load the whole file unless the user requests maximum rigor or the task genuinely needs most sections.
+4. At the first engineering turn in a conversation, determine the current repository or workspace path and run `node <SKILL_DIR>/scripts/task-state.js resume --repo <PROJECT_OR_WORKSPACE_PATH> --json` before planning or editing. It checks the exact project first, then registered descendants only; it never scans the filesystem broadly. A negative result does not require loading the full continuity reference.
+5. Follow the nearest project `AGENTS.md`, project docs, real scripts, and current architecture when they are more specific and do not conflict with higher-priority instructions.
 
 ## Operating Rules
 
-- Default to Chinese unless the user explicitly requests another language.
 - At the start of every task handled by this skill, before reading or modifying project business files, explicitly tell the user: `已使用 $production-engineering，并已读取 SKILL.md / routing.md。` Also list any extra reference files read for this task. If you cannot confirm the skill entry and required references were read, stop write operations and continue only with read-only investigation or risk explanation.
-- For read-only tasks, inspect and report; do not modify files, Git, databases, remotes, or external state.
-- For implementation tasks, inspect the real entrypoints, configs, dependencies, existing patterns, Git state, and user changes before editing.
-- For bug reports and errors, locate the most relevant files, functions, routes, configs, logs, or call chains first; explain the likely cause, evidence, and smallest fix before broad edits.
-- Before modifying files, determine whether the target is inside a Git repository. If it is not, create a timestamped backup or equivalent recovery point before overwriting existing files.
-- Protect user changes. Do not revert or mix unrelated user edits into the task.
-- Move deletions to the system trash/recycle bin or a recoverable backup location; do not use permanent deletion commands or APIs.
-- Treat production, databases, credentials, payments, balances, orders, permissions, CI/CD, deployment, force push, direct main-branch push, and remote settings changes as high risk. Do read-only investigation first and wait for explicit confirmation before risky writes.
-- Verify with the smallest command set that matches the risk: lint, typecheck, tests, build, smoke tests, page checks, API checks, migration checks, or security regression checks as applicable.
-- When task state is required, Codex must update it without waiting for the user: after implementation but before validation, keep the task active with implementation complete and verification pending; only validation against the current diff may set the task complete and verification passed. Failed or unavailable validation cannot be marked complete, and any later code edit resets verification to pending.
-- Never claim something was tested, pushed, merged, deployed, or verified unless current evidence proves it.
-- Before final output, apply first-principles review: point out flawed assumptions, factual errors, missing risk controls, and invalid acceptance criteria directly with actionable fixes.
+- Inspect the real project, applicable rules, Git/non-Git recovery boundary, current diff, and user-owned changes before writing. Never guess interfaces, data models, configuration, commands, or external state.
+- Protect user work and secrets. Do not revert or mix unrelated changes; do not expose or commit credentials, private data, logs, dependency output, large generated files, or release artifacts.
+- Move deletions to the system trash/recycle bin or a recoverable backup. If that is impossible, stop and ask before using any permanent alternative.
+- Treat production, database writes, credentials, payments, balances, orders, permissions, security policy, CI/CD, deployment, force push, direct main-branch push, and remote settings as high risk. Investigate read-only first and obtain explicit confirmation immediately before the risky write.
+- Evolve existing database schemas and data compatibly by default. Do not silently rename, drop, repurpose, or narrow existing fields, rebuild tables, or bulk-overwrite historical data to make new code work; use staged additive migration and a tested rollback path.
+- A local implementation request does not authorize push, review-request creation, formal-branch merge, release, or deployment. Apply the plain-language authorization map in `references/routing.md` and the remote overlay in `references/task-lanes.md`.
+- Validate the current diff with the smallest sufficient checks, then review the diff for old behavior, failure paths, permissions, duplicate effects, secrets, unrelated changes, and rollback. A task cannot be complete when validation failed, is unavailable, or applies to an older diff.
+- Use the task-state helper for required state transitions and stale-verification detection. Do not rely on chat context or built-in memories as the only record of unfinished work.
+- Never claim testing, verification, commit, push, review, merge, deployment, CI, audit, or online results without current evidence.
 
 ## Beginner-First Communication
 
@@ -44,24 +36,25 @@ Use this skill to turn software work into a controlled production-grade workflow
 - Interpret ordinary phrases through the authorization map in `references/routing.md`; ask only when the wording would materially change remote, production, data, security, or destructive effects.
 - User-facing updates and final reports must answer plainly: what changed, whether it was verified, whether it was saved remotely, whether it entered the formal version, and how to recover.
 
+## Continuity Bootstrap
+
+- Run the resume command in First Steps directly. Read `references/context-memory-continuity.md` only when unfinished state is found or the selected lane requires durable state; do not load it merely to confirm that no state exists.
+- At the first engineering turn in every conversation, check the current project or workspace for an active or blocked task state before starting new work. Completed state is history and must not silently replace the newest user request.
+- When a matching unfinished state exists, re-check its repository path, branch, `HEAD`, current diff, prohibited operations, and next step. Current files and the newest user request always win over remembered text.
+- Standard/full source-code work, multi-file or multi-stage work, interruption-prone work, and substantial planning explicitly needing continuity must keep durable state. A read-only task may write only non-sensitive Codex-local continuity metadata when this reference requires it; project files, Git, databases, remotes, services, and business state remain read-only.
+
 ## Invocation Reliability
 
 Keep implicit invocation enabled through `agents/openai.yaml`, and use the provided `global-AGENTS.example.md` or a project `AGENTS.md` as the hard-gate fallback for engineering write operations. Ordinary users should be able to state the goal without naming the skill. Explicit `$production-engineering` invocation is a diagnostic or one-off fallback when host matching cannot be confirmed, not a per-request requirement.
 
 ## Reference Loading
 
-Use heading searches in `references/full-production-engineering.md`:
+- Lane choice, validation depth, and remote delivery: `references/task-lanes.md`.
+- Context continuity, new-conversation resume, task-state helper, and stale verification: `references/context-memory-continuity.md`.
+- Code review, hidden bugs, diagnosis, security, vulnerabilities, or backdoors: `references/code-risk-review.md`.
+- README, docs, release notes, PR descriptions, customer notes, UI copy, and AI-style cleanup: `references/content-writing-quality.md`.
+- Frontend/admin/UI implementation or review: `references/frontend-interface-quality.md`.
+- Project understanding, architecture teardown, or repository onboarding: `references/project-understanding.md`.
+- Detailed Git, backend, API, database, performance, deployment, security, testing, and rollback rules: relevant headings in `references/full-production-engineering.md`.
 
-- Execution cost control, quick/standard/full lane choice, remote delivery overlay, and validation depth: read `references/task-lanes.md` when implementation, delivery, risk, or uncertainty requires it.
-- README, docs, release notes, PR descriptions, customer-facing notes, UI copy, and "AI 味" writing cleanup: read `references/content-writing-quality.md`.
-- Project understanding, architecture teardown, codebase onboarding, and "理解项目/拆解项目/接手项目" requests: read `references/project-understanding.md`.
-- Git, branches, commits, remote save, review requests, CI, rollback, and plain-language authorization: read the remote delivery overlay in `references/task-lanes.md`, then search `## 三`, `## 四`, `回滚`, `CI` as needed.
-- Standard/full source-code implementation, changes spanning more than one source-code file, long tasks, task-state, context continuity, compaction recovery, handoff, and optional external memory systems: read `references/context-memory-continuity.md`, then search `上下文续航`.
-- Code review, hidden bugs, bug diagnosis, vague "有没有问题/看看代码" requests, vulnerability and backdoor review: read `references/code-risk-review.md`, then search `Bug 修复前置规则`, `## 十四`, `## 十七`, `## 十九`.
-- Frontend, admin pages, UI validation: read `references/frontend-interface-quality.md`, then search `## 九`.
-- Backend APIs and service boundaries: search `## 八`, `## 十`.
-- Database, migration, consistency: search `## 十三`, `## 十四`.
-- Security audit, vulnerabilities, backdoors: search `## 十七`, `## 十九`.
-- Testing and final reporting: search `## 二十`, `## 二十二`, `## 二十三`.
-
-Load only the needed parts unless the user explicitly asks to inspect or rewrite the whole standard.
+Load only what the current task needs. Safety hard gates above are intentionally duplicated with global guidance; detailed workflow text should have one canonical owner.
