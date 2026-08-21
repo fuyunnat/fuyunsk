@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 const fs = require('node:fs');
 const path = require('node:path');
+const { spawnSync } = require('node:child_process');
 
 const root = path.resolve(__dirname, '..');
 
@@ -93,6 +94,36 @@ function assertFileBudget(relPath, maxLines, maxBytes) {
   }
 }
 
+function assertFileFloor(relPath, minLines, minBytes) {
+  const content = read(relPath);
+  const lines = content.endsWith('\n') ? content.split('\n').length - 1 : content.split('\n').length;
+  const bytes = Buffer.byteLength(content, 'utf8');
+  if (lines < minLines || bytes < minBytes) {
+    throw new Error(
+      `${relPath} appears truncated: ${lines}/${minLines} minimum lines, ${bytes}/${minBytes} minimum bytes`,
+    );
+  }
+}
+
+function assertCombinedBudget(relPaths, maxBytes) {
+  const bytes = relPaths.reduce((total, relPath) => total + Buffer.byteLength(read(relPath), 'utf8'), 0);
+  if (bytes > maxBytes) {
+    throw new Error(`Always-loaded guidance exceeds budget: ${bytes}/${maxBytes} bytes`);
+  }
+}
+
+function assertNodeCommand(relPath, args = []) {
+  const result = spawnSync(process.execPath, [path.join(root, relPath), ...args], {
+    cwd: root,
+    encoding: 'utf8',
+  });
+  if (result.status !== 0) {
+    throw new Error(
+      `${relPath} ${args.join(' ')} failed:\n${(result.stderr || result.stdout || '').trim()}`,
+    );
+  }
+}
+
 const requiredFiles = [
   'README.md',
   'AGENTS.md',
@@ -100,8 +131,14 @@ const requiredFiles = [
   'docs/ai-installation.md',
   'docs/personal-custom-instructions.md',
   '.gitignore',
+  'tests/routing-cases.json',
+  'scripts/validate-routing-cases.js',
+  'scripts/validate-repository-hygiene.js',
+  'scripts/validate-task-state.js',
   'skills/production-engineering/SKILL.md',
   'skills/production-engineering/agents/openai.yaml',
+  'skills/production-engineering/scripts/task-state.js',
+  'skills/production-engineering/scripts/task-state-core.js',
   'skills/production-engineering/references/code-risk-review.md',
   'skills/production-engineering/references/content-writing-quality.md',
   'skills/production-engineering/references/context-memory-continuity.md',
@@ -116,9 +153,20 @@ for (const relPath of requiredFiles) {
   assertFile(relPath);
 }
 
-assertFileBudget('skills/production-engineering/SKILL.md', 100, 12_000);
-assertFileBudget('skills/production-engineering/references/routing.md', 200, 20_000);
+assertFileBudget('global-AGENTS.example.md', 80, 9_000);
+assertFileBudget('skills/production-engineering/SKILL.md', 80, 9_000);
+assertFileBudget('skills/production-engineering/references/routing.md', 120, 12_000);
 assertFileBudget('skills/production-engineering/references/task-lanes.md', 240, 20_000);
+assertFileBudget('skills/production-engineering/references/context-memory-continuity.md', 200, 15_000);
+assertFileBudget('skills/production-engineering/scripts/task-state.js', 600, 24_000);
+assertFileBudget('skills/production-engineering/scripts/task-state-core.js', 600, 20_000);
+assertFileFloor('skills/production-engineering/references/full-production-engineering.md', 1_800, 100_000);
+assertCombinedBudget([
+  'global-AGENTS.example.md',
+  'skills/production-engineering/SKILL.md',
+  'skills/production-engineering/references/routing.md',
+  'skills/production-engineering/references/task-lanes.md',
+], 36_000);
 
 const { content: skillContent, fields: skillFields } = parseSkillFrontmatter();
 if (skillFields.name !== 'production-engineering') {
@@ -126,10 +174,10 @@ if (skillFields.name !== 'production-engineering') {
 }
 
 const description = skillFields.description || '';
-if (description.length < 180 || description.length > 520) {
-  throw new Error(`SKILL.md description length must be 180-520 characters; got ${description.length}`);
+if (description.length < 160 || description.length > 480) {
+  throw new Error(`SKILL.md description length must be 160-480 characters; got ${description.length}`);
 }
-for (const phrase of ['software', 'verification', 'rollback', 'plain-language', 'Do not use']) {
+for (const phrase of ['real software project', 'current-diff verification', 'plain-language', 'generic programming explanations', 'Do not use']) {
   if (!description.includes(phrase)) {
     throw new Error(`SKILL.md description is missing routing boundary: ${phrase}`);
   }
@@ -170,9 +218,15 @@ assertIncludes('skills/production-engineering/SKILL.md', [
   'A request to change code authorizes local scoped edits and verification',
   'what changed, whether it was verified, whether it was saved remotely',
   'Ordinary users should be able to state the goal without naming the skill',
-  'standard or full implementation that modifies source code',
-  'Codex must update it without waiting for the user',
-  'any later code edit resets verification to pending',
+  'Continuity Bootstrap',
+  'first engineering turn in every conversation',
+  'task-state helper',
+  'Validate the current diff',
+  'registered descendants only',
+  'A negative result does not require loading the full continuity reference',
+  'Evolve existing database schemas and data compatibly by default',
+  'task-lanes.md`; it is authoritative',
+  'detailed workflow text should have one canonical owner',
   'references/routing.md',
   'references/task-lanes.md',
   'references/content-writing-quality.md',
@@ -191,28 +245,25 @@ assertIncludes('skills/production-engineering/references/routing.md', [
   '“开 PR / 提交审核 / 准备合并”',
   '“搞到主线 / 合并到主库 / 正式用这个版本”',
   'This does not authorize push',
-  'Bug Report Workflow',
-  'Code Risk Review Workflow',
+  'Bug And Risk Review Routing',
   'Context Memory Workflow',
-  'Add the context lane for every standard/full source-code implementation',
-  'Refresh stale state',
-  'Codex updates state itself',
-  'current-diff validation passes',
-  'invalidates that result for the current diff',
+  'first engineering turn in a conversation',
+  'scripts/task-state.js resume',
+  'A negative result does not require loading `context-memory-continuity.md`',
+  'provided helper',
+  'Built-in memories are secondary hints',
   'Content Writing Quality Workflow',
   'Project Understanding Workflow',
   'Execution Cost Control Workflow',
+  'task-lanes.md` is authoritative',
+  'cannot reclassify a task or expand authorization',
   'code-risk-review.md',
   'content-writing-quality.md',
   'context-memory-continuity.md',
   'project-understanding.md',
   'task-lanes.md',
-  'remote delivery overlay',
-  'Admin Frontend Default',
+  'remote overlay in `task-lanes.md`',
   'frontend-interface-quality.md',
-  'Vue 3 + Vite',
-  'Ant Design Vue',
-  'ordinary `.vue` / `.js`',
 ]);
 
 assertIncludes('skills/production-engineering/references/project-understanding.md', [
@@ -256,9 +307,14 @@ assertIncludes('skills/production-engineering/references/context-memory-continui
   'Context Memory Continuity',
   'TencentDB Agent Memory',
   'work/task-state.md',
-  'every standard or full implementation that modifies source code',
+  'first engineering turn in each conversation',
+  'A negative resume result alone does not require loading this file',
   'only when it is already ignored',
-  'If no safe location can be confirmed, stop before source-code edits',
+  '$CODEX_HOME/task-states/index/',
+  'A legacy `index.json` is read for compatibility but is not rewritten',
+  'New-Conversation Resume Bootstrap',
+  'scripts/task-state.js resume',
+  'A substantial read-only plan',
   'An old task snapshot does not satisfy the requirement',
   'Automatic State Transitions',
   'Task status: active, blocked, or complete',
@@ -268,11 +324,20 @@ assertIncludes('skills/production-engineering/references/context-memory-continui
   '"Tested" only describes an attempted action',
   'Do not rewrite it for every small edit or test retry',
   'Task state counts as maintained only when',
+  'Task-State Helper',
+  '`init` refuses to overwrite a different active task',
+  '`update` cannot directly set task/implementation state to complete',
+  '`run` executes one validation command without a shell',
+  'including untracked file content',
+  '`check` automatically invalidates a passing result',
+  'returns failure until implementation is complete',
+  '`finalize` succeeds only when implementation is complete',
   'Layered Memory Model',
   'Progressive Disclosure',
   'Traceability',
   'External Memory Systems',
   'Do not install, start, configure, or call any external memory server',
+  'Built-in Codex Memories may carry useful context',
 ]);
 
 assertIncludes('skills/production-engineering/references/frontend-interface-quality.md', [
@@ -288,7 +353,8 @@ assertIncludes('skills/production-engineering/references/frontend-interface-qual
 
 assertIncludes('skills/production-engineering/references/task-lanes.md', [
   'Execution Cost Control',
-  'full specification remains authoritative',
+  'authoritative for lane selection',
+  'must not reclassify the lane, expand authorization',
   'Do not weaken hard gates',
   'Quick lane',
   'A genuinely single-step change touching at most one source-code file may skip task state',
@@ -296,19 +362,21 @@ assertIncludes('skills/production-engineering/references/task-lanes.md', [
   'Before the first source-code edit',
   'Full lane',
   'For implementation writes, read `context-memory-continuity.md`',
-  'Codex updates task, implementation, and verification status itself',
-  'Mark the task complete only after current-diff validation passes',
+  'bounded project/workspace discovery',
+  'Existing database fields and historical data',
   'one clear final commit per user task',
   'Remote Delivery Overlay',
   'Local implementation does not authorize remote push',
-  'A routine commit, task-branch push, or review request with no implementation change still does not require a state file',
+  'A routine commit, task-branch push, or review request with no implementation change still does not require new state',
   'Do not assume every Git remote is GitHub',
   'Project understanding lane',
   'project-understanding.md',
   'Content writing lane',
   'Escalation',
+  'Ordinary phrases such as "稳一点" or "别出问题"',
   'Verification Matrix',
   'node scripts/validate-skill.js',
+  'node skills/production-engineering/scripts/task-state.js self-test',
 ]);
 
 assertIncludes('README.md', [
@@ -325,13 +393,16 @@ assertIncludes('README.md', [
   'content-writing-quality.md',
   'project-understanding.md',
   'task-lanes.md',
-  '不会删减或削弱完整规范',
+  '完整规范继续保留全部详细规则',
   '避免明显的 AI 味',
-  '简单任务少读少跑',
-  '标准或完整通道只要修改源代码',
-  'AI 会自动维护任务、实现和验证三项状态',
-  '验证后再次改代码都会撤销完成状态',
-  '不会在每次细节编辑时反复重写',
+  '只会查询 Codex 本地索引中登记的下级项目',
+  '不遍历目录树或整台机器',
+  'task-state-core.js',
+  '未跟踪文件内容也计入 Git 指纹',
+  '禁止普通状态更新绕过',
+  '数据库兼容演进',
+  '不能擅自重命名、删除、复用或改变现有数据库字段',
+  '主自检会自动运行路由场景检查和任务状态助手验证',
 ]);
 
 assertIncludes('skills/production-engineering/references/full-production-engineering.md', [
@@ -355,6 +426,10 @@ assertIncludes('skills/production-engineering/references/full-production-enginee
   '一个任务默认一个最终提交',
   '稳定检查点提交',
   '避免主线 commit 数膨胀',
+  '### 默认采用兼容演进，不做一刀切替换',
+  '扩展 → 迁移 → 切换 → 清理',
+  '禁止无条件全表覆盖',
+  '无法做到向后兼容',
   'Vue 3 + Vite',
   'Ant Design Vue',
   '普通 `.vue` / `.js`',
@@ -365,6 +440,9 @@ assertIncludes('AGENTS.md', [
   '不要引入、复制或依赖 Ponytail 等第三方 skill',
   '保持 `SKILL.md` 精简',
   'node scripts/validate-skill.js',
+  '`validate-skill.js` 必须自动运行路由场景和任务状态助手验证',
+  '`task-state-core.js` 负责状态发现、指纹和持久化',
+  '数据库兼容演进',
   '不提交 `work/`',
   '只有用户明确要求远端保存时才推送任务分支',
 ]);
@@ -373,26 +451,21 @@ assertIncludes('global-AGENTS.example.md', [
   '$production-engineering',
   '写操作硬门禁',
   '已使用 $production-engineering，并已读取 SKILL.md / routing.md',
-  '“已完成”不是完成',
-  '空值、重复请求、并发、权限、超时、异常处理和敏感信息泄露',
-  '一个用户任务通常一个任务分支、一个清晰最终提交',
   '“改一下、修一下、做一个”只授权本地修改和验证',
   '只有用户同时说“上传仓库、提交到仓库、同步 GitHub、别只放本地”时，才推送任务分支',
-  '用户日常只需要说目标，不应被要求每次手动写 `$production-engineering`',
-  'AI 味太重',
-  '内容写作质量规则',
-  '项目理解规则',
-  '默认主动读取',
+  '日常使用不应要求用户手动写 `$production-engineering`',
+  '每个新对话的第一个工程请求',
+  '有边界的恢复检查',
+  '不扫描磁盘',
+  '没有未完成状态时不必只为恢复检查加载完整续航文档',
   'work/task-state.md',
-  '标准实现通道或完整通道只要修改源代码',
-  '最多一个源代码文件且没有明显中断风险时可以跳过',
-  '新任务开始时必须刷新旧快照',
-  'AI 必须自己维护三项状态',
-  '当前最新代码验证通过后',
-  '旧验证立即失效',
-  '不得默认安装、启动、调用或通过外部记忆系统',
+  '内置 Memories 只作辅助线索',
+  '当前 diff 验证通过后才能完成',
+  'Skill 不可用、未读取或无法确认接管时，停止写操作',
   '禁止使用 `rm`',
-  '禁止把未经验证的功能、测试、部署、推送、CI 或生产状态说成已经完成',
+  '不得擅自重命名、删除、复用或改变已有数据库字段',
+  '新增兼容结构、分批回填、新旧并存、受控切换和可回滚迁移',
+  '禁止编造测试、验证、提交、推送、评审、合并、部署、CI、审计或线上结果',
 ]);
 
 assertIncludes('docs/ai-installation.md', [
@@ -403,12 +476,17 @@ assertIncludes('docs/ai-installation.md', [
   '不要照抄其他人的 `/Users/...`',
   'content-writing-quality.md',
   'task-lanes.md',
+  'scripts/task-state.js',
+  'scripts/task-state-core.js',
   'docs/personal-custom-instructions.md',
   'allow_implicit_invocation',
   '把其中的 `<SKILL_DIR>` 替换成第 2 步确认的实际完整目录',
   '不要保留未替换占位符',
   '不要把两份全文重复塞进同一个位置',
   '不要要求我另开任务',
+  'task-state.js self-test',
+  'PROJECT_OR_WORKSPACE_PATH',
+  '数据库字段和历史数据默认兼容演进',
   '日常使用时，用户只需要说目标',
   'Test-Path',
 ]);
@@ -419,26 +497,20 @@ assertIncludes('docs/personal-custom-instructions.md', [
   'OpenAI 当前文档列出的用户级根目录是 $HOME/.agents/skills',
   '不得把其他机器的 /Users/...',
   '已使用 $production-engineering，并已读取 SKILL.md / routing.md',
-  '“已完成”不是完成',
   '<SKILL_DIR>/SKILL.md',
   '<SKILL_DIR>/references/routing.md',
-  '<SKILL_DIR>/references/task-lanes.md',
-  '<SKILL_DIR>/references/code-risk-review.md',
-  '<SKILL_DIR>/references/context-memory-continuity.md',
-  '<SKILL_DIR>/references/content-writing-quality.md',
-  '<SKILL_DIR>/references/project-understanding.md',
-  '一个用户任务通常一个任务分支、一个清晰最终提交',
+  '<SKILL_DIR>/scripts/task-state.js',
+  '<SKILL_DIR>/scripts/task-state-core.js',
+  '<PROJECT_OR_WORKSPACE_PATH>',
+  '不扫描目录树或整台机器',
+  '没有未完成状态时不必只为这一步加载完整续航文档',
+  '内置 Memories 只作辅助线索',
   '“改一下、修一下、做一个”只授权本地修改和验证',
-  '普通本地提交、任务分支推送或按要求创建评审请求',
-  '标准实现通道或完整通道只要修改源代码',
-  '不能静默跳过',
-  '不要求每次细节编辑或测试重试都重写',
-  'AI 必须自己维护任务状态',
-  '不能把任务总状态写成“完成/待测试”',
-  '必须自动退回“任务进行中、验证待验证”',
-  'AI 味太重',
-  '默认主动读取',
-  '必须停止写操作',
+  '实现完成但未验证时任务仍是进行中',
+  '当前 diff 的必要验证通过',
+  '擅自重命名、删除、复用或改变已有数据库字段',
+  '新增兼容字段、分批可重复回填、新旧结构并存、受控切换',
+  '不得继续写操作',
   'Vue 3 + Vite',
   'Ant Design Vue',
 ]);
@@ -501,5 +573,9 @@ assertIncludes('skills/production-engineering/references/full-production-enginee
   '托管平台的发布区',
   '未经明确授权不得操作托管平台的合并按钮',
 ]);
+
+assertNodeCommand('scripts/validate-routing-cases.js');
+assertNodeCommand('scripts/validate-repository-hygiene.js');
+assertNodeCommand('scripts/validate-task-state.js');
 
 console.log('production-engineering skill validation passed');

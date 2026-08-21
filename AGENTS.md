@@ -9,6 +9,7 @@
 - `skills/production-engineering/SKILL.md` 是轻量入口，负责触发和路由。
 - `skills/production-engineering/references/routing.md` 是执行前第一读取文件，负责模式判断和章节选择。
 - `skills/production-engineering/references/full-production-engineering.md` 是完整生产工程规范，按需读取相关章节。
+- `skills/production-engineering/scripts/task-state.js` 是命令入口，`task-state-core.js` 负责状态发现、指纹和持久化；两个手写文件都不得超过 600 行。
 - `global-AGENTS.example.md` 是给用户复制到全局或项目 `AGENTS.md` 的示例，不等于当前仓库的全部实现。
 
 ## 修改规则
@@ -38,4 +39,6 @@ git status --short
 git diff --check
 ```
 
-如果自检脚本、路径、触发词、删除策略、Git 规则、上下文状态规则或前端后台默认栈有变化，必须说明影响范围和回滚方式。
+`validate-skill.js` 必须自动运行路由场景和任务状态助手验证；不要在默认流程里重复执行同一组检查。
+
+如果自检脚本、路径、触发词、删除策略、Git 规则、上下文状态规则、数据库兼容演进或前端后台默认栈有变化，必须说明影响范围和回滚方式。
