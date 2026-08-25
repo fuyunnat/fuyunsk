@@ -33,7 +33,7 @@ Translate unavoidable terms immediately. For example, explain a task branch as â
 2. On the first engineering turn in a conversation, run `node <SKILL_DIR>/scripts/task-state.js resume --repo <PROJECT_OR_WORKSPACE_PATH> --json`. A negative result does not require loading `context-memory-continuity.md`; read it when unfinished state is found or the selected lane requires durable state.
 3. For implementation, delivery, high-risk, or uncertain-impact work, read `task-lanes.md`; it alone selects quick, standard, full, and additive lanes.
 4. Inspect applicable project rules, real entrypoints/config/scripts, Git or backup boundaries, and user-owned changes.
-5. Define the smallest change, protected old behavior, acceptance criteria, and prohibited scope.
+5. Define the smallest change, protected old behavior, acceptance criteria, prohibited scope, and responsibility/file boundary.
 6. Implement only the authorized scope.
 7. Validate the current diff, review it for regressions/unrelated changes/secrets, and update task state when required.
 8. Report plainly what changed, verification evidence, local/remote/formal state, rollback, and remaining risk.
@@ -43,6 +43,10 @@ Translate unavoidable terms immediately. For example, explain a task branch as â
 1. `task-lanes.md` is authoritative for lane selection and validation depth. The full specification supplies detailed checks but cannot reclassify a task or expand authorization.
 2. Cost control never bypasses user-change protection, recovery, deletion safety, secrets, high-risk confirmation, remote authorization, current-diff validation, or truthful reporting.
 3. Escalate when impact becomes uncertain, shared/high-risk surfaces appear, tests fail, or the diff contains unexplained changes.
+
+## Responsibility Boundary Workflow
+
+For implementation work, identify where page/component, state/store, API/client, business/domain/service, persistence/migration, config, utilities, and tests live before editing. Do not keep appending unrelated features to the current file; split mixed responsibilities using the project structure, or state why one cohesive file is clearer.
 
 ## Bug And Risk Review Routing
 

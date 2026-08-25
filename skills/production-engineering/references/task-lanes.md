@@ -15,6 +15,7 @@ Never skip these checks when they apply:
 - Trash/recycle-bin deletion policy.
 - Production, database, payments, balances, orders, permissions, auth, security, CI/CD, deployment, remote settings, force push, and direct main-branch push boundaries.
 - Existing database fields and historical data: prefer additive, backward-compatible migration; never use destructive schema replacement or bulk overwrite as an implicit code-update shortcut.
+- Responsibility/file-boundary check: separate unrelated features, layers, API calls, business rules, persistence, state, UI components, config, utilities, and tests according to the real project structure.
 - Truthful validation and final reporting.
 
 The optimization is only this: load fewer reference files and run smaller validation when the task is genuinely narrow, local, reversible, and low risk.
@@ -75,6 +76,7 @@ Rules:
 - Read relevant project files, `routing.md`, this file, and only the relevant reference files.
 - Use heading searches in `full-production-engineering.md` for the sections that match the actual surface.
 - Check Git state before editing.
+- Before writing, decide whether changed code belongs in existing modules or a new focused module; do not create a large mixed-responsibility file.
 - Before the first source-code edit, add the context lane and initialize or refresh state through `context-memory-continuity.md`. A standard task that changes only documentation or one non-code artifact may skip new state unless the work is multi-stage or interruption-prone; the conversation-start resume check still runs.
 - Validate with the smallest command set that proves the changed behavior.
 - Commit locally when the user asks for a recovery point. Push only when the user asks for repository or remote delivery, or when an explicit project-local policy requires that handoff.
@@ -135,6 +137,7 @@ Escalate from quick to standard or full lane if any of these appear:
 - Diff contains unexplained changes.
 - User-owned changes affect the target area.
 - The task touches shared code, public API, global state, routing, request wrappers, auth, permission, security, data, database, production, deployment, dependencies, lockfile, remote repository settings, or external systems.
+- Different features, UI states, data access, business rules, or configuration start accumulating in one file and the responsibility boundary is no longer clear.
 - The user explicitly requests the full standard, maximum-rigor/no-omissions execution, production deployment, CI/CD changes, formal-branch merge, or equivalent high-impact handling. Ordinary phrases such as "稳一点" or "别出问题" do not override a clearly quick or standard scope by themselves.
 
 When escalating, stop broadening the change, explain the reason briefly, read the required references, and continue under the stricter lane.
