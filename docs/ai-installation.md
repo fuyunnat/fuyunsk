@@ -14,7 +14,7 @@ https://github.com/fuyunnat/fuyunsk/tree/main/skills/production-engineering
 3. 安装后确认 `<SKILL_DIR>/` 下的 `SKILL.md`、`agents/openai.yaml`、`scripts/task-state.js`、`scripts/task-state-core.js`、`references/routing.md`、`references/task-lanes.md`、`references/context-memory-continuity.md`、`references/content-writing-quality.md` 和 `references/full-production-engineering.md` 都存在。
 4. 检查 `agents/openai.yaml`：`policy.allow_implicit_invocation` 必须是 `true`，`default_prompt` 必须包含 `$production-engineering`。不要声称这等于所有宿主和所有说法都能 100% 自动触发。
 5. 读取我现有的全局 `AGENTS.md` 和客户端个性化自定义提示词。修改前建立带时间戳的可恢复备份。全局 `AGENTS.md` 以仓库的 `global-AGENTS.example.md` 为参考；只有客户端提供独立的个性化提示词输入框时，才使用 `docs/personal-custom-instructions.md`，并把其中的 `<SKILL_DIR>` 替换成第 2 步确认的实际完整目录。不要保留未替换占位符，不要把两份全文重复塞进同一个位置，保留原有规则并去掉重复内容，不能整文件盲目覆盖。
-6. 验证全局硬门禁至少包含：工程写操作路由到 `$production-engineering`；先读取 `SKILL.md` 和 `routing.md`；读不到或无法确认接管时停止写操作；删除进入回收站；保护用户已有改动；数据库字段和历史数据默认兼容演进；本地修改、远端保存、评审、合并和部署分开授权。
+6. 验证全局硬门禁至少包含：工程写操作路由到 `$production-engineering`；先读取 `SKILL.md` 和 `routing.md`；读不到或无法确认接管时停止写操作；职责边界和文件拆分；删除进入回收站；保护用户已有改动；数据库字段和历史数据默认兼容演进；本地修改、远端保存、评审、合并和部署分开授权。
 7. 安装完成后不要要求我另开任务。在当前任务中立即读取已安装的 `SKILL.md` 和 `routing.md`，并明确输出：`已使用 $production-engineering，并已读取 SKILL.md / routing.md。`
 8. 运行 `node <SKILL_DIR>/scripts/task-state.js self-test`。再对当前项目或工作区运行 `node <SKILL_DIR>/scripts/task-state.js resume --repo <PROJECT_OR_WORKSPACE_PATH> --json`，确认命令只读取精确项目或本地索引登记的下级项目，不扫描磁盘，也不会覆盖未完成状态。
 9. 用普通话做一次只读验证，例如“看看当前项目有没有问题，先别改”。确认它会先路由到该 skill，且不会因为“看看”而修改文件或 Git。验证过程不得制造业务改动。

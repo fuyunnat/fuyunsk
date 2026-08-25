@@ -10,6 +10,7 @@ This file absorbs framework-agnostic interface quality ideas from Vercel Labs `v
 - For quick, low-risk UI changes, check only the touched region and adjacent layout.
 - For full-channel frontend tasks, new admin pages, complex forms, tables, dialogs, shared components, or UI review, apply the full checklist below.
 - In Vue 3 + Vite + Ant Design Vue projects, prefer Ant Design Vue native components and props before custom ARIA, focus, modal, table, form, or tooltip logic.
+- For complex admin pages, keep page shell, filters/forms, table/list, modal/drawer, API service, store/state, validation/constants, and formatting helpers in the project's existing responsibility structure. Do not put multiple independent workflows into one `.vue` file just because it is faster.
 
 ## Interaction And Accessibility
 

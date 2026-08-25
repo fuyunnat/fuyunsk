@@ -166,7 +166,7 @@ assertCombinedBudget([
   'skills/production-engineering/SKILL.md',
   'skills/production-engineering/references/routing.md',
   'skills/production-engineering/references/task-lanes.md',
-], 36_000);
+], 38_000);
 
 const { content: skillContent, fields: skillFields } = parseSkillFrontmatter();
 if (skillFields.name !== 'production-engineering') {
@@ -222,6 +222,7 @@ assertIncludes('skills/production-engineering/SKILL.md', [
   'first engineering turn in every conversation',
   'task-state helper',
   'Validate the current diff',
+  'Keep responsibility boundaries explicit',
   'registered descendants only',
   'A negative result does not require loading the full continuity reference',
   'Evolve existing database schemas and data compatibly by default',
@@ -255,6 +256,8 @@ assertIncludes('skills/production-engineering/references/routing.md', [
   'Content Writing Quality Workflow',
   'Project Understanding Workflow',
   'Execution Cost Control Workflow',
+  'Responsibility Boundary Workflow',
+  'Do not keep appending unrelated features to the current file',
   'task-lanes.md` is authoritative',
   'cannot reclassify a task or expand authorization',
   'code-risk-review.md',
@@ -345,6 +348,7 @@ assertIncludes('skills/production-engineering/references/frontend-interface-qual
   'Vercel',
   'Icon-only buttons',
   'Do not use clickable `div` or `span`',
+  'Do not put multiple independent workflows into one `.vue` file',
   'Never block paste',
   'Do not use `transition: all`',
   'Large lists and tables',
@@ -364,6 +368,8 @@ assertIncludes('skills/production-engineering/references/task-lanes.md', [
   'For implementation writes, read `context-memory-continuity.md`',
   'bounded project/workspace discovery',
   'Existing database fields and historical data',
+  'Responsibility/file-boundary check',
+  'do not create a large mixed-responsibility file',
   'one clear final commit per user task',
   'Remote Delivery Overlay',
   'Local implementation does not authorize remote push',
@@ -401,12 +407,14 @@ assertIncludes('README.md', [
   '未跟踪文件内容也计入 Git 指纹',
   '禁止普通状态更新绕过',
   '数据库兼容演进',
+  '代码组织先看职责边界',
   '不能擅自重命名、删除、复用或改变现有数据库字段',
   '主自检会自动运行路由场景检查和任务状态助手验证',
 ]);
 
 assertIncludes('skills/production-engineering/references/full-production-engineering.md', [
   '### 全局文件删除策略',
+  '禁止因为“当前文件正在改”',
   'Windows 必须进入资源管理器回收站',
   'work/task-state.md',
   '标准实现通道或完整通道并修改源代码时',
@@ -464,6 +472,8 @@ assertIncludes('global-AGENTS.example.md', [
   'Skill 不可用、未读取或无法确认接管时，停止写操作',
   '禁止使用 `rm`',
   '不得擅自重命名、删除、复用或改变已有数据库字段',
+  '职责边界与文件拆分',
+  '禁止因为当前正在改某个文件',
   '新增兼容结构、分批回填、新旧并存、受控切换和可回滚迁移',
   '禁止编造测试、验证、提交、推送、评审、合并、部署、CI、审计或线上结果',
 ]);
@@ -487,6 +497,7 @@ assertIncludes('docs/ai-installation.md', [
   'task-state.js self-test',
   'PROJECT_OR_WORKSPACE_PATH',
   '数据库字段和历史数据默认兼容演进',
+  '职责边界和文件拆分',
   '日常使用时，用户只需要说目标',
   'Test-Path',
 ]);
@@ -509,6 +520,7 @@ assertIncludes('docs/personal-custom-instructions.md', [
   '实现完成但未验证时任务仍是进行中',
   '当前 diff 的必要验证通过',
   '擅自重命名、删除、复用或改变已有数据库字段',
+  '写代码前必须判断职责边界',
   '新增兼容字段、分批可重复回填、新旧结构并存、受控切换',
   '不得继续写操作',
   'Vue 3 + Vite',
