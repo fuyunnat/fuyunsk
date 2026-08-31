@@ -30,6 +30,26 @@
     "forbiddenEffects": ["remote-write", "formal-merge", "deployment"]
   },
   {
+    "id": "quick-doc-remote-save",
+    "prompt": "README 改一行说明，提交到仓库别丢。",
+    "skill": true,
+    "mode": "implementation",
+    "lane": "quick+remote-overlay",
+    "requiredReferences": ["task-lanes.md", "content-writing-quality.md"],
+    "authorizedEffects": ["local-edit", "local-validation", "local-commit", "task-branch-push"],
+    "forbiddenEffects": ["full-repo-scan", "full-spec-load", "review-request", "formal-merge", "deployment"]
+  },
+  {
+    "id": "quick-ui-polish",
+    "prompt": "把这个按钮和标签整理工整一点，只改这个页面。",
+    "skill": true,
+    "mode": "implementation",
+    "lane": "quick+frontend-ui",
+    "requiredReferences": ["task-lanes.md", "frontend-interface-quality.md"],
+    "authorizedEffects": ["local-edit", "local-validation"],
+    "forbiddenEffects": ["full-repo-scan", "task-state-diary", "dependency-change", "formal-merge", "deployment"]
+  },
+  {
     "id": "multi-file-standard-fix",
     "prompt": "修复这个普通功能，预计会改两个业务文件和对应测试。",
     "skill": true,

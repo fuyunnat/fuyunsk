@@ -40,9 +40,10 @@ Translate unavoidable terms immediately. For example, explain a task branch as â
 
 ## Execution Cost Control Workflow
 
-1. `task-lanes.md` is authoritative for lane selection and validation depth. The full specification supplies detailed checks but cannot reclassify a task or expand authorization.
+1. `task-lanes.md` is authoritative for lane selection and validation depth. Start by trying to prove the task fits quick lane; the full specification supplies detailed checks but cannot reclassify a task or expand authorization.
 2. Cost control never bypasses user-change protection, recovery, deletion safety, secrets, high-risk confirmation, remote authorization, current-diff validation, or truthful reporting.
-3. Escalate when impact becomes uncertain, shared/high-risk surfaces appear, tests fail, or the diff contains unexplained changes.
+3. Quick work should read only target files plus nearest context, run one focused check when enough, and avoid task-state/PR/CI/full-spec overhead unless evidence requires escalation.
+4. Escalate when impact becomes uncertain, shared/high-risk surfaces appear, tests fail, or the diff contains unexplained changes.
 
 ## Responsibility Boundary Workflow
 
@@ -61,7 +62,7 @@ When a standard or full implementation modifies source code, a task changes more
 1. Read `context-memory-continuity.md` and reuse the first-turn resume result. Run the bounded project/workspace check now only if the lightweight bootstrap was not already executed.
 2. Required implementation state must exist before the first source-code edit. Substantial read-only planning may write only Codex-local continuity metadata when continuation risk is explicit; project and external business state remain read-only.
 3. Use the provided helper to locate/register state, record current-diff verification, detect stale evidence, and prevent completion after later edits.
-4. Codex updates task, implementation, and verification status at phase boundaries without waiting for the user.
+4. Codex updates task, implementation, and verification status at phase boundaries without waiting for the user; the state file is a checkpoint, not a diary.
 5. Built-in memories are secondary hints. The state file plus current project/Git/runtime are the recovery source of truth.
 
 ## Content Writing Quality Workflow

@@ -60,6 +60,8 @@ const requiredIds = [
   'generic-explanation',
   'read-only-review',
   'single-file-quick-fix',
+  'quick-doc-remote-save',
+  'quick-ui-polish',
   'multi-file-standard-fix',
   'frontend-admin',
   'wrapped-workspace-ui',
@@ -83,6 +85,12 @@ if (byId['generic-explanation'].skill !== false) {
 }
 if (!includes(byId['read-only-review'], 'forbiddenEffects', 'file-write')) {
   fail('Read-only review must forbid file writes');
+}
+if (!includes(byId['quick-doc-remote-save'], 'forbiddenEffects', 'full-spec-load')) {
+  fail('Quick docs work must not load the full specification by default');
+}
+if (!includes(byId['quick-ui-polish'], 'forbiddenEffects', 'task-state-diary')) {
+  fail('Quick UI polish must not keep a task-state diary');
 }
 if (!includes(byId['wrapped-workspace-ui'], 'requiredReferences', 'wrapped-workspace-ui.md')) {
   fail('Wrapped workspace UI must load wrapped-workspace-ui.md');

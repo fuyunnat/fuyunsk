@@ -9,6 +9,7 @@ This file absorbs general memory-system ideas from TencentDB Agent Memory withou
 The default mechanism is still local, white-box, and recoverable:
 
 - Before the first source-code edit, standard and full implementation lanes must create or refresh task state. A quick-lane task may skip it only when the work is genuinely single-step, touches at most one source-code file, and has no meaningful interruption or handoff risk.
+- Task state is a checkpoint against lost context, not a diary or progress blog. Use it to preserve the active goal, branch, changed-file boundary, validation evidence, next step, remote state, and rollback path.
 - Use `work/task-state.md` only when it is already ignored, or use an equivalent ignored/project-external Codex task-state location. Check the ignore boundary before creating it; do not change the project's `.gitignore` only to hide agent state.
 - If `work/` is not ignored, use an existing ignored directory or the project-external Codex task-state directory selected by `scripts/task-state.js`. The helper records one registry file per project under `$CODEX_HOME/task-states/index/` so concurrent tasks do not overwrite one shared index. A legacy `index.json` is read for compatibility but is not rewritten.
 - A substantial read-only plan, diagnosis, or audit may write only non-sensitive Codex-local continuity state when the user mentions context loss, asks to continue later, or the work is clearly multi-stage. This exception does not permit project, Git, database, remote, service, browser, or business-state changes.
@@ -53,6 +54,17 @@ Load only the memory needed for the current step:
 - Do not inject full historical logs into context when a short summary plus evidence pointer is enough.
 - If the summary conflicts with current Git status, file content, live process state, PR status, database state, or the user's latest message, the current real surface wins.
 - When continuing after compaction, read task state, current Git status, current diff, and the newest user request before making or reporting changes.
+
+## Write Frequency
+
+Update task state only when a resumable fact changes:
+
+- Start or resume: active goal, lane, branch, stable point, planned files, do-not-touch scope, and next step.
+- Implementation boundary: implementation complete while verification remains pending.
+- Validation boundary: passed, failed, unavailable, or stale, with the command/evidence pointer that proves it.
+- Delivery boundary: local commit, remote branch push, review request, merge, deployment, rollback, or explicit blocker.
+
+Do not rewrite state after every tiny edit, every formatting pass, every repeated failed command, or every chat update when the status and next step did not change. For a tiny quick-lane task that legitimately skips state, the final report must still say what was changed, what was checked, and how to recover.
 
 ## Traceability
 
@@ -138,7 +150,7 @@ Codex must update these fields itself. The user does not need to ask it to chang
 - If source code changes after a passing check: the previous evidence becomes stale for the new diff. Immediately return task status to active and verification status to pending, then revalidate.
 - "Tested" only describes an attempted action. Use passed, failed, or unavailable to describe the result.
 
-Update state at meaningful phase boundaries: before the first source-code edit, after implementation, after validation, after an authorized commit/push/review request/merge/deploy action, and when the task is complete. Do not rewrite it for every small edit or test retry.
+Update state at meaningful phase boundaries: before the first source-code edit when the lane requires state, after implementation, after validation, after an authorized commit/push/review request/merge/deploy action, and when the task is complete. Do not rewrite it for every small edit or test retry.
 
 Task state counts as maintained only when its goal, task/implementation/verification statuses, branch, changed/planned files, validation summary, next step, and prohibited operations still match current reality.
 
