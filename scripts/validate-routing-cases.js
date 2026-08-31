@@ -62,6 +62,7 @@ const requiredIds = [
   'single-file-quick-fix',
   'multi-file-standard-fix',
   'frontend-admin',
+  'wrapped-workspace-ui',
   'remote-save-only',
   'formal-merge',
   'production-database',
@@ -82,6 +83,12 @@ if (byId['generic-explanation'].skill !== false) {
 }
 if (!includes(byId['read-only-review'], 'forbiddenEffects', 'file-write')) {
   fail('Read-only review must forbid file writes');
+}
+if (!includes(byId['wrapped-workspace-ui'], 'requiredReferences', 'wrapped-workspace-ui.md')) {
+  fail('Wrapped workspace UI must load wrapped-workspace-ui.md');
+}
+if (byId['wrapped-workspace-ui'].mode !== 'implementation' || byId['wrapped-workspace-ui'].lane !== 'standard') {
+  fail('Wrapped workspace UI must remain a standard implementation scenario');
 }
 if (!includes(byId['remote-save-only'], 'forbiddenEffects', 'formal-merge')) {
   fail('Remote save must not imply formal merge');

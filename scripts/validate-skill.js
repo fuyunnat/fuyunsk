@@ -143,6 +143,7 @@ const requiredFiles = [
   'skills/production-engineering/references/content-writing-quality.md',
   'skills/production-engineering/references/context-memory-continuity.md',
   'skills/production-engineering/references/frontend-interface-quality.md',
+  'skills/production-engineering/references/wrapped-workspace-ui.md',
   'skills/production-engineering/references/project-understanding.md',
   'skills/production-engineering/references/routing.md',
   'skills/production-engineering/references/task-lanes.md',
@@ -158,6 +159,7 @@ assertFileBudget('skills/production-engineering/SKILL.md', 80, 9_000);
 assertFileBudget('skills/production-engineering/references/routing.md', 120, 12_000);
 assertFileBudget('skills/production-engineering/references/task-lanes.md', 240, 20_000);
 assertFileBudget('skills/production-engineering/references/context-memory-continuity.md', 200, 15_000);
+assertFileBudget('skills/production-engineering/references/wrapped-workspace-ui.md', 360, 30_000);
 assertFileBudget('skills/production-engineering/scripts/task-state.js', 600, 24_000);
 assertFileBudget('skills/production-engineering/scripts/task-state-core.js', 600, 20_000);
 assertFileFloor('skills/production-engineering/references/full-production-engineering.md', 1_800, 100_000);
@@ -267,6 +269,8 @@ assertIncludes('skills/production-engineering/references/routing.md', [
   'task-lanes.md',
   'remote overlay in `task-lanes.md`',
   'frontend-interface-quality.md',
+  'wrapped-workspace-ui.md',
+  'framework-neutral shell contract',
 ]);
 
 assertIncludes('skills/production-engineering/references/project-understanding.md', [
@@ -353,6 +357,20 @@ assertIncludes('skills/production-engineering/references/frontend-interface-qual
   'Do not use `transition: all`',
   'Large lists and tables',
   'Vue 3 + Vite + Ant Design Vue',
+]);
+
+assertIncludes('skills/production-engineering/references/wrapped-workspace-ui.md', [
+  '参考图提炼',
+  '多面板桌面工作台',
+  '表面层级、内容宽度和信息密度',
+  '框架中立的实现契约',
+  '不指定 Vue、React、Svelte、CSS 方案或组件库',
+  '桌面壳层模式',
+  '窄列详情',
+  '内容边界',
+  '滚动、调整大小和状态稳定性',
+  'reduced-motion',
+  'Footer 左右内容与工作区边缘对齐',
 ]);
 
 assertIncludes('skills/production-engineering/references/task-lanes.md', [

@@ -98,6 +98,7 @@ skills/production-engineering/
   references/context-memory-continuity.md
   references/content-writing-quality.md
   references/frontend-interface-quality.md
+  references/wrapped-workspace-ui.md
   references/project-understanding.md
 
 docs/
@@ -141,6 +142,10 @@ tests/routing-cases.json                  # 触发、通道、授权和禁止行
 ### 前端界面质量
 
 `references/frontend-interface-quality.md` 补充后台页面和管理端的界面要求，覆盖表格、筛选区、表单、弹窗、loading、empty、error、disabled、权限不足、登录失效、响应式和可访问性。
+
+### 包裹式工作台 UI
+
+`references/wrapped-workspace-ui.md` 补充框架中立的专业桌面工作台设计能力：外层画布、连续侧栏、内嵌工作区、同级多面板、内容列密度和底部信息栏的对齐关系，以及去除重复分界线、响应式适配和视觉验收清单。它只约束空间组合与信息层级，不替换项目已有的技术栈、颜色或组件库。
 
 ### 内容写作质量
 

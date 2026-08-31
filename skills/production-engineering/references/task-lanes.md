@@ -102,7 +102,7 @@ Rules:
 
 - Read `frontend-interface-quality.md`.
 - Match the real project stack first.
-- For new admin work with no project-specific stack, default to Vue 3 + Vite + Ant Design Vue + Pinia + Vue Router, ordinary `.vue` / `.js`.
+- For new admin work with no project-specific stack, default to Vue 3 + Vite + Ant Design Vue + Pinia + Vue Router, ordinary `.vue` / `.js`. This is only a fallback for an otherwise unspecified new admin project; it does not constrain the framework-neutral `wrapped-workspace-ui.md` contract or authorize a stack migration.
 - Validate layout, states, text fitting, disabled/loading/empty/error behavior, and responsive behavior according to risk.
 
 ### Context lane

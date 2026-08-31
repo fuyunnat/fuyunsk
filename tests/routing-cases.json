@@ -50,6 +50,16 @@
     "forbiddenEffects": ["remote-write", "formal-merge", "deployment"]
   },
   {
+    "id": "wrapped-workspace-ui",
+    "prompt": "把这个管理后台改成包裹式工作台：侧栏和内容区要有外层留白，底部放信息栏，去掉上下两条分界线；不要限制实现框架。",
+    "skill": true,
+    "mode": "implementation",
+    "lane": "standard",
+    "requiredReferences": ["task-lanes.md", "context-memory-continuity.md", "frontend-interface-quality.md", "wrapped-workspace-ui.md"],
+    "authorizedEffects": ["local-edit", "local-validation", "task-state-write"],
+    "forbiddenEffects": ["remote-write", "formal-merge", "deployment"]
+  },
+  {
     "id": "remote-save-only",
     "prompt": "把已经验证好的改动上传仓库，别合并主线。",
     "skill": true,

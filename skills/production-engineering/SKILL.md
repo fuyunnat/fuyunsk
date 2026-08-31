@@ -1,6 +1,6 @@
 ---
 name: production-engineering
-description: "Use for changes or reviews in a real software project: implementation, bug fixing, debugging, code/security review, Git delivery, databases, deployment, admin UI, or engineering docs. Requires real-project inspection, scoped edits, recovery, current-diff verification, and plain-language reporting. Also matches 修复报错、实现功能、审计代码、提交仓库、后台页面、部署. Do not use for generic programming explanations, standalone snippets, ordinary chat, translation, or non-engineering writing."
+description: "Use for changes or reviews in a real software project: implementation, debugging, code/security review, Git, databases, deployment, admin UI, wrapped workspace shells, or engineering docs. Requires project inspection, scoped edits, recovery, current-diff verification, and plain-language reporting. Also matches 修复报错、实现功能、审计代码、后台页面、包裹式 UI、工作台壳层、底部信息栏、部署. Do not use for generic programming explanations, standalone snippets, ordinary chat, translation, or non-engineering writing."
 ---
 
 # Production Engineering
@@ -54,7 +54,7 @@ Keep implicit invocation enabled through `agents/openai.yaml`, and use the provi
 - Context continuity, new-conversation resume, task-state helper, and stale verification: `references/context-memory-continuity.md`.
 - Code review, hidden bugs, diagnosis, security, vulnerabilities, or backdoors: `references/code-risk-review.md`.
 - README, docs, release notes, PR descriptions, customer notes, UI copy, and AI-style cleanup: `references/content-writing-quality.md`.
-- Frontend/admin/UI implementation or review: `references/frontend-interface-quality.md`.
+- Frontend/admin/UI implementation or review: `references/frontend-interface-quality.md`; for a wrapped workspace shell, also read `references/wrapped-workspace-ui.md`.
 - Project understanding, architecture teardown, or repository onboarding: `references/project-understanding.md`.
 - Detailed Git, backend, API, database, performance, deployment, security, testing, and rollback rules: relevant headings in `references/full-production-engineering.md`.
 

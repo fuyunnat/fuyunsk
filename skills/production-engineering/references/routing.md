@@ -79,7 +79,7 @@ Read targeted sections from `full-production-engineering.md`:
 - Priority, modes, requirements, and risk boundaries: `## 零`, `## 一`, `## 二`, `## 五`, `## 六`.
 - Git, branches, commits, remote review, CI, and rollback: remote overlay in `task-lanes.md`, then `## 三`, `## 四`.
 - Context continuity and task state: `context-memory-continuity.md`, then search `上下文续航` only when more detail is needed.
-- Frontend/admin/UI work: `frontend-interface-quality.md`, then `## 九` when needed.
+- Frontend/admin/UI work: `frontend-interface-quality.md`, then `## 九` when needed; for a wrapped workspace, also load `wrapped-workspace-ui.md` and apply its framework-neutral shell contract.
 - Backend/API/database/concurrency: `## 八`, `## 十`, `## 十三`, `## 十四`.
 - Performance/flags/config/deployment/dependencies: `## 十一`, `## 十二`, `## 十五`, `## 十六`.
 - Security/logging/testing/completion: `## 十七` through `## 二十四` as applicable.
