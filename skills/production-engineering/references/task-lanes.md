@@ -1,18 +1,18 @@
 # Execution Cost Control
 
-Use after `routing.md` for implementation, delivery, high-risk, or uncertain-impact work. This file is authoritative for lane selection, execution cost, and remote-delivery overlays. `full-production-engineering.md` supplies detailed domain rules after a lane is selected; it must not reclassify the lane, expand authorization, or force unrelated checks.
+Use after `routing.md` for implementation, delivery, high-risk, or uncertain-impact work. This file is authoritative for lane selection and remote-delivery overlays; `full-production-engineering.md` adds detail after lane selection and must not reclassify the lane, expand authorization.
 
 ## Core Rule
 
 Start cheap, then escalate only when evidence requires it. Do not weaken hard gates to save time.
 
-Never skip applicable hard gates: user-owned changes, unrelated diffs, untracked files, recovery boundaries, secrets, trash/recycle-bin deletion, production/database/payment/auth/security/CI/deploy/remote risks, force/direct-main writes, truthful validation, and final reporting. Existing database fields and historical data require additive compatibility by default; never use destructive schema replacement or bulk overwrite as an implicit code-update shortcut. Responsibility/file-boundary check means separate unrelated features, API calls, business rules, persistence, state, UI, config, utilities, and tests by the real project structure.
+Never skip hard gates: user-owned changes, unrelated diffs, untracked files, recovery boundaries, secrets, trash/recycle-bin deletion, production/database/payment/auth/security/CI/deploy/remote risks, force/direct-main writes, truthful validation, and final reporting. Existing database fields and historical data require additive compatibility by default; never use destructive schema replacement or bulk overwrite as an implicit shortcut. Responsibility/file-boundary check means separate unrelated features, API calls, business rules, persistence, state, UI, config, utilities, and tests by the real project structure.
 
 The optimization is only this: classify first, load fewer references, write fewer task-state updates, and run smaller validation for genuinely narrow, local, reversible, low-risk work.
 
 ## Fast-First Default
 
-For every engineering request, first try to prove it fits quick lane. Escalate only when target area, current diff, project rules, or user wording shows a real reason. Do not treat "严谨点", "稳一点", "小白不会 Git", or "提交仓库" as automatic full-lane triggers.
+For every request, first try to prove it fits quick lane. Escalate only when target area, current diff, project rules, or user wording shows a real reason. Do not treat "严谨点", "稳一点", "小白不会 Git", or "提交仓库" as automatic full-lane triggers.
 
 Quick-lane budget: read `routing.md`, this file, target file, and one or two nearest context files when needed; run one focused validation or diff check; give a short final report. Do not scan the whole repository, load the whole full specification, keep a task-state diary, create a PR, or wait on broad CI unless the task escalates.
 
@@ -34,11 +34,11 @@ Rules: read `project-understanding.md`; do not create `architecture.md` or analy
 
 ### Quick lane
 
-Use only when all are true: scope/target files are clear; the change is local and reversible; it touches no shared module, public API, global config, data model, auth, permission, security, deployment, dependency, lockfile, database, production, remote, or external side effect; no file/directory is permanently deleted; impact can be proven with small diff review, keyword check, local command, or focused smoke test.
+Use only when scope/target files are clear; the change is local and reversible; it touches no shared module, public API, global config, data model, auth, permission, security, deployment, dependency, lockfile, database, production, remote, or external side effect; no file/directory is permanently deleted; impact can be proven with small diff review, keyword check, local command, or focused smoke test.
 
 Rules:
 
-- Read `routing.md`, this file, target files, and only nearest necessary context.
+- Read `routing.md`, this file, target files, and nearest necessary context.
 - Do not load the whole full specification by default.
 - Do not create `work/task-state.md`, PR, CI review, or broad regression by default.
 - A genuinely single-step change touching at most one source-code file may skip task state. Existing state is updated only at phase boundaries, not for each small edit.
@@ -50,7 +50,7 @@ Rules:
 
 Use for ordinary implementation or fixes that are larger than quick lane and not high-risk.
 
-Rules: read relevant project files, `routing.md`, this file, and only relevant references. Use heading searches in `full-production-engineering.md`; check Git state; decide whether code belongs in existing modules or a new focused module; do not create a large mixed-responsibility file. Before the first source-code edit, add context lane and initialize/refresh state through `context-memory-continuity.md`. Documentation-only or one non-code artifact may skip new state unless multi-stage or interruption-prone. Validate with the smallest command set that proves the changed behavior. Commit locally for a requested recovery point. Push only for repository/remote delivery or explicit project-local handoff policy. Default to one clear final commit per user task and one clear final commit per user goal; split only for genuinely independent, reviewable, separately reversible changes, not every button, label, style tweak, retry, or prompt sentence.
+Rules: read relevant project files, `routing.md`, this file, and relevant references. Use heading searches in `full-production-engineering.md`; check Git state; decide whether code belongs in existing modules or a new focused module; do not create a large mixed-responsibility file. Before the first source-code edit, add context lane and initialize/refresh state through `context-memory-continuity.md`. Documentation-only or one non-code artifact may skip new state unless multi-stage or interruption-prone. Validate with the smallest command set that proves the changed behavior. Commit locally for a requested recovery point. Push only for repository/remote delivery or explicit project-local handoff policy. Default to one clear final commit per user task and one clear final commit per user goal; split only for genuinely independent, reviewable, separately reversible changes, not every button, label, style tweak, retry, or prompt sentence.
 
 ### Full lane
 
@@ -66,7 +66,7 @@ Rules: read `frontend-interface-quality.md`; match the real project stack first.
 
 ### Context lane
 
-Use in addition to standard or full lane whenever source code is modified. Also use it for quick work that expands beyond one source-code file, substantial planning that must survive a new conversation, long work, multi-stage development, handoff, compaction recovery, "继续开发", "别忘了", or context-loss concerns.
+Use in addition to standard or full lane when source code is modified and the task needs durable state. Also use it for quick work that expands beyond one source-code file, substantial planning that must survive a new conversation, long work, multi-stage development, handoff, compaction recovery, "继续开发", "别忘了", or context-loss concerns.
 
 Rules: read `context-memory-continuity.md` and use its helper for bounded project/workspace discovery, state transitions, current-diff fingerprints, and completion checks. Keep only recovery-critical facts and evidence pointers; never store secrets or full sensitive logs. On a new conversation or continuation, reread state, current files, Git status/diff, and newest user request before acting. Treat task state as a checkpoint file: start/in progress, implementation complete/pending verification, verified, submitted, or complete. Do not rewrite it after every small edit or repeated failed command unless status, next step, changed-file set, blocker, validation evidence, or remote state changed.
 
