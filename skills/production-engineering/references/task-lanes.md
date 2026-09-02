@@ -4,17 +4,21 @@ Use after `routing.md` for implementation, delivery, high-risk, or uncertain-imp
 
 ## Core Rule
 
-Start cheap, then escalate only when evidence requires it. Do not weaken hard gates to save time.
+Start cheap, then escalate only when evidence requires it. Do not weaken hard gates.
 
 Never skip hard gates: user-owned changes, unrelated diffs, untracked files, recovery boundaries, secrets, trash/recycle-bin deletion, production/database/payment/auth/security/CI/deploy/remote risks, force/direct-main writes, truthful validation, and final reporting. Existing database fields and historical data require additive compatibility by default; never use destructive schema replacement or bulk overwrite as an implicit shortcut. Responsibility/file-boundary check means separate unrelated features, API calls, business rules, persistence, state, UI, config, utilities, and tests by the real project structure.
 
-The optimization is only this: classify first, load fewer references, write fewer task-state updates, and run smaller validation for genuinely narrow, local, reversible, low-risk work.
+Optimization: classify first, load fewer references, write fewer task-state updates, and run smaller validation for local, reversible work.
 
 ## Fast-First Default
 
-For every request, first try to prove it fits quick lane. Escalate only when target area, current diff, project rules, or user wording shows a real reason. Do not treat "严谨点", "稳一点", "小白不会 Git", or "提交仓库" as automatic full-lane triggers.
+For every request, first try to prove it fits quick lane. Escalate only when target area, current diff, project rules, or user wording gives a real reason. Do not treat "严谨点", "稳一点", "小白不会 Git", or "提交仓库" as automatic full-lane triggers.
 
-Quick-lane budget: read `routing.md`, this file, target file, and one or two nearest context files when needed; run one focused validation or diff check; give a short final report. Do not scan the whole repository, load the whole full specification, keep a task-state diary, create a PR, or wait on broad CI unless the task escalates.
+Quick-lane budget: read `routing.md`, this file, target file, and nearby context when needed; run one focused check; give a short final report. Do not scan the repo, load the full specification, keep a task-state diary, create a PR, or wait on broad CI unless escalation is needed.
+
+## Big-Change Rule
+
+Treat a task as big if it hits a shared/public/global/remote/DB/security surface, spans two or more responsibility layers, or needs submit, push, PR, merge, release, deploy, or online validation. If unsure, escalate. Only a clearly local, reversible, low-risk, single-step change with one source file or less stays quick.
 
 ## Lane Selection
 
@@ -42,7 +46,7 @@ Rules:
 - Do not load the whole full specification by default.
 - Do not create `work/task-state.md`, PR, CI review, or broad regression by default.
 - A genuinely single-step change touching at most one source-code file may skip task state. Existing state is updated only at phase boundaries, not for each small edit.
-- A quick README/docs/copy/style tweak should finish as one change with one focused check. Remote save, when authorized, should be one commit and one push to the current task branch or a small direct maintainer branch per repository rules.
+- A quick README/docs/copy/style tweak should finish as one change with one focused check. Remote save, when authorized, should be one commit and one push to the current task branch or a small direct maintainer branch.
 - If the task changes more than one source-code file, becomes multi-step, or may be interrupted, add context lane and maintain ignored/project-external state before further edits.
 - Still check Git or backup boundaries before overwriting. If the user asks to save remotely, apply the remote overlay; remote delivery alone does not turn quick work into a full audit.
 
@@ -50,13 +54,13 @@ Rules:
 
 Use for ordinary implementation or fixes that are larger than quick lane and not high-risk.
 
-Rules: read relevant project files, `routing.md`, this file, and relevant references. Use heading searches in `full-production-engineering.md`; check Git state; decide whether code belongs in existing modules or a new focused module; do not create a large mixed-responsibility file. Before the first source-code edit, add context lane and initialize/refresh state through `context-memory-continuity.md`. Documentation-only or one non-code artifact may skip new state unless multi-stage or interruption-prone. Validate with the smallest command set that proves the changed behavior. Commit locally for a requested recovery point. Push only for repository/remote delivery or explicit project-local handoff policy. Default to one clear final commit per user task and one clear final commit per user goal; split only for genuinely independent, reviewable, separately reversible changes, not every button, label, style tweak, retry, or prompt sentence.
+Rules: read relevant project files, `routing.md`, this file, and relevant references. Use heading searches in `full-production-engineering.md`; check Git state; keep code in the right module; do not create a large mixed-responsibility file. Before the first source-code edit, add context lane and initialize/refresh state through `context-memory-continuity.md`. Documentation-only or one non-code artifact may skip new state unless multi-stage or interruption-prone. Validate with the smallest command set that proves the change. Commit locally for a requested recovery point. Push only for repository/remote delivery or explicit project-local handoff policy. Default to one clear final commit per user task and one clear final commit per user goal. Split only for independent, reviewable, separately reversible changes.
 
 ### Full lane
 
 Use when any escalation trigger exists.
 
-Rules: read directly relevant references and sections of `full-production-engineering.md`. For implementation writes, read `context-memory-continuity.md` and initialize/refresh state before editing. A routine commit, task-branch push, or review request with no implementation change still does not require new state. Use Git recovery gates, diff review, risk explanation, validation evidence, rollback plan, and final delivery reporting. Use one task branch. Create/update one review request only when the user asks for review/merge preparation or project workflow requires it. Use task-state files, diff review, and the task branch as recovery checkpoints; do not create a new commit for every small fix, test retry, wording tweak, or file edit.
+Rules: read directly relevant references and `full-production-engineering.md`. For implementation writes, read `context-memory-continuity.md` and initialize/refresh state before editing. A routine commit, task-branch push, or review request with no implementation change still does not require new state. Use Git recovery gates, diff review, risk explanation, validation evidence, rollback plan, and final delivery reporting. Use one task branch. Create/update one review request only when needed. Use task-state files, diff review, and the task branch as recovery checkpoints; do not create a new commit for every small fix, test retry, wording tweak, or file edit.
 
 ### Frontend/UI lane
 
