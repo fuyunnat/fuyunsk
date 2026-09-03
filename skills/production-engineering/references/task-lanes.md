@@ -1,6 +1,6 @@
 # Execution Cost Control
 
-Use after `routing.md` for implementation, delivery, high-risk, or uncertain-impact work. This file is authoritative for lane selection and remote overlays; `full-production-engineering.md` adds detail after selection and must not reclassify the lane, expand authorization.
+Use after `routing.md` for implementation, delivery, high-risk, or uncertain work. It is authoritative for lane selection and remote overlays; `full-production-engineering.md` adds detail and must not reclassify the lane, expand authorization.
 
 ## Core Rule
 
@@ -8,13 +8,13 @@ Start cheap, then escalate only when evidence requires it. Do not weaken hard ga
 
 Never skip hard gates: protect user-owned changes, unrelated/untracked work, recovery boundaries, secrets, trash/recycle-bin deletion, production/database/payment/auth/security/CI/deploy/remote risks, force/direct-main writes, truthful validation, and final reporting. Existing database fields and historical data use additive compatibility by default; no destructive schema replacement or bulk overwrite. Responsibility/file-boundary check keeps features, API calls, business rules, persistence, state, UI, config, utilities, and tests separated by real project structure.
 
-Optimization: classify first, load fewer references, write fewer task-state updates, and run smaller validation for reversible work.
+Optimization: classify first, load fewer refs, write fewer task-state updates, and run smaller validation for reversible work.
 
 ## Fast-First Default
 
 First prove the cheapest safe lane. Escalate only when target, diff, rules, or wording gives an objective trigger. Do not treat "严谨点", "稳一点", "小白不会 Git", or "提交仓库" as automatic full-lane triggers.
 
-Answer-only: short answer; no Git/task-state/full-spec/validation unless asked to modify, verify, deliver, save, push, merge, deploy, or inspect live evidence.
+Answer-only: short answer; no Git, task-state, validation, or full-spec load unless asked to modify, verify, deliver, save, push, merge, deploy, or inspect evidence.
 
 Quick-lane budget: read `routing.md`, this file, target/context; run one focused check when enough; report briefly. Do not scan repo, load full spec, keep a task-state diary, create a PR, or wait on broad CI unless this table requires it.
 
@@ -35,7 +35,11 @@ Tiny fixes stay quick. A quick README/docs/copy/style tweak should finish as one
 
 ## Big-Change Rule
 
-Treat a task as big if it hits shared/public/global/remote/DB/security surfaces, spans two or more responsibility layers, or needs submit, push, PR, merge, release, deploy, or online validation. If unsure, check target/context first; escalate only if risk remains real. Only a local, reversible, low-risk, single-file change stays quick.
+Treat a task as big if it hits shared/public/global/remote/DB/security surfaces, spans two or more responsibility layers, or needs submit, push, PR, merge, release, deploy, or online validation. If unsure, check target/context first; escalate only if risk remains real. Only local, reversible, single-file changes stay quick.
+
+## Precision Guard
+
+Change only the requested behavior. Do not clean up, refactor, or reformat unrelated code.
 
 ## Lanes
 
@@ -73,7 +77,7 @@ Use in addition to standard/full when source code changes need durable state. Al
 
 ### Content writing lane
 
-Use in addition to read-only, quick, standard, or full lane for README files, engineering docs, repository descriptions, installation guides, PR descriptions, release notes, customer-facing technical notes, admin UI copy, or product settings copy. Apply proactively; users do not need to say "AI 味" for it to apply. Read `content-writing-quality.md`; preserve facts, commands, paths, constraints, validation evidence, and rollback notes; remove generic AI-style filler, overclaiming, chat residue, and self-referential prompting language; match the reader/document type; do not invent product claims, test results, customer impact, security guarantees, or compatibility promises.
+Use in addition to read-only, quick, standard, or full lane for README files, engineering docs, repository descriptions, installation guides, PR descriptions, release notes, customer-facing technical notes, admin UI copy, or product settings copy. Read `content-writing-quality.md`; preserve facts, commands, paths, constraints, validation evidence, and rollback notes; remove generic AI-style filler, overclaiming, chat residue, and self-referential prompting language; match the reader/document type; do not invent product claims, test results, customer impact, security guarantees, or compatibility promises.
 
 ## Escalation
 
