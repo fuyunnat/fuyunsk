@@ -12,13 +12,17 @@ Optimization: classify first, load fewer references, write fewer task-state upda
 
 ## Fast-First Default
 
-For every request, first try to prove it fits quick lane. Escalate only when target area, current diff, project rules, or user wording gives a real reason. Do not treat "严谨点", "稳一点", "小白不会 Git", or "提交仓库" as automatic full-lane triggers.
+First try to prove quick lane. Escalate only when target area, diff, project rules, or wording gives a real reason. Do not treat "严谨点", "稳一点", "小白不会 Git", or "提交仓库" as automatic full-lane triggers.
 
-Quick-lane budget: read `routing.md`, this file, target file, and nearby context when needed; run one focused check; give a short final report. Do not scan the repo, load the full specification, keep a task-state diary, create a PR, or wait on broad CI unless escalation is needed.
+Answer-only: short answer; no Git/task-state/full-spec/validation unless asked to modify, verify, or deliver.
+
+Quick-lane budget: read `routing.md`, this file, target, and nearby context; run one check; give a short report. Do not scan the repo, load full spec, keep a task-state diary, create a PR, or wait on broad CI unless needed.
 
 ## Big-Change Rule
 
-Treat a task as big if it hits a shared/public/global/remote/DB/security surface, spans two or more responsibility layers, or needs submit, push, PR, merge, release, deploy, or online validation. If unsure, escalate. Only a clearly local, reversible, low-risk, single-step change with one source file or less stays quick.
+Treat a task as big if it hits a shared/public/global/remote/DB/security surface, spans two or more responsibility layers, or needs submit, push, PR, merge, release, deploy, or online validation. If unsure, escalate after checking the target file and nearby context. Only a local, reversible, low-risk, single-file change stays quick.
+
+Tiny fixes stay quick.
 
 ## Lane Selection
 
