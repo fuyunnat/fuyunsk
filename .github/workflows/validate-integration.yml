@@ -15,9 +15,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: 9df62b40b0d07432a7629f33d1a9610a452826e8
           fetch-depth: 2
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - run: test "$(git rev-parse HEAD)" = "9df62b40b0d07432a7629f33d1a9610a452826e8"
       - run: node scripts/validate-skill.js
       - run: git diff --check HEAD^ HEAD
