@@ -242,14 +242,28 @@ assertIncludes('docs/ai-installation.md', [
 ]);
 
 assertIncludes('README.md', [
-  'explicit-only by default',
-  'Method Toolkit',
+  '默认仅支持**显式调用**',
+  '## 方法工具箱',
   'diagnosis-feedback-loop.md',
   'design-testing.md',
   'spec-review.md',
   'mattpocock/skills',
   'allow_implicit_invocation: false',
-  'Migration',
+  '## 从旧版本迁移',
+]);
+
+assertNotIncludes('README.md', [
+  '## Why This Changed',
+  '## Usage',
+  '## Method Toolkit',
+  '## Authorization',
+  '## Install',
+  '## Performance Model',
+  '## Capabilities',
+  '## Structure',
+  '## Optional Global Fallback',
+  '## Validation',
+  '## Migration',
 ]);
 
 for (const relPath of [
