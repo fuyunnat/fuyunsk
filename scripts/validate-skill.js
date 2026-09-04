@@ -71,6 +71,13 @@ function runNode(relPath, args = []) {
   }
 }
 
+const methodReferences = [
+  'skills/production-engineering/references/diagnosis-feedback-loop.md',
+  'skills/production-engineering/references/design-testing.md',
+  'skills/production-engineering/references/spec-review.md',
+  'skills/production-engineering/references/upstream-notes.md',
+];
+
 const requiredFiles = [
   'README.md',
   'AGENTS.md',
@@ -95,6 +102,7 @@ const requiredFiles = [
   'skills/production-engineering/references/routing.md',
   'skills/production-engineering/references/task-lanes.md',
   'skills/production-engineering/references/full-production-engineering.md',
+  ...methodReferences,
 ];
 
 for (const relPath of requiredFiles) {
@@ -104,8 +112,12 @@ for (const relPath of requiredFiles) {
 assertBudget('global-AGENTS.example.md', 40, 3_500);
 assertBudget('docs/personal-custom-instructions.md', 70, 4_500);
 assertBudget('docs/ai-installation.md', 120, 8_000);
-assertBudget('skills/production-engineering/SKILL.md', 100, 7_000);
-assertBudget('skills/production-engineering/references/routing.md', 130, 9_000);
+assertBudget('skills/production-engineering/SKILL.md', 115, 8_000);
+assertBudget('skills/production-engineering/references/routing.md', 165, 12_000);
+assertBudget('skills/production-engineering/references/diagnosis-feedback-loop.md', 150, 11_000);
+assertBudget('skills/production-engineering/references/design-testing.md', 150, 11_000);
+assertBudget('skills/production-engineering/references/spec-review.md', 175, 13_000);
+assertBudget('skills/production-engineering/references/upstream-notes.md', 80, 7_000);
 assertFloor('skills/production-engineering/references/full-production-engineering.md', 100_000);
 
 const combined = [
@@ -114,8 +126,8 @@ const combined = [
   'skills/production-engineering/references/routing.md',
 ].reduce((sum, relPath) => sum + Buffer.byteLength(read(relPath), 'utf8'), 0);
 
-if (combined > 18_000) {
-  throw new Error(`Performance-sensitive guidance exceeds combined budget: ${combined}/18000 bytes`);
+if (combined > 20_000) {
+  throw new Error(`Performance-sensitive guidance exceeds combined budget: ${combined}/20000 bytes`);
 }
 
 const skill = read('skills/production-engineering/SKILL.md');
@@ -130,6 +142,9 @@ assertIncludes('skills/production-engineering/SKILL.md', [
   'user explicitly invokes $production-engineering',
   'Do not use for greetings',
   'Do not run it merely because a conversation is new',
+  'diagnosis-feedback-loop.md',
+  'design-testing.md',
+  'spec-review.md',
   'Load only what the current task needs',
 ]);
 
@@ -142,6 +157,68 @@ assertMatch(
 assertIncludes('skills/production-engineering/agents/openai.yaml', [
   '$production-engineering',
   'load only the references required',
+]);
+
+assertIncludes('skills/production-engineering/references/routing.md', [
+  'Method Routing',
+  'diagnosis-feedback-loop.md',
+  'design-testing.md',
+  'spec-review.md',
+  'If an exact reproduction loop cannot be built',
+  'Review standards/quality separately from spec/intent',
+  'Do not load it during normal task execution',
+]);
+
+assertIncludes('skills/production-engineering/references/diagnosis-feedback-loop.md', [
+  'observable pass/fail verdict',
+  'Build The Tightest Useful Feedback Loop',
+  'Rank Falsifiable Hypotheses',
+  'unique searchable marker',
+  'original, non-minimized feedback loop',
+  'result remains provisional',
+]);
+
+assertIncludes('skills/production-engineering/references/design-testing.md', [
+  'Design A Deep Module',
+  'Test Through Public Behavior',
+  'Implement In Vertical Slices',
+  'expand–migrate–contract',
+  'A prototype answers one design question',
+  'Do not add abstractions solely for imagined future needs',
+]);
+
+assertIncludes('skills/production-engineering/references/spec-review.md', [
+  'Synthesize Before Interviewing',
+  'Break Work Into Vertical Slices',
+  'Map Large Uncertain Work',
+  'Pin A Review Fixed Point',
+  'Review On Two Independent Axes',
+  'no spec available',
+]);
+
+assertIncludes('skills/production-engineering/references/upstream-notes.md', [
+  'mattpocock/skills',
+  '3cca18b368ae95cdbdebbff572ccafa662551015',
+  'MIT License',
+  'Copyright (c) 2026 Matt Pocock',
+  'does not vendor or require another skill collection at runtime',
+]);
+
+for (const relPath of methodReferences.slice(0, 3)) {
+  assertIncludes(relPath, ['See `upstream-notes.md` for methodology attribution.']);
+  assertNotIncludes(relPath, [
+    'Call the Skill tool',
+    '/setup-matt-pocock-skills',
+    'docs/agents/issue-tracker.md',
+    'disable-model-invocation',
+  ]);
+}
+
+assertIncludes('AGENTS.md', [
+  '只提炼并重写适用流程',
+  '注明来源和许可证',
+  '不得复制整套第三方 skill',
+  '不得借此开启隐式调用',
 ]);
 
 assertIncludes('global-AGENTS.example.md', [
@@ -166,9 +243,11 @@ assertIncludes('docs/ai-installation.md', [
 
 assertIncludes('README.md', [
   'explicit-only by default',
-  'Why This Changed',
-  '$production-engineering',
-  'Do not install both global fallback documents',
+  'Method Toolkit',
+  'diagnosis-feedback-loop.md',
+  'design-testing.md',
+  'spec-review.md',
+  'mattpocock/skills',
   'allow_implicit_invocation: false',
   'Migration',
 ]);
@@ -192,11 +271,13 @@ assertNotIncludes('skills/production-engineering/agents/openai.yaml', [
 
 const policyFiles = [
   'README.md',
+  'AGENTS.md',
   'global-AGENTS.example.md',
   'docs/ai-installation.md',
   'docs/personal-custom-instructions.md',
   'skills/production-engineering/SKILL.md',
   'skills/production-engineering/references/routing.md',
+  ...methodReferences,
 ];
 
 for (const relPath of policyFiles) {
@@ -213,4 +294,4 @@ runNode('scripts/validate-routing-cases.js');
 runNode('scripts/validate-repository-hygiene.js');
 runNode('scripts/validate-task-state.js');
 
-console.log('production-engineering skill validation passed (explicit-only, performance-first)');
+console.log('production-engineering skill validation passed (explicit-only, method-routed, attributed)');

@@ -30,11 +30,31 @@ After invocation, select the cheapest safe mode and load only the references req
 1. Confirm explicit invocation and classify the mode.
 2. For implementation, delivery, high-risk, or uncertain work, read `task-lanes.md`.
 3. Inspect the nearest project rules, entrypoints, Git/backup boundary, current diff, and user-owned changes.
-4. Define the smallest authorized change, protected old behavior, acceptance criteria, and file responsibility boundary.
+4. Define the smallest authorized change, protected old behavior, acceptance criteria, responsibility boundary, and observable verification seam when relevant.
 5. Load only the specialized reference needed.
 6. Implement the authorized scope.
 7. Validate the current diff with the smallest proving checks.
 8. Report change, evidence, local/remote/formal state, rollback, and remaining risk.
+
+## Method Routing
+
+- A reported bug, intermittent failure, incorrect output, or performance regression uses `diagnosis-feedback-loop.md`. Add `code-risk-review.md` only for a broad risk/security scan or when the affected path is sensitive.
+- A feature, refactor, module/interface change, testability problem, TDD request, or throwaway prototype uses `design-testing.md`. A trivial copy/style fix does not.
+- A specification, acceptance-criteria draft, vertical work breakdown, large decision plan, branch/PR/WIP review, or “review since X” uses `spec-review.md`.
+- A diff review that also asks for security or hidden-bug coverage uses both `spec-review.md` and `code-risk-review.md`, with findings kept in separate sections.
+- `upstream-notes.md` is attribution for maintainers. Do not load it during normal task execution.
+
+## Diagnosis Boundary
+
+Read-only diagnosis may measure, reproduce, inspect logs, and build a non-mutating feedback loop. Do not edit product code until the user authorizes a fix. If an exact reproduction loop cannot be built, report the diagnosis as provisional and do not present a guessed root cause as confirmed.
+
+## Design And Testing Boundary
+
+Identify the public behavior seam before adding tests. Prefer one end-to-end vertical slice at a time. Ask the user only when the seam choice changes business behavior or acceptance; ordinary technical placement is Codex's responsibility.
+
+## Review Boundary
+
+Pin the review fixed point before judging a diff. Review standards/quality separately from spec/intent so one passing axis cannot hide failure on the other. If no spec exists, say so rather than inventing one.
 
 ## Continuity Gate
 
@@ -59,13 +79,12 @@ A small, self-contained task does not need task state. Built-in memories remain 
 - `task-lanes.md` is authoritative for lane selection and cannot expand user authorization.
 - `full-production-engineering.md` adds detail only; conflicting workflow breadth yields to this file and `task-lanes.md`.
 
-## Specialized Routing
+## Other Specialized Routing
 
-- Bugs, vague review, hidden defects, security, vulnerabilities, or backdoors: `code-risk-review.md`.
 - Continuation, handoff, compaction, or durable state: `context-memory-continuity.md`.
 - README, documentation, changelog, release notes, PR text, customer notes, or UI copy: `content-writing-quality.md`.
 - Frontend/admin/UI: `frontend-interface-quality.md`; wrapped workspaces also use `wrapped-workspace-ui.md`.
-- Project understanding, architecture teardown, or onboarding: `project-understanding.md`.
+- Project understanding, architecture teardown, or onboarding: `project-understanding.md`; add `design-testing.md` only when evaluating interface depth or test seams.
 - Detailed backend/API/database/performance/deployment/testing rules: search the relevant heading in `full-production-engineering.md`.
 
 ## Responsibility Boundary

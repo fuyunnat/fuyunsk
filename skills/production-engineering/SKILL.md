@@ -61,12 +61,15 @@ Final reports should state:
 ## Reference Routing
 
 - Lane choice, validation depth, and remote delivery: `references/task-lanes.md`.
+- Hard bugs, intermittent failures, and performance regressions: `references/diagnosis-feedback-loop.md`.
+- Module/interface design, test seams, vertical implementation, refactoring, and throwaway prototypes: `references/design-testing.md`.
+- Specifications, work breakdown, decision maps, and review against both standards and intent: `references/spec-review.md`.
 - Continuation, handoff, compaction, or durable state: `references/context-memory-continuity.md`.
-- Bugs, hidden defects, code review, security, or backdoors: `references/code-risk-review.md`.
+- Broad risk review, security, vulnerabilities, or backdoors: `references/code-risk-review.md`.
 - README, docs, release notes, PR text, customer notes, and UI copy: `references/content-writing-quality.md`.
 - Frontend/admin/UI: `references/frontend-interface-quality.md`.
 - Wrapped desktop workspaces: `references/wrapped-workspace-ui.md`.
 - Architecture understanding and repository onboarding: `references/project-understanding.md`.
 - Detailed backend, API, database, performance, Git, deployment, and testing rules: relevant headings in `references/full-production-engineering.md`.
 
-Load only what the current task needs.
+Load only what the current task needs. `references/upstream-notes.md` records methodology attribution and is not a runtime prerequisite.
