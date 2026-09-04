@@ -66,6 +66,134 @@
     ]
   },
   {
+    "id": "explicit-performance-diagnosis",
+    "prompt": "$production-engineering 查一下为什么这个接口偶发变慢，先别改。",
+    "skill": true,
+    "mode": "read-only",
+    "lane": "read-only+diagnosis",
+    "requiredReferences": [
+      "routing.md",
+      "diagnosis-feedback-loop.md"
+    ],
+    "authorizedEffects": [
+      "read-project",
+      "measure-baseline",
+      "build-read-only-feedback-loop"
+    ],
+    "forbiddenEffects": [
+      "product-code-write",
+      "root-cause-claim-without-feedback-loop",
+      "remote-write"
+    ]
+  },
+  {
+    "id": "explicit-hard-bug-fix",
+    "prompt": "$production-engineering 这个回调偶发重复扣款，先复现定位再修并补回归验证。",
+    "skill": true,
+    "mode": "high-risk",
+    "lane": "full+diagnosis",
+    "requiredReferences": [
+      "routing.md",
+      "task-lanes.md",
+      "diagnosis-feedback-loop.md",
+      "design-testing.md",
+      "code-risk-review.md"
+    ],
+    "authorizedEffects": [
+      "read-only-investigation",
+      "local-edit-after-confirmed-scope",
+      "local-validation"
+    ],
+    "forbiddenEffects": [
+      "production-write",
+      "root-cause-claim-without-feedback-loop",
+      "remote-write"
+    ]
+  },
+  {
+    "id": "explicit-diff-two-axis-review",
+    "prompt": "$production-engineering 按 main 到当前分支做代码审查，分别看规范和需求是否满足，先别改。",
+    "skill": true,
+    "mode": "read-only",
+    "lane": "read-only+review",
+    "requiredReferences": [
+      "routing.md",
+      "spec-review.md"
+    ],
+    "authorizedEffects": [
+      "read-project",
+      "read-git-diff",
+      "read-spec"
+    ],
+    "forbiddenEffects": [
+      "file-write",
+      "merge-axes-into-one-score",
+      "remote-write"
+    ]
+  },
+  {
+    "id": "explicit-work-breakdown",
+    "prompt": "$production-engineering 把这个大功能拆成能独立验证的纵向任务，先在聊天里规划。",
+    "skill": true,
+    "mode": "read-only",
+    "lane": "read-only+planning",
+    "requiredReferences": [
+      "routing.md",
+      "spec-review.md"
+    ],
+    "authorizedEffects": [
+      "read-project",
+      "draft-plan-in-chat"
+    ],
+    "forbiddenEffects": [
+      "issue-create",
+      "file-write",
+      "implementation"
+    ]
+  },
+  {
+    "id": "explicit-design-refactor",
+    "prompt": "$production-engineering 重构这个模块，让接口更简单，并通过公共行为补测试。",
+    "skill": true,
+    "mode": "implementation",
+    "lane": "standard+design-testing",
+    "requiredReferences": [
+      "routing.md",
+      "task-lanes.md",
+      "design-testing.md"
+    ],
+    "authorizedEffects": [
+      "local-edit",
+      "local-validation"
+    ],
+    "forbiddenEffects": [
+      "implementation-coupled-test",
+      "speculative-abstraction",
+      "remote-write"
+    ]
+  },
+  {
+    "id": "explicit-prototype",
+    "prompt": "$production-engineering 先做一个可丢弃原型验证状态机，不要进入正式代码。",
+    "skill": true,
+    "mode": "implementation",
+    "lane": "quick+prototype",
+    "requiredReferences": [
+      "routing.md",
+      "task-lanes.md",
+      "design-testing.md"
+    ],
+    "authorizedEffects": [
+      "local-prototype",
+      "local-validation"
+    ],
+    "forbiddenEffects": [
+      "formal-merge",
+      "production-dependency",
+      "remote-write"
+    ]
+  },
+  {
     "id": "explicit-quick-fix",
     "prompt": "$production-engineering 修一下这个页面上的错别字。",
     "skill": true,
@@ -81,6 +209,7 @@
     ],
     "forbiddenEffects": [
       "task-state-init",
+      "method-reference-overload",
       "remote-write",
       "formal-merge",
       "deployment"

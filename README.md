@@ -6,20 +6,13 @@ The current release is performance-first. The skill is **explicit-only by defaul
 
 ## Why This Changed
 
-Older versions combined:
-
-- implicit skill invocation;
-- a large global `AGENTS.md` fallback;
-- optional personal instructions;
-- automatic first-turn task recovery.
-
-That design was safe but expensive. Even a greeting could inherit engineering rules, skill routing, and continuity guidance. The new default keeps ordinary turns small and loads the workflow only when it is requested.
+Older versions combined implicit invocation, a large global fallback, optional personal instructions, and automatic first-turn recovery. That design was safe but expensive. The current default keeps ordinary turns small and loads engineering guidance only after the user invokes `$production-engineering`.
 
 ## Usage
 
 For ordinary chat, just chat normally.
 
-For real project work, invoke the skill explicitly:
+For real project work:
 
 ```text
 $production-engineering 修一下这个报错，先只改本地并验证。
@@ -34,6 +27,17 @@ $production-engineering 优化完成后提交到仓库，但不要合并主线�
 ```
 
 The explicit prefix is intentional. It trades a few typed characters for predictable performance and prevents accidental engineering context injection.
+
+## Method Toolkit
+
+After explicit invocation, the router loads only the method needed:
+
+- `diagnosis-feedback-loop.md`: create an exact, fast feedback loop; reproduce and minimize; test falsifiable hypotheses; prove the regression is gone.
+- `design-testing.md`: design small public interfaces around clean seams, test behavior instead of internals, implement vertical slices, and use expand–migrate–contract for wide changes.
+- `spec-review.md`: synthesize specs from known context, split work into independently verifiable slices, map unresolved decisions, and review standards separately from intended behavior.
+- existing references still own security/risk review, frontend quality, documentation, continuity, database safety, deployment, and Git delivery.
+
+These methods are concise adaptations from [`mattpocock/skills`](https://github.com/mattpocock/skills) at commit `3cca18b368ae95cdbdebbff572ccafa662551015`. Attribution and design differences are recorded in [`references/upstream-notes.md`](skills/production-engineering/references/upstream-notes.md). The external repository is MIT-licensed; this skill does not depend on it at runtime.
 
 ## Authorization
 
@@ -67,27 +71,29 @@ Detailed migration and verification steps are in [docs/ai-installation.md](docs/
 
 ## Performance Model
 
-The workflow now uses progressive disclosure:
+The workflow uses progressive disclosure:
 
 1. Normal turn: no production-engineering workflow.
 2. Explicit invocation: load `SKILL.md` and `references/routing.md`.
 3. Implementation or delivery: add `references/task-lanes.md`.
-4. Specialized work: add only the matching reference.
+4. Specialized work: add only the matching method/reference.
 5. Full specification: search and load only the needed heading.
 6. Task-state recovery: only for continuation, handoff, multi-stage work, or context-loss risk.
 
-Do not install both global fallback documents. Most users need neither.
+Do not install both global fallback documents. Most users need neither. The methodology attribution file is maintenance documentation and is not loaded during normal tasks.
 
 ## Capabilities
 
 When explicitly invoked, the skill supports:
 
 - implementation, debugging, refactoring, and focused validation;
-- code review, security review, vulnerability and backdoor investigation;
+- feedback-loop-first diagnosis and performance measurement;
+- interface/seam design, behavior-focused tests, TDD, vertical slices, and prototypes;
+- specifications, work breakdown, decision maps, and two-axis diff review;
+- code/security review, vulnerabilities, and backdoor investigation;
 - Git commits, pushes, review requests, formal integration, and rollback reporting;
 - database-compatible evolution and production-risk handling;
-- frontend/admin UI quality;
-- engineering documentation and release notes;
+- frontend/admin UI quality and engineering documentation;
 - durable task state for genuine long-running or interrupted work.
 
 ## Structure
@@ -100,6 +106,10 @@ skills/production-engineering/
   scripts/task-state-core.js
   references/routing.md
   references/task-lanes.md
+  references/diagnosis-feedback-loop.md
+  references/design-testing.md
+  references/spec-review.md
+  references/upstream-notes.md
   references/context-memory-continuity.md
   references/code-risk-review.md
   references/content-writing-quality.md
@@ -138,7 +148,7 @@ node scripts/validate-skill.js
 git diff --check
 ```
 
-The validator enforces explicit-only invocation, prompt-size budgets, routing cases, repository hygiene, and task-state helper checks.
+The validator enforces explicit-only invocation, prompt-size budgets, specialized method routing, upstream attribution, repository hygiene, and task-state helper checks.
 
 ## Migration
 
@@ -152,4 +162,4 @@ From an older release:
 6. Restart Codex if the client does not refresh automatically.
 7. Test a normal greeting and an explicit `$production-engineering` request.
 
-The old commit remains available in Git history for rollback.
+The old commits remain available in Git history for rollback.

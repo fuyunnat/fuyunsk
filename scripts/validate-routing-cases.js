@@ -15,8 +15,8 @@ function includes(item, field, value) {
   return Array.isArray(item[field]) && item[field].includes(value);
 }
 
-if (!Array.isArray(cases) || cases.length < 10) {
-  fail('routing-cases.json must contain at least 10 realistic scenarios');
+if (!Array.isArray(cases) || cases.length < 18) {
+  fail('routing-cases.json must contain at least 18 realistic scenarios');
 }
 
 const ids = new Set();
@@ -70,7 +70,10 @@ for (const item of cases) {
     fail(`${item.id} must load task-lanes.md`);
   }
 
-  if (item.mode === 'read-only' && item.authorizedEffects.some((effect) => /write|edit|push|merge|deploy/.test(effect))) {
+  if (
+    item.mode === 'read-only' &&
+    item.authorizedEffects.some((effect) => /write|edit|push|merge|deploy|implementation/.test(effect))
+  ) {
     fail(`${item.id} grants a write effect in read-only mode`);
   }
 }
@@ -80,6 +83,12 @@ const requiredIds = [
   'generic-explanation-no-skill',
   'ordinary-engineering-no-explicit',
   'explicit-read-only-review',
+  'explicit-performance-diagnosis',
+  'explicit-hard-bug-fix',
+  'explicit-diff-two-axis-review',
+  'explicit-work-breakdown',
+  'explicit-design-refactor',
+  'explicit-prototype',
   'explicit-quick-fix',
   'explicit-ui-standard',
   'explicit-remote-save',
@@ -104,24 +113,43 @@ for (const id of ['greeting-no-skill', 'generic-explanation-no-skill', 'ordinary
   }
 }
 
+if (!includes(byId['explicit-performance-diagnosis'], 'requiredReferences', 'diagnosis-feedback-loop.md')) {
+  fail('Performance diagnosis must load diagnosis-feedback-loop.md');
+}
+if (!includes(byId['explicit-performance-diagnosis'], 'forbiddenEffects', 'root-cause-claim-without-feedback-loop')) {
+  fail('Performance diagnosis must forbid unsupported root-cause claims');
+}
+if (!includes(byId['explicit-hard-bug-fix'], 'requiredReferences', 'code-risk-review.md')) {
+  fail('High-risk bug fixes must add the risk review reference');
+}
+if (!includes(byId['explicit-design-refactor'], 'requiredReferences', 'design-testing.md')) {
+  fail('Design refactors must load design-testing.md');
+}
+if (!includes(byId['explicit-diff-two-axis-review'], 'requiredReferences', 'spec-review.md')) {
+  fail('Diff review must load spec-review.md');
+}
+if (!includes(byId['explicit-work-breakdown'], 'requiredReferences', 'spec-review.md')) {
+  fail('Work breakdown must load spec-review.md');
+}
+if (byId['explicit-quick-fix'].requiredReferences.some((ref) =>
+  ['diagnosis-feedback-loop.md', 'design-testing.md', 'spec-review.md'].includes(ref)
+)) {
+  fail('A trivial quick fix must not preload specialized method references');
+}
 if (!includes(byId['explicit-quick-fix'], 'forbiddenEffects', 'task-state-init')) {
   fail('A self-contained quick fix must not initialize task state');
 }
-
 if (!includes(byId['explicit-remote-save'], 'forbiddenEffects', 'formal-merge')) {
   fail('Remote save must not imply formal integration');
 }
-
 if (!includes(byId['explicit-formal-main'], 'forbiddenEffects', 'force-push')) {
   fail('Formal integration must forbid force push');
 }
-
 if (!includes(byId['explicit-context-resume'], 'requiredReferences', 'context-memory-continuity.md')) {
   fail('Continuation must load context-memory-continuity.md');
 }
-
 if (!includes(byId['explicit-recoverable-delete'], 'forbiddenEffects', 'permanent-delete')) {
   fail('Deletion must forbid permanent deletion');
 }
 
-console.log(`routing scenario validation passed (${cases.length} cases, explicit-only)`);
+console.log(`routing scenario validation passed (${cases.length} cases, explicit-only, method-routed)`);
