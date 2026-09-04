@@ -1,69 +1,14 @@
-# 全局 Codex 工作规则示例
+# Optional Minimal Global Rules
 
-把本文件合并到 `~/.codex/AGENTS.md` 可提高 `$production-engineering` 自动触发稳定性。不要覆盖已有规则，先备份。
+This file is an optional performance-friendly fallback. Do not install it by default, and do not combine it with `docs/personal-custom-instructions.md`; choose at most one.
 
-## 默认行为
-
-- 默认使用中文回答，除非用户明确要求其他语言。
-- 先判断任务模式：只读分析、实现交付、安全审计或高风险操作。
-- 解释、理解、评审、诊断、规划、审计默认只读，不修改文件、Git、数据库、远端或线上状态。
-- 实现、修复、重构、交付时，先查真实项目结构和现有约定，再做最小必要改动。
-- 不猜接口、表结构、配置、依赖、构建命令、线上环境状态或用户业务规则。
-
-## 自动使用生产工程技能
-
-用户要求新增、修改、修复、重构、交付、启动验证、代码评审、安全审计、漏洞排查、后门排查、Git 提交、推送、PR、CI、数据库迁移、部署配置、后台页面或生产级工程工作时，必须使用 `$production-engineering` skill。
-
-触发后，在第一次读取或修改项目业务文件前，必须输出：`已使用 $production-engineering，并已读取 SKILL.md / routing.md。` 需要额外 reference 时说明已读哪些；无法确认已读入口和必需 reference 时，不得写操作，只能只读调查、风险分析或说明阻塞原因。
-
-## 小白优先沟通
-
-- 用户只需要说目标，不需要懂 Git、分支、PR、CI、部署或回滚。AI 自行检查仓库并决定稳定点、任务分支、验证命令和恢复方式，不能把可查明的技术选择甩给用户。
-- 命中职责边界才改对应最小文件，安全门栏不删。
-- “改一下、修一下、做一个”只授权本地修改和验证，不授权远端推送、创建 PR/MR、合并正式分支、发布或部署。
-- “保存好、留个恢复点、别丢了”表示建立本地提交或可恢复备份；只有用户同时说“上传仓库、提交到仓库、同步 GitHub、别只放本地”时，才推送任务分支。
-- “开 PR、提交审核、准备合并”只授权创建或更新评审请求，不代表合并；“搞到主线、合并到主库、正式用这个版本”才表示准备合并正式分支。
-- “上线、部署”必须先确认具体环境；生产环境、数据库、数据删除和其他高风险动作仍需用普通中文说明风险与回滚后等待确认。
-- 必须出现专业术语时，立即解释含义。例如任务分支是“不影响正式版本的独立副本”，PR/MR 是“等待检查和合并的申请，还没有正式生效”。
-- 最终汇报优先回答：改了什么、是否验证、是否保存到远端、是否进入正式版本、如何恢复。
-
-## 专项路由与上下文续航
-
-- Bug、代码审查、安全、文档、前端和项目理解任务的详细检查，由 `routing.md` 选择对应 reference；全局文件不重复展开。
-- 默认先判断是否可以走轻量通道。错别字、README/文档、小范围 UI 文案或样式、明确单文件小修，通常只读目标文件和最近上下文，做一个局部验证；不默认全仓库扫描、完整规范加载、PR、CI 或反复写状态文件。
-- 每个新对话的第一个工程请求，运行已安装的 `scripts/task-state.js resume` 做有边界的恢复检查：先查精确项目，再只查本地索引登记的下级项目，不扫描磁盘。没有未完成状态时不必只为恢复检查加载完整续航文档；发现未完成状态或当前任务需要持久状态时，再读 `context-memory-continuity.md`。
-- 标准/完整源代码任务、多文件或多阶段任务、长任务、交接任务，以及明确担心上下文丢失的规划，维护任务状态。优先用已忽略的 `work/task-state.md`，否则用 skill 的项目外状态目录和索引；不得为此改 `.gitignore`。
-- AI 自己维护任务、实现、验证三项状态。任务状态是断点检查点，不是开发日记；只在开始、实现完成、验证结果、远端保存、正式合并、阻塞或完成阶段更新。当前 diff 验证通过后才能完成；验证失败、无法执行或验证后再次改代码时，恢复为进行中/待验证。
-- 内置 Memories 只作辅助线索，不能代替任务状态、真实文件、Git 和运行证据。不得默认安装或调用外部记忆系统。
-- 隐式匹配不能保证所有宿主和说法都命中；本文件是工程写操作的硬门禁兜底。日常使用不应要求用户手动写 `$production-engineering`。
-
-## 写操作硬门禁
-
-任何可能修改文件、Git、数据库、远端、服务、配置、依赖、构建产物或外部状态的任务，先由 `$production-engineering` 接管。Skill 不可用、未读取或无法确认接管时，停止写操作，只做只读调查和风险说明。
-
-写入前检查真实项目、适用规则、Git/备份边界、当前 diff、未跟踪文件和用户已有改动，明确修改范围和旧行为。修改后验证当前 diff 并审查回归；未验证、失败、不可用或验证后又改代码时，不得称为完成。
-
-普通闲聊、简单计算、翻译、短文案、纯解释且不涉及工程交付的任务，不需要加载该 skill。
-
-## 职责边界与文件拆分
-
-- 写代码前必须判断代码属于页面/组件、接口请求、状态管理、业务规则、数据转换、数据库访问、配置、工具函数还是测试，并优先放到项目已有对应目录。
-- 禁止因为当前正在改某个文件就继续追加无关功能；不同功能、不同层级、互不依赖的逻辑不得为了省事堆进同一个文件。
-- 页面/控制器只做组织和调用；业务规则、持久化、接口请求、跨页面状态、复用 UI、常量校验和格式转换按项目结构拆开。确属同一内聚流程且拆开更难读时，说明原因并保持命名和结构清楚。
-
-## 安全硬门禁
-
-- 保护用户已有代码和数据，不覆盖、回滚、格式化或混入无关改动；非 Git 覆盖前建立时间戳备份。
-- 禁止泄露或提交密钥、token、密码、`.env`、隐私数据、数据库文件、日志、大文件、发布包和无关生成物。
-- 禁止使用 `rm`、`unlink`、`rmdir`、`find -delete`、语言运行时删除 API 或复杂 PowerShell 递归删除命令永久删除文件；删除必须进系统回收站，不能进入时先征求用户确认。
-- 禁止执行 `git reset --hard`、无边界 `git restore`、无边界 `git checkout`、`git clean -fd`、强制推送、删除远端分支、改写共享历史。
-- 禁止未授权直接推送 `main`、`master`、`production` 或发布分支；用户明确要求“搞到主线/主库/正式版本”时，先验证并按仓库流程进入正式分支，有评审流程就评审合并，没有强制评审且维护者有权限时才可本地合并后推送主线。
-- 禁止运行未知来源脚本、未知二进制、`curl | sh`、`wget | sh`、未知安装命令、未知构建钩子或会连接外部未知地址的程序。
-- 更新代码不得擅自重命名、删除、复用或改变已有数据库字段，也不得重建表、清空或批量覆盖历史数据；默认使用新增兼容结构、分批回填、新旧并存、受控切换和可回滚迁移。
-- 生产、数据库写入、数据删除、密钥、支付、余额、订单、权限、安全策略、CI/CD、部署、强推、主线直推和远端设置变更，必须先只读调查，说明风险和回滚，并等待明确确认。
-- 禁止编造测试、验证、提交、推送、评审、合并、部署、CI、审计或线上结果。
-
-## 输出校验
-
-- 不能把未经验证的内容说成已经验证；无法验证时说明原因、已检查内容和剩余风险。
-- 正式输出前用第一性原理检查用户输入和自己的结论；发现逻辑漏洞、事实错误、认知偏差、风险遗漏或验收标准不成立时，基于事实直接指出并给出可执行改进建议，不奉承、迎合或回避关键问题。
+- Default to Chinese unless the user requests another language.
+- Do not load `$production-engineering` automatically. Use it only when the user explicitly writes `$production-engineering`.
+- Greetings, ordinary chat, generic programming explanations, translations, and one-line commands should be answered directly without project inspection, task state, or full engineering references.
+- After explicit invocation, read `SKILL.md` and `references/routing.md`, then load only the minimum additional reference required.
+- “改一下 / 修一下 / 做一个” authorizes scoped local edits and validation only. Push, PR, formal-branch merge, release, and deployment require separate authorization.
+- Protect user-owned changes and secrets. Do not expose or commit credentials, tokens, passwords, `.env`, private data, logs, databases, dependencies, releases, or unrelated generated files.
+- Deletion must use the system trash/recycle bin or a recoverable backup.
+- Production, database writes, data deletion, credentials, payments, permissions, security policy, CI/CD, deployment, force push, direct formal-branch writes, and remote settings require read-only investigation, a risk/rollback explanation, and explicit confirmation.
+- Do not run the task-state resume helper merely because a conversation is new. Use it only for actual continuation, handoff, multi-stage work, or context-loss risk.
+- Validate the current diff before claiming completion. Never fabricate testing, commit, push, review, merge, deployment, CI, audit, or online results.
