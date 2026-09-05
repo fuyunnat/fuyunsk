@@ -42,7 +42,7 @@ for(const p of docs){
  for(const match of s.matchAll(/`(references\/[a-zA-Z0-9_./-]+\.md)`/g))assert.ok(fs.existsSync(path.join(root,skill,match[1])),`入口引用缺失：${match[1]}`);
 }
 run(['scripts/build-rules.js','--check']);
-run(['--test','tests/rules.test.js','tests/task-state-behavior.test.js','tests/rule-batch.test.js','tests/migration.test.js','tests/frontend-stack.test.js']);
+run(['--test','tests/rules.test.js','tests/task-state-behavior.test.js','tests/rule-batch.test.js','tests/migration.test.js','tests/frontend-stack.test.js','tests/intent-source.test.js']);
 run(['scripts/validate-routing-cases.js']);
 run(['scripts/validate-repository-hygiene.js']);
 run(['scripts/validate-task-state.js']);
