@@ -1,0 +1,31 @@
+name: 中文技能重构验证
+on:
+  push:
+    branches: [docs/skill-chinese-rebuild]
+permissions:
+  contents: read
+jobs:
+  validate:
+    name: 检查规范与保留源码快照
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: 检出当前提交
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+          persist-credentials: false
+      - name: 验证技能
+        run: node scripts/validate-skill.js
+      - name: 检查本次差异
+        run: git diff --check HEAD^ HEAD
+      - name: 保存可复核源码快照
+        if: always()
+        run: git archive --format=zip --output="$RUNNER_TEMP/skill-source.zip" HEAD
+      - name: 上传源码快照
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: skill-source
+          path: ${{ runner.temp }}/skill-source.zip
+          retention-days: 7
