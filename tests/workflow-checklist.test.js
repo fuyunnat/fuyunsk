@@ -115,3 +115,38 @@ test('入口和安装说明不把目标清单导向 Codex 配置目录', () => {
   assert.ok(text('skills/production-engineering/SKILL.md').includes('非 Codex/技能目录'));
   assert.ok(text('global-AGENTS.example.md').includes('不是 Codex/技能目录'));
 });
+
+
+// 这些是执行文案与读取链路回归检查，不是模型端到端的目录隔离证明。
+test('清单根绑定当前聊天源文件夹，显示名和 src 子目录都不是绝对路径', () => {
+  requireText(rules(), ['当前聊天所属项目关联的源文件夹', '项目名称只是显示名', '不是工程内部名为 `src/`', 'PROJECT_ROOT/工作流程.md']);
+});
+test('读取技能改变 cwd 不能改变业务清单根，不在全局模板锁死业务路径', () => {
+  requireText(rules(), ['SKILL_DIR', '__dirname', 'PROJECT_ROOT` 不随 `cd` 改变', '不能把任一业务项目根目录写死']);
+  const entry = text('skills/production-engineering/SKILL.md');
+  const bridge = text('global-AGENTS.example.md');
+  requireText(entry, ['当前聊天关联源文件夹', 'PROJECT_ROOT/工作流程.md']);
+  requireText(bridge, ['当前聊天关联源目录', '不跨项目共用']);
+});
+test('多源目录和多聊天的清单隔离必须核对实际归属', () => {
+  requireText(rules(), ['多个源文件夹', '不按第一个目录或显示名盲选', '重新核对绑定', '同一实际项目', '独立任务区块', '不自动把总清单移进去']);
+});
+test('错放清单只合并本项目记录，不删除原记录或带入其他项目', () => {
+  requireText(rules(), ['先停止更新错处', '其他项目条目不得带入', '原文件不删除、不清空、不覆盖', '报告旧路径、正确路径']);
+});
+test('目标模式没有预先审批清单也要拆解，开始后补建不重置成果', () => {
+  requireText(rules(), ['不以用户没有预先审批整份清单为由等待', '先确认方案或清单再动手', '保留正确成果，不重置任务', '不凭聊天回忆补打勾']);
+});
+test('中途漏项纳入完成条件但不能自行扩权，独立明确工作继续', () => {
+  requireText(rules(), ['发现依据、对应目标、验收方式', '新发现的必做事项也属于完成条件', '不能靠加入清单自行授权', '其他独立、明确且已授权事项继续', '不只验收最初清单']);
+});
+test('安装区分维护历史与业务清单并要求两个项目实际验证', () => {
+  requireText(text('docs/ai-installation.md'), ['不要把本技能仓库根目录的 `工作流程.md` 复制到技能安装目录', '项目甲的任务不得出现在项目乙', '不把静态文案测试说成已实测']);
+  requireText(text('README.md'), ['只记录 fuyunsk 自身维护', '不必先逐项审批']);
+});
+test('同批读取携带目录隔离与动态清单而不改变原稿接口', () => {
+  const out = reader.readBatch(reader.parse(['--stage', '实现', '--topic', '前端,整项目迁移']));
+  const files = out.references.filter(e => e.file === 'workflow-checklist.md');
+  assert.equal(files.length, 1);
+  requireText(files[0].text, ['PROJECT_ROOT/工作流程.md', '目标模式与动态追加', '新旧页面对照', '真实后端联调']);
+});
