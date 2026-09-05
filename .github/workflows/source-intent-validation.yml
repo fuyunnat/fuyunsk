@@ -1,0 +1,22 @@
+name: 源码依据与需求边界验证
+on:
+  push:
+    branches: [fix/source-grounded-intent]
+permissions:
+  contents: read
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: 导出固定主线，不执行仓库代码
+        run: git archive --format=zip --output=/tmp/source-intent-baseline.zip 3f287410c90568af94faedcf77a694ac19a91ff8
+      - uses: actions/upload-artifact@v4
+        with:
+          name: source-intent-baseline
+          path: /tmp/source-intent-baseline.zip
+          retention-days: 3
