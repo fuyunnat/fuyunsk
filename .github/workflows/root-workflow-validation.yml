@@ -1,0 +1,20 @@
+name: 根目录工作清单验证
+on:
+  push:
+    branches: [feat/root-workflow-20260906]
+permissions:
+  contents: read
+jobs:
+  baseline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: 导出已确认主线源码
+        run: git archive --format=zip --output="$RUNNER_TEMP/root-workflow-baseline.zip" 9fc57556ec0ccd53c5ad10199fbc72c44092789c
+      - uses: actions/upload-artifact@v4
+        with:
+          name: root-workflow-baseline
+          path: ${{ runner.temp }}/root-workflow-baseline.zip
+          retention-days: 3
