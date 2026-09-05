@@ -77,6 +77,14 @@ $production-engineering 检查这个仓库有没有漏洞，先不要改文件�
 
 本次用户已明确更改前端选型：[当前前端规则](skills/production-engineering/references/frontend-stack.md)替代原稿的 Vue/Ant 默认，不是再加一套可选方案。原稿保留用于追溯，其他工程规范不变。
 
+## 图标统一方案
+
+图标统一通过 [Morphicons](https://www.morphicons.com/) 接入；它负责描边 SVG 的渲染与变形，图形数据仍可来自官网兼容的 Lucide、Tabler、Heroicons 等来源，不是只改一个依赖名称。React、Vue 和普通 JavaScript 按真实框架选择官方入口，不为图标迁移框架。完整边界见[前端选型中的图标规则](skills/production-engineering/references/frontend-stack.md#图标统一使用-morphicons)。
+
+新设计与授权新增/替换的图标执行统一方案；原样迁移不擅自改变旧图标、样式或交互。不强制增加动画，明确处理减少动画偏好；找不到兼容图形或确实与保留要求冲突时，先查证再问，不偷换其他库。
+
+AI 安装或升级技能时，同步更新前端规则和个性化短块中的 Morphicons 要求，但**不安装业务依赖**、不改当前业务项目、不另加后台服务。实际开发需要时才在目标业务项目接入，具体版本与许可证按对应来源核实。这里的规则检查不等于已在用户项目验证实际图标效果。
+
 ## 减少实际等待
 
 已确定阶段与领域时，一次取齐原文和专项说明，不再强制串行经过入口、路由、索引、通道：
