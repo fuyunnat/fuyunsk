@@ -14,6 +14,16 @@ includes(skill+'SKILL.md',['默认中文','八荣八耻','第一性原理','300/
 includes(skill+'references/routing.md',['前端与后台','中文提交格式','只读','04-00.md','source-policy.md']);
 includes(skill+'references/source-policy.md',['最后上传','原始字节','差异','冲突','不擅自']);
 includes('README.md',['原文','中文','验证','不等于']);
+// 安装说明的静态契约不等于已在用户电脑完成安装或自动调用验证。
+includes('README.md',['## 让 AI 自动安装','个性化 / Codex 说明','AGENTS.override.md','不要求你每次手写技能名','文件安装和自动调用要分别验证']);
+includes('docs/ai-installation.md',['默认安装必须完成本步骤','保留块外所有无关要求','扫描目录之外','同一短块','实际自动调用待验证','不能算自动触发通过']);
+const bridge=read('global-AGENTS.example.md').trim();
+const personal=read('docs/personal-custom-instructions.md').match(/```markdown\n([\s\S]*?)\n```/);
+assert.ok(personal,'个性化说明缺少可合并的短模板');
+assert.equal(personal[1].trim(),bridge,'个性化与全局模板必须一致，避免安装两套规则');
+for(const marker of ['<!-- production-engineering:auto:start -->','<!-- production-engineering:auto:end -->'])assert.equal(bridge.split(marker).length-1,1,'短模板的边界标记必须唯一');
+assert.ok(bridge.includes('<已核实的SKILL.md绝对路径>'),'短模板必须要求绑定实际技能入口');
+
 includes(skill+'references/upstream-notes.md',['mattpocock/skills','3cca18b368ae95cdbdebbff572ccafa662551015','MIT License','Copyright (c) 2026 Matt Pocock']);
 for(const name of ['task-state.js','task-state-core.js'])assert.ok(read(skill+'scripts/'+name).split('\n').length<=600,`${name} 超过 600 行`);
 // 原稿及其无损切片保持原始技术术语，不进行破坏保真的语言改写。
