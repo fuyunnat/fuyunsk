@@ -1,119 +1,31 @@
-# Content Writing Quality
+# 工程文档与界面文案质量
 
-Use this file when writing or editing engineering documentation, README files, repository descriptions, installation guides, changelogs, release notes, PR descriptions, customer-facing technical notes, admin UI copy, product settings copy, empty/error/loading text, or any user-facing wording in a software project.
+用于 README、安装和使用说明、仓库介绍、更新日志、发布说明、评审请求、客户技术说明及产品界面文案。按原文中文要求与项目语言例外执行；用户不需要额外说“去 AI 味”。
 
-The goal is not to make text decorative. The goal is to make it sound like a responsible maintainer or product engineer wrote it: concrete, restrained, useful, and credible.
+## 表达标准
 
-Apply this proactively for the content types above. Users normally will not say "remove AI style"; the writer must perform this quality pass by default whenever producing repository documentation, engineering copy, PR/release text, customer-facing notes, or admin/product UI copy. A user explicitly mentioning "AI 味" only makes this rule more urgent; it is not required for the rule to apply.
+写明对象、实际动作、范围与边界；每段完成一件事。保留真实限制、前置条件、安装、使用、验证和回滚信息。删除空泛赞美、推销、重复“确保提升”、无证据的完美安全兼容承诺、自我表功和聊天残留。
 
-## Default Standard
+“优化、赋能、增强”等词不能代替具体行为；不要用冗长堆叠清单、同一种句式或内部提示词机制占据读者注意，除非文档本身在讲这些机制。不虚构人工经历，不隐藏必要来源声明。
 
-Before finalizing text, remove obvious AI-style writing:
+## 自述文件和安装说明
 
-- Generic praise, cheerleading, and sales language.
-- Repetitive "this will help / this ensures / this makes it easy" filler.
-- Over-broad claims such as "complete", "perfect", "seamless", "robust", "enterprise-grade", or "fully secure" unless proven and necessary.
-- Self-referential phrasing such as "this skill will", "the AI will", "we have absorbed", "based on your request", or "as an AI".
-- Vague verbs such as "optimize", "enhance", "streamline", "empower", "leverage", "ensure", and "improve" when they hide the actual behavior.
-- Long stacked lists where a short paragraph or table would be clearer.
-- Repeating the same sentence shape across sections.
-- Explaining internal prompting or model behavior to end users unless the document is specifically about Codex behavior.
+先说项目是什么、解决什么问题，再给安装与用法。能力、限制、维护分开；目录树仅用于定位。普通章节不写成修改流水账，不提朋友、前次聊天或不可见截图。不写“轻松高效管理强大流程”，改写为具体的检查、修改、验证和恢复步骤。
 
-Prefer:
+## 技术和客户说明
 
-- A clear subject, concrete verb, and real object.
-- Short paragraphs with one job each.
-- Specific scope and boundaries.
-- Honest limitations and prerequisites.
-- Installation, usage, verification, and rollback steps when relevant.
-- Terms that match the repository, product, or customer domain.
+写当前行为、支持路径、已知限制与运维影响。没有使用必要时不暴露内部版本号、提示词片段、私有历史和术语；语气正式但易懂。尚未验证时说清已查范围和未知项，不保证未测的稳定性、性能、安全和兼容。
 
-## README And Repository Documentation
+## 提交、评审和发布
 
-For README, self-description, setup, installation, usage, and repository overview:
+按原文第四章使用中文标题与正文，技术类型和 ASCII 分支保留原样。先讲用户或维护者可见结果，再列有助审查的模块、验证证据、遗漏、风险和回滚。不机械重复每个提交。发布说明按用户影响组织，必要时附迁移方式。
 
-- Start with what the project is and what it is for.
-- Put installation and usage before long background explanation.
-- Keep design goals concrete and verifiable.
-- Use directory trees only when they help a reader find files.
-- Separate "what it does", "how to install", "how to use", "limits", and "maintenance".
-- Do not write like a changelog unless the section is a changelog.
-- Do not mention friends, screenshots, previous conversation, or prompt-history context.
-- Do not over-explain why text was written unless the reader needs that to use the project.
+## 产品界面
 
-Bad:
+按钮用明确动词，标签和页签用名词；空、错、加载状态简短具体，说明发生什么和下一步。避免责备、玩笑或已知原因时仍说“系统繁忙”。不暴露堆栈、token、内部服务和敏感配置。
 
-```text
-This project helps you easily and efficiently manage powerful production-grade workflows.
-```
+例如：按钮“保存配置”；空状态“暂无兑换记录”；网络问题“保存失败，请检查网络后重试”；权限说明“当前账号无权查看余额记录”。新增文案沿用项目国际化机制。
 
-Better:
+## 修改与终检
 
-```text
-This repository contains a Codex skill for controlled engineering changes: inspect the project, make scoped edits, validate them, and report the rollback path.
-```
-
-## Technical And Customer-Facing Notes
-
-For customer-facing or collaborator-facing technical text:
-
-- Avoid internal vendor version names, private implementation history, prompt fragments, and "upstream" wording unless the customer needs them.
-- Describe current behavior, supported paths, known limits, and operational impact.
-- Use formal but readable language.
-- Do not promise stability, security, compatibility, or performance without evidence.
-- If something is unverified, say what was checked and what remains unknown.
-
-## PR Descriptions And Release Notes
-
-For PR descriptions:
-
-- State the user-visible or maintainer-visible change first.
-- List the main files or modules only when it helps review.
-- Include validation evidence and known omissions.
-- Keep risk and rollback concrete.
-- Do not restate every commit mechanically.
-
-For release notes:
-
-- Group by user impact.
-- Avoid internal refactor detail unless it changes behavior or maintenance.
-- Include migration or rollback notes when required.
-
-## UI And Admin Copy
-
-For buttons, labels, table empty states, errors, modals, tooltips, settings pages, and admin copy:
-
-- Use action verbs for buttons.
-- Use nouns for labels and tabs.
-- Keep empty/error/loading states short and specific.
-- Tell the user what happened and what they can do next.
-- Avoid blame, jokes, and vague "something went wrong" messages when a more specific state is available.
-- Do not expose stack traces, tokens, internal service names, or sensitive config in user-facing text.
-
-Examples:
-
-- Button: `保存配置`, not `点击这里进行保存`.
-- Empty state: `暂无兑换记录`, not `这里还没有任何神奇的数据`.
-- Error: `保存失败，请检查网络后重试`, not `系统繁忙，请稍后再试` when the failure is network-related.
-- Permission: `当前账号无权查看余额记录`, not `你没有权限`.
-
-## Editing Workflow
-
-When rewriting existing text:
-
-1. Preserve accurate technical facts, commands, paths, and constraints.
-2. Remove conversational residue from prior chat context.
-3. Replace generic claims with concrete behavior.
-4. Keep the document's target reader in mind: user, maintainer, operator, reviewer, or customer.
-5. Read the final text once as a skeptical reviewer and remove any sentence that sounds impressive but says nothing.
-
-## Final Check
-
-Before final output or commit, check:
-
-- Does the first paragraph explain the actual object?
-- Can a new reader install, use, or review the change without reading the chat?
-- Are limitations and verification stated honestly?
-- Are there unnecessary "AI", "skill", "prompt", or "we" references?
-- Are there words that sound polished but hide behavior?
-- Would this text look acceptable in a public repository or customer handoff?
+保留准确技术事实、命令、路径与约束；去掉聊天残留，用具体行为替换虚词，匹配用户、维护者、操作者或客户的阅读需要。最后检查新读者能否脱离聊天安装和使用，限制是否诚实，是否存在空洞漂亮话或不必要的自我说明。

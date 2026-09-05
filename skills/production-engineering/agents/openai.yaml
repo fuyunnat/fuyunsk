@@ -1,6 +1,6 @@
 interface:
-  display_name: "Production Engineering"
-  short_description: "Opt-in production engineering workflow"
-  default_prompt: "Use $production-engineering for this real-project task, load only the references required, verify the result, and report briefly."
+  display_name: "生产级工程"
+  short_description: "按原始规范完成工程实现、界面、验证、审计与交付"
+  default_prompt: "使用 $production-engineering 处理当前工程目标：先查真实项目，按需读取原文条款，保护旧行为，完成验证并用中文说明交付和回滚。"
 policy:
-  allow_implicit_invocation: false
+  allow_implicit_invocation: true

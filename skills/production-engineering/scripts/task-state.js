@@ -28,15 +28,15 @@ const {
 } = require('./task-state-core');
 
 function usage() {
-  process.stdout.write(`Usage:
-  task-state.js resume --repo <path> [--json]
-  task-state.js init --repo <path> --goal <text> --lane <text> [options]
-  task-state.js update --repo <path> [field options]
-  task-state.js implementation-complete --repo <path> [--next-step <text>]
-  task-state.js run --repo <path> -- <program> <args...>
-  task-state.js check --repo <path> [--require-complete] [--json]
-  task-state.js finalize --repo <path> [--unverified-risk <text>]
-  task-state.js fingerprint --repo <path>
+  process.stdout.write(`用法：
+  task-state.js resume --repo <路径> [--json]
+  task-state.js init --repo <路径> --goal <文字> --lane <文字> [选项]
+  task-state.js update --repo <路径> [字段选项]
+  task-state.js implementation-complete --repo <路径> [--next-step <文字>]
+  task-state.js run --repo <路径> -- <程序> <参数...>
+  task-state.js check --repo <路径> [--require-complete] [--json]
+  task-state.js finalize --repo <路径> [--unverified-risk <文字>]
+  task-state.js fingerprint --repo <路径>
   task-state.js self-test
 `);
 }
@@ -53,7 +53,7 @@ function parseCli(argv) {
       break;
     }
     if (!value.startsWith('--')) {
-      throw new Error(`Unexpected argument: ${value}`);
+      throw new Error(`未预期的参数：${value}`);
     }
 
     const key = value.slice(2);
@@ -164,17 +164,17 @@ function commandResume(repo, options) {
 
 function commandInit(repo, options) {
   if (!options.goal || options.goal === true) {
-    throw new Error('init requires --goal <text>');
+    throw new Error('init 需要 --goal <文字>');
   }
   if (!options.lane || options.lane === true) {
-    throw new Error('init requires --lane <text>');
+    throw new Error('init 需要 --lane <文字>');
   }
 
   const existing = readState(repo, true);
   if (existing.fields) {
     const status = (existing.fields['Task status'] || '').toLowerCase();
     if (status === 'active' || status === 'blocked') {
-      throw new Error(`An unfinished task already exists at ${existing.statePath}. Resume it before starting another task in this working tree.`);
+      throw new Error(`${existing.statePath} 已有未完成任务，请先恢复并确认，不得覆盖。`);
     }
     archiveCompletedState(existing.statePath, existing.fields);
   }
@@ -184,7 +184,7 @@ function commandInit(repo, options) {
   const fields = {
     'Task ID': options['task-id'] && options['task-id'] !== true ? options['task-id'] : taskId(),
     'Latest user goal': options.goal,
-    'Acceptance criteria': options.acceptance && options.acceptance !== true ? options.acceptance : 'Define and verify the requested outcome without expanding scope.',
+    'Acceptance criteria': options.acceptance && options.acceptance !== true ? options.acceptance : '明确并验证请求结果，不扩大范围。',
     'Task status': 'active',
     'Implementation status': options.mode === 'read-only' ? 'not started' : 'in progress',
     'Verification status': 'pending',
@@ -194,17 +194,17 @@ function commandInit(repo, options) {
     'Current fingerprint': current,
     'Verified fingerprint': 'none',
     'Existing user changes': summary.changes,
-    'Authorization': options.authorization && options.authorization !== true ? options.authorization : 'Local scoped work only; remote and high-risk writes require separate authorization.',
-    'Do-not-touch': options['do-not-touch'] && options['do-not-touch'] !== true ? options['do-not-touch'] : 'Unrelated user changes, secrets, production data, and out-of-scope files.',
-    'Source references': options['source-references'] && options['source-references'] !== true ? options['source-references'] : 'Current project rules, real files, and selected skill references.',
-    Decisions: options.decisions && options.decisions !== true ? options.decisions : 'none yet',
-    'Changed/planned files': options['changed-files'] && options['changed-files'] !== true ? options['changed-files'] : 'none yet',
+    'Authorization': options.authorization && options.authorization !== true ? options.authorization : '当前仅授权本地范围工作；远端及高风险写入按原文和最新授权判断。',
+    'Do-not-touch': options['do-not-touch'] && options['do-not-touch'] !== true ? options['do-not-touch'] : '无关用户改动、密钥、生产数据和范围外文件。',
+    'Source references': options['source-references'] && options['source-references'] !== true ? options['source-references'] : '当前项目规则、真实文件与适用原文条款。',
+    Decisions: options.decisions && options.decisions !== true ? options.decisions : '暂无',
+    'Changed/planned files': options['changed-files'] && options['changed-files'] !== true ? options['changed-files'] : '暂无',
     'Validation evidence': 'none',
     'Current blockers': 'none',
-    'Next step': options['next-step'] && options['next-step'] !== true ? options['next-step'] : 'Inspect the real project and define the smallest safe change.',
-    'PR/CI/remote state': 'No remote action performed.',
-    Rollback: options.rollback && options.rollback !== true ? options.rollback : 'Use the confirmed Git stable point or non-Git backup.',
-    'Unverified risk': 'Implementation and validation are not complete.',
+    'Next step': options['next-step'] && options['next-step'] !== true ? options['next-step'] : '检查真实项目，确定最小安全改动。',
+    'PR/CI/remote state': '尚未执行远端操作。',
+    Rollback: options.rollback && options.rollback !== true ? options.rollback : '使用已确认的 Git 稳定点或非 Git 备份。',
+    'Unverified risk': '实现和验证尚未完成。',
   };
 
   writeState(repo, existing.statePath, fields);
@@ -221,7 +221,7 @@ function validateUpdateTransitions(options) {
   for (const [option, values] of Object.entries(allowed)) {
     const value = options[option];
     if (value !== undefined && value !== true && !values.includes(value)) {
-      throw new Error(`${option} must be one of: ${values.join(', ')}. Use the dedicated transition command for complete or passed states.`);
+      throw new Error(`${option} 必须是以下值之一：${values.join(', ')}. 完成或通过状态必须使用专门的转换命令。`);
     }
   }
 }
@@ -266,15 +266,15 @@ function commandImplementationComplete(repo, options) {
   state.fields['Verified fingerprint'] = 'none';
   state.fields['Next step'] = options['next-step'] && options['next-step'] !== true
     ? options['next-step']
-    : 'Run all required validation for the current diff.';
-  state.fields['Unverified risk'] = 'Implementation is complete but the current diff is not fully verified.';
+    : '执行当前差异的全部适用验证。';
+  state.fields['Unverified risk'] = '实现已结束，但当前差异尚未完成验证。';
   writeState(repo, state.statePath, state.fields);
   output({ updated: true, implementationStatus: 'complete', verificationStatus: 'pending', currentFingerprint: current });
 }
 
 function commandRun(repo, passthrough) {
   if (passthrough.length === 0) {
-    throw new Error('run requires a program after --');
+    throw new Error('run 需要在 -- 后指定程序');
   }
 
   const state = requireState(repo);
@@ -290,9 +290,9 @@ function commandRun(repo, passthrough) {
   const after = fingerprint(repo);
   const changedDuringValidation = before !== after;
   const passed = exitCode === 0 && !changedDuringValidation;
-  const outcome = passed ? 'passed' : changedDuringValidation ? 'changed repository during validation' : 'failed';
+  const outcome = passed ? '通过' : changedDuringValidation ? '验证过程中仓库发生变化' : '失败';
 
-  appendEvidence(state.fields, `[${now()}] ${display} => ${outcome} (exit ${exitCode}) @ ${after}`);
+  appendEvidence(state.fields, `[${now()}] ${display} => ${outcome} （退出码 ${exitCode}） @ ${after}`);
   state.fields['Current fingerprint'] = after;
   state.fields['Task status'] = 'active';
 
@@ -300,18 +300,18 @@ function commandRun(repo, passthrough) {
     state.fields['Verification status'] = 'passed';
     state.fields['Verified fingerprint'] = after;
     state.fields['Current blockers'] = 'none';
-    state.fields['Next step'] = 'Run any remaining required checks, then check and finalize.';
-    state.fields['Unverified risk'] = 'Other required checks may still remain; a passing command does not complete the task by itself.';
+    state.fields['Next step'] = '完成剩余适用检查后，再运行 check 和 finalize。';
+    state.fields['Unverified risk'] = '可能仍有其他适用检查；一次命令通过不代表任务完成。';
   } else {
     state.fields['Verification status'] = changedDuringValidation ? 'pending' : 'failed';
     state.fields['Verified fingerprint'] = 'none';
     state.fields['Current blockers'] = changedDuringValidation
-      ? 'Validation changed the repository; inspect the new diff before re-running checks.'
-      : `Validation command failed with exit code ${exitCode}.`;
+      ? '验证改变了仓库；先检查新差异再重新验证。'
+      : `验证命令失败，退出码 ${exitCode}。`;
     state.fields['Next step'] = changedDuringValidation
-      ? 'Review the changed diff and run validation again.'
-      : 'Fix the failure and re-run validation.';
-    state.fields['Unverified risk'] = 'The current diff is not verified.';
+      ? '检查发生变化的差异，再重新验证。'
+      : '修复失败后重新验证。';
+    state.fields['Unverified risk'] = '当前差异尚未验证。';
   }
 
   writeState(repo, state.statePath, state.fields);
@@ -383,28 +383,28 @@ function commandFinalize(repo, options) {
   const stale = refreshStaleVerification(state.fields, current);
   if (stale) {
     writeState(repo, state.statePath, state.fields);
-    throw new Error('Repository content changed after verification. Re-run validation before finalizing.');
+    throw new Error('验证后仓库内容变化，完成前必须重新验证。');
   }
   if (current.startsWith('non-git:')) {
-    throw new Error('Automatic finalization requires a Git fingerprint. Use explicit backup/hash evidence for a non-Git project.');
+    throw new Error('自动完成需要 Git 指纹；非 Git 项目请使用明确备份和哈希证据。');
   }
   if (state.fields['Implementation status'] !== 'complete') {
-    throw new Error('Implementation status must be complete before finalization.');
+    throw new Error('实现完成后才能结束任务。');
   }
   if (state.fields['Verification status'] !== 'passed') {
-    throw new Error('Verification status must be passed before finalization.');
+    throw new Error('验证通过后才能结束任务。');
   }
   if (state.fields['Verified fingerprint'] !== current) {
-    throw new Error('Verified fingerprint does not match the current repository diff.');
+    throw new Error('已验证指纹与当前差异不一致。');
   }
 
   state.fields['Task status'] = 'complete';
   state.fields['Current fingerprint'] = current;
-  state.fields['Next step'] = 'Task complete; preserve evidence and report delivery state plainly.';
+  state.fields['Next step'] = '任务完成；保留证据并清楚报告交付状态。';
   state.fields['Current blockers'] = 'none';
   state.fields['Unverified risk'] = options['unverified-risk'] && options['unverified-risk'] !== true
     ? options['unverified-risk']
-    : 'none stated';
+    : '未声明';
   writeState(repo, state.statePath, state.fields);
   output({ finalized: true, statePath: state.statePath, fingerprint: current });
 }
@@ -421,7 +421,7 @@ function commandSelfTest() {
     parsed['Task ID'] !== 'Task ID value' ||
     parsed['Latest user goal'] !== 'first line / second line'
   ) {
-    throw new Error('Task-state parse/render self-test failed.');
+    throw new Error('任务状态读写自检失败。');
   }
 
   const redacted = redactCommand([
@@ -432,19 +432,19 @@ function commandSelfTest() {
     'https://user:password@example.invalid/path',
   ]);
   if (redacted.includes('secret-value') || redacted.includes('hunter2') || redacted.includes('user:password')) {
-    throw new Error('Command redaction self-test failed.');
+    throw new Error('命令脱敏自检失败。');
   }
   const scope = path.join(path.parse(process.cwd()).root, 'task-state-scope');
   if (
     !pathIsWithin(scope, path.join(scope, 'project')) ||
     pathIsWithin(scope, path.join(`${scope}-other`, 'project'))
   ) {
-    throw new Error('Scoped registry discovery self-test failed.');
+    throw new Error('限定范围索引查找自检失败。');
   }
   const streamedHash = hashFileContent(__filename);
   const directHash = crypto.createHash('sha256').update(fs.readFileSync(__filename)).digest('hex');
   if (streamedHash !== directHash) {
-    throw new Error('Streaming content fingerprint self-test failed.');
+    throw new Error('流式文件指纹自检失败。');
   }
 
   let transitionBlocked = 0;
@@ -460,7 +460,7 @@ function commandSelfTest() {
     }
   }
   if (transitionBlocked !== 3) {
-    throw new Error('Dedicated state-transition self-test failed.');
+    throw new Error('专用状态转换自检失败。');
   }
 
   output({
@@ -512,7 +512,7 @@ function main() {
       output({ repository: repo, fingerprint: fingerprint(repo) });
       break;
     default:
-      throw new Error(`Unknown command: ${command}`);
+      throw new Error(`未知命令：${command}`);
   }
 }
 

@@ -1,14 +1,9 @@
-# Optional Minimal Global Rules
+# 可选短全局规则
 
-This file is an optional performance-friendly fallback. Do not install it by default, and do not combine it with `docs/personal-custom-instructions.md`; choose at most one.
+不覆盖已有规则。仅需要加强工程自动匹配时合并下列短规则；与个性化提示词择一，禁止把完整规范常驻注入。
 
-- Default to Chinese unless the user requests another language.
-- Do not load `$production-engineering` automatically. Use it only when the user explicitly writes `$production-engineering`.
-- Greetings, ordinary chat, generic programming explanations, translations, and one-line commands should be answered directly without project inspection, task state, or full engineering references.
-- After explicit invocation, read `SKILL.md` and `references/routing.md`, then load only the minimum additional reference required.
-- “改一下 / 修一下 / 做一个” authorizes scoped local edits and validation only. Push, PR, formal-branch merge, release, and deployment require separate authorization.
-- Protect user-owned changes and secrets. Do not expose or commit credentials, tokens, passwords, `.env`, private data, logs, databases, dependencies, releases, or unrelated generated files.
-- Deletion must use the system trash/recycle bin or a recoverable backup.
-- Production, database writes, data deletion, credentials, payments, permissions, security policy, CI/CD, deployment, force push, direct formal-branch writes, and remote settings require read-only investigation, a risk/rollback explanation, and explicit confirmation.
-- Do not run the task-state resume helper merely because a conversation is new. Use it only for actual continuation, handoff, multi-stage work, or context-loss risk.
-- Validate the current diff before claiming completion. Never fabricate testing, commit, push, review, merge, deployment, CI, audit, or online results.
+- 默认中文沟通，工程提交、评审和交付说明遵守中文要求，技术标识保留原样。
+- 真实项目的实现、修复、前端、审查、Git、数据库和部署使用 `$production-engineering`，读取入口并按任务读取原文条款；无需用户每次手写名称。
+- 问候、闲聊、普通翻译、简单计算、脱离项目的概念解释直接回答，不初始化工程流程。
+- 保护用户改动、恢复点、隐私和旧行为；只读不写入，高风险操作先说明并确认。
+- 不因新对话运行恢复脚本，不重复检查；不得把静态校验说成真实模型行为验证。

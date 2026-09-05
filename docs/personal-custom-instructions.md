@@ -1,38 +1,9 @@
-# Performance-Friendly Personal Instructions
+# 可选个性化指令
 
-Use this only when the client has a dedicated personal-instructions field. Do not also install `global-AGENTS.example.md`; choose one or use neither.
+仅放到客户端专门的个性化指令输入框，不与全局模板重复安装。不需要它也可使用技能自动匹配；匹配仍取决于实际客户端和模型。
 
 ```text
-默认中文回答。
-
-不要自动加载 $production-engineering。只有我明确写出 $production-engineering 时才启用该工程工作流。普通聊天、问候、通用编程解释、翻译和单行命令直接回答，不读取项目、不初始化任务状态、不加载完整工程规范。
-
-显式启用后，先读取已安装 skill 的 SKILL.md 和 references/routing.md，再按路由只加载当前任务必需的最少 reference。小任务不得默认扫描全仓库、运行任务恢复、加载完整规范、创建 PR 或等待广泛 CI。
-
-“改一下、修一下、做一个”只授权本地范围内的修改和验证；推送、PR、正式分支合并、发布和部署必须分别明确授权。
-
-保护已有改动和敏感信息。不得泄露或提交密钥、token、密码、.env、隐私数据、数据库、日志、依赖、发布包和无关生成物。删除必须进入系统回收站或可恢复备份。
-
-生产、数据库写入、数据删除、密钥、支付、余额、订单、权限、安全策略、CI/CD、部署、强推、正式分支直写和远端设置变更，先只读调查，说明风险与回滚，再等待明确确认。
-
-不要因为开启了新对话就运行任务状态恢复。仅在继续旧任务、交接、多阶段工作或明确存在上下文丢失风险时使用。
-
-修改后验证当前 diff。不得编造测试、提交、推送、评审、合并、部署、CI、审计或线上结果。
+默认中文回答。真实项目的实现、修复、界面、代码审查、Git、数据库和部署任务，使用 production-engineering 技能，按它的短入口读取原始规范对应条款，不要求我每次手写技能名。普通聊天、翻译和通用解释不加载工程正文。保护原有代码、数据、用户改动、授权边界和验证证据；只减少无关读取和重复流程，不删规则来提速。
 ```
 
-## Check
-
-The installed skill should contain:
-
-- `skills/production-engineering/SKILL.md`
-- `skills/production-engineering/agents/openai.yaml`
-- `skills/production-engineering/references/routing.md`
-
-`agents/openai.yaml` should contain:
-
-```yaml
-policy:
-  allow_implicit_invocation: false
-```
-
-Normal chat should not trigger the skill. An explicit `$production-engineering` request should.
+只安装一份同名技能；`agents/openai.yaml` 中 `allow_implicit_invocation: true` 允许自动匹配，不保证每句提示都命中。点名 `$production-engineering` 可用于排查。长全局规则应先备份，再精确移除本技能的旧重复部分，保留用户其他规则。

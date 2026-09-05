@@ -19,7 +19,7 @@ function assertIncludes(relPath, phrases) {
   const content = read(relPath);
   for (const phrase of phrases) {
     if (!content.includes(phrase)) {
-      throw new Error(`${relPath} is missing task-state behavior: ${phrase}`);
+      throw new Error(`${relPath} 缺少任务状态行为：${phrase}`);
     }
   }
 }
@@ -30,17 +30,17 @@ function runNode(args) {
     encoding: 'utf8',
   });
   if (result.status !== 0) {
-    throw new Error(`node ${args.join(' ')} failed:\n${(result.stderr || result.stdout || '').trim()}`);
+    throw new Error(`node ${args.join(' ')} 失败：\n${(result.stderr || result.stdout || '').trim()}`);
   }
 }
 
 for (const relPath of Object.values(files)) {
   const fullPath = path.join(root, relPath);
   if (!fs.existsSync(fullPath) || !fs.statSync(fullPath).isFile()) {
-    throw new Error(`Missing task-state source: ${relPath}`);
+    throw new Error(`缺少任务状态源码：${relPath}`);
   }
   if (/\b(?:rmSync|rmdirSync|unlinkSync)\b|fs\.rm\s*\(|fs\.unlink\s*\(|fs\.rmdir\s*\(/.test(read(relPath))) {
-    throw new Error(`${relPath} must not permanently delete files`);
+    throw new Error(`${relPath} 不得永久删除文件`);
   }
   runNode(['--check', fullPath]);
 }
@@ -49,7 +49,7 @@ assertIncludes(files.cli, [
   "require('./task-state-core')",
   'registeredUnfinishedStates(repo)',
   'ambiguous: true',
-  'Use the dedicated transition command for complete or passed states',
+  '完成或通过状态必须使用专门的转换命令',
   'readyToFinalize',
   'shell: false',
   'contentHash',
@@ -70,4 +70,4 @@ assertIncludes(files.core, [
 runNode([path.join(root, files.cli), 'self-test']);
 runNode([path.join(root, files.cli), 'fingerprint', '--repo', root]);
 
-console.log('task-state helper validation passed');
+console.log('任务状态助手校验通过');

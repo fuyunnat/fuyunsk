@@ -1,96 +1,54 @@
-# Production Engineering Routing
+# 原文执行路由
 
-Use this file first after the user explicitly invokes `$production-engineering`.
+入口负责通用边界，本文件负责把当前任务映射到原文。正文不是替代原文的缩写。读取 `rules-index.md` 可以找到每段的精确位置；以下主题也可通过只读助手一次提取：
 
-## Entry Gate
+```bash
+node <技能目录>/scripts/read-rules.js --topic 前端
+node <技能目录>/scripts/read-rules.js --topic 接口,数据库
+node <技能目录>/scripts/read-rules.js --id 04-04
+```
 
-This skill is explicit-only by default. If the user did not invoke `$production-engineering`, ordinary chat, greetings, generic programming explanations, translations, simple commands, and unscoped questions should be answered without loading this workflow.
+没有 Node.js 时直接按索引读文件，不安装运行环境。助手只读本技能条款，不扫描项目、不联网、不执行 Git、不恢复状态。
 
-After invocation, select the cheapest safe mode and load only the references required for that mode.
+## 领域路由
 
-## Task Modes
+| 任务主题 | 必须应用的原文章节 | 按需补充 |
+| --- | --- | --- |
+| 通用协作、判断模式 | 零、一、二的适用部分 | 八荣八耻、第一性原理不能省略 |
+| 明确局部小改 | 零章快速条件、三、六、七的适用部分 | 不读整个 Git 交付流程 |
+| 内容和工程文档 | 二章内容补充、六、二十一、二十三 | `content-writing-quality.md` |
+| 后端 | 七、八、十、十一、十八、二十 | `design-testing.md` |
+| 前端与后台 | 六、七、九、十一、二十 | `frontend-interface-quality.md`；只检查适用视觉范围 |
+| 包裹式工作台 | 同前端 | `wrapped-workspace-ui.md` |
+| API、回调与联调 | 八、十、十四、十七、十八、二十 | 按实际影响补数据库、配置 |
+| 性能与容量 | 十一及受影响领域 | `diagnosis-feedback-loop.md`，先基准后修复 |
+| 开关、灰度与回滚 | 十二、第四章回滚部分 | 代码、数据、配置回滚分开验证 |
+| 数据库和迁移 | 十、十二、十三、十四、二十 | 旧数据和旧代码兼容，不只测新库 |
+| 并发、资金与权益 | 十四、十七、十八、二十 | 实际数据库、权限和高风险确认 |
+| 配置、环境与部署 | 十二、十五、十六、十八、二十 | 明确环境，不能误连生产 |
+| 依赖与供应链 | 十六、十九相关部分 | 来源、钩子、锁文件、许可证 |
+| 安全与权限 | 五、十七、十八、十九、二十 | `code-risk-review.md` |
+| 日志与可观测性 | 十八 | 不顺手改造全仓日志体系 |
+| 安全审计、漏洞、后门 | 十六至十九及二十三 | 默认只读，可疑代码不运行，证据不删除 |
+| 删除与清理 | 第一章删除策略（`01-01.md`）、第五章风险分级 | 精确范围、回收站或备份，不永久删除 |
+| 任务续航 | 二章第六节 | `context-memory-continuity.md` |
+| 设计、重构、测试 | 六、七、二十、二十一 | `design-testing.md` |
+| 规格、拆任务、评审 | 六、二十、二十二、二十三 | `spec-review.md` |
+| 项目理解 | 零、一、二和实际领域 | `project-understanding.md`，不默认写文件 |
+| 完成与报告 | 二十至二十四 | 不适用项省略，不能伪造已完成 |
 
-- **Answer-only**: explain status, commands, rules, performance, or prior changes. No project read, Git work, task state, validation suite, or full-spec load unless evidence is requested.
-- **Read-only**: understand a project, review code, diagnose, audit, plan, or respond to “先看 / 别改”. Inspect only.
-- **Implementation**: add, modify, fix, refactor, build, package, or verify. Inspect the real target and recovery boundary before editing.
-- **High-risk**: production, database writes, data deletion, credentials, payments, balances, orders, auth, security policy, CI/CD, deployment, dependencies, force push, direct formal-branch writes, or remote settings. Investigate first; risky writes require explicit authorization immediately before execution.
+多个领域交叉时取适用条款并集。例如后台订单页面涉及前端、接口、权限、幂等；不能只因为任务叫“页面”就漏掉后三项。
 
-## Authorization Map
+## Git 按阶段读取
 
-- “改一下 / 修一下 / 做一个”: scoped local edit and validation only.
-- “保存好 / 留个恢复点 / 别丢了”: local commit or recoverable backup after validation.
-- “上传仓库 / 提交到仓库 / 同步 GitHub / 别只放本地”: commit and push a task branch; no review request or formal merge.
-- “开 PR / 提交审核 / 准备合并”: create or update a review request; do not merge.
-- “搞到主线 / 合并到主库 / 正式用这个版本”: normal formal-branch integration after checking the actual branch, diff, validation, and repository policy.
-- “上线 / 部署”: identify the exact target environment first.
-- “删除 / 清理”: use trash or a recoverable backup; ambiguous or broad deletion requires exact scope confirmation.
+第四章拆为 `04-00.md` 至 `04-10.md`：00 是通用交付边界，01 按逻辑提交，02 提交前测试，03 推送和分支，04 中文提交格式，05 提交前检查，06 远端风险，07 评审协作，08 回滚，09 CI，10 测试证据。
 
-## Default Workflow
+到对应步骤前读取对应条款；提交至少覆盖 00、01、02、04、05、10；推送另读 03、06、09；评审另读 07；回滚读 08 及实际影响领域。合并、主线直写和其他高风险操作不能由“默认交付”代替确认。
 
-1. Confirm explicit invocation and classify the mode.
-2. For implementation, delivery, high-risk, or uncertain work, read `task-lanes.md`.
-3. Inspect the nearest project rules, entrypoints, Git/backup boundary, current diff, and user-owned changes.
-4. Define the smallest authorized change, protected old behavior, acceptance criteria, responsibility boundary, and observable verification seam when relevant.
-5. Load only the specialized reference needed.
-6. Implement the authorized scope.
-7. Validate the current diff with the smallest proving checks.
-8. Report change, evidence, local/remote/formal state, rollback, and remaining risk.
+## 非原文方法
 
-## Method Routing
+Bug 诊断可读取 `diagnosis-feedback-loop.md`；设计与测试读取 `design-testing.md`；规格与双轴评审读取 `spec-review.md`。这些方法来自先前授权的外部方法融合，只补充执行方法，不覆盖本次原文。`upstream-notes.md` 只在维护来源时读取。
 
-- A reported bug, intermittent failure, incorrect output, or performance regression uses `diagnosis-feedback-loop.md`. Add `code-risk-review.md` only for a broad risk/security scan or when the affected path is sensitive.
-- A feature, refactor, module/interface change, testability problem, TDD request, or throwaway prototype uses `design-testing.md`. A trivial copy/style fix does not.
-- A specification, acceptance-criteria draft, vertical work breakdown, large decision plan, branch/PR/WIP review, or “review since X” uses `spec-review.md`.
-- A diff review that also asks for security or hidden-bug coverage uses both `spec-review.md` and `code-risk-review.md`, with findings kept in separate sections.
-- `upstream-notes.md` is attribution for maintainers. Do not load it during normal task execution.
+## 补充稿
 
-## Diagnosis Boundary
-
-Read-only diagnosis may measure, reproduce, inspect logs, and build a non-mutating feedback loop. Do not edit product code until the user authorizes a fix. If an exact reproduction loop cannot be built, report the diagnosis as provisional and do not present a guessed root cause as confirmed.
-
-## Design And Testing Boundary
-
-Identify the public behavior seam before adding tests. Prefer one end-to-end vertical slice at a time. Ask the user only when the seam choice changes business behavior or acceptance; ordinary technical placement is Codex's responsibility.
-
-## Review Boundary
-
-Pin the review fixed point before judging a diff. Review standards/quality separately from spec/intent so one passing axis cannot hide failure on the other. If no spec exists, say so rather than inventing one.
-
-## Continuity Gate
-
-Do not run `scripts/task-state.js resume` merely because a conversation is new.
-
-Use `context-memory-continuity.md` and the task-state helper only when at least one is true:
-
-- the user asks to continue or recover prior work;
-- an unfinished task is already known;
-- the task is multi-stage, interruption-prone, or requires handoff;
-- source changes span multiple responsibility layers and need durable checkpoints;
-- the user explicitly mentions context loss, compaction, “别忘了”, or “继续开发”.
-
-A small, self-contained task does not need task state. Built-in memories remain hints and never replace current repository evidence.
-
-## Cost Control
-
-- Start with the cheapest lane.
-- Quick work reads target files and nearest context only.
-- Do not scan the whole repository, load every reference, initialize task state, open a PR, or wait on broad CI unless the lane or evidence requires it.
-- Escalate only when impact is uncertain, shared/high-risk surfaces appear, tests fail, or the diff contains unexplained changes.
-- `task-lanes.md` is authoritative for lane selection and cannot expand user authorization.
-- `full-production-engineering.md` adds detail only; conflicting workflow breadth yields to this file and `task-lanes.md`.
-
-## Other Specialized Routing
-
-- Continuation, handoff, compaction, or durable state: `context-memory-continuity.md`.
-- README, documentation, changelog, release notes, PR text, customer notes, or UI copy: `content-writing-quality.md`.
-- Frontend/admin/UI: `frontend-interface-quality.md`; wrapped workspaces also use `wrapped-workspace-ui.md`.
-- Project understanding, architecture teardown, or onboarding: `project-understanding.md`; add `design-testing.md` only when evaluating interface depth or test seams.
-- Detailed backend/API/database/performance/deployment/testing rules: search the relevant heading in `full-production-engineering.md`.
-
-## Responsibility Boundary
-
-Before implementation, identify where UI, state, API client, business logic, persistence, config, utilities, and tests belong. Do not append unrelated behavior to whichever file is already open.
-
-## Final Report
-
-Keep it brief and factual: lane used, changed files, validation evidence, remote/formal status, rollback, and remaining risk. Never invent verification or delivery results.
+`rules-speed/01-01.md`、`rules-speed/01-02.md` 保留单职责与回归保护补充；Bug 前置在速度稿第二章第三节。需要时读取，不全篇注入。冲突遵守 `source-policy.md`，不把不一致偷偷变成新规范。

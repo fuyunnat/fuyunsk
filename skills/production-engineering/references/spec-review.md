@@ -1,123 +1,41 @@
-# Specification, Work Breakdown, And Review
+# 规格、任务拆分与双轴审查
 
-Use this reference to synthesize a specification, split work into verifiable units, map a large uncertain effort, or review a branch/PR/WIP diff against both repository standards and intended behavior.
+用于整理规格、划分可验证工作、规划大任务或审查分支与工作区差异。原文验收、只读、授权和验证规则优先。
 
-## Synthesize Before Interviewing
+## 先整理已有证据
 
-Start from the current conversation, repository evidence, existing issue/spec, glossary, and ADRs. Do not repeat questions already answered. Ask only when an unresolved choice changes business behavior, acceptance criteria, compatibility, risk, or authorization.
+从当前对话、真实仓库、已有议题、规格、术语与决策记录提炼，不重复盘问已经回答的问题。只有业务行为、验收、兼容、风险或授权仍有关键歧义时再问。
 
-A compact specification should contain:
+规格写清问题与使用者、目标结果、可观察验收及失败路径、已经确定的接口/数据/集成决定、公开测试边界、范围外事项，以及必要风险和回滚。优先稳定行为约定，不编造文件路径或实现细节。
 
-1. **Problem**: the user-visible problem and affected actor.
-2. **Outcome**: what must become possible or stop happening.
-3. **Acceptance criteria**: observable pass/fail behavior, including important failure paths.
-4. **Implementation decisions**: module/interface, data, integration, and compatibility decisions that are already settled.
-5. **Testing seams**: public boundaries where the outcome will be proven.
-6. **Out of scope**: adjacent work deliberately excluded.
-7. **Risks and rollback**: only where the change can cause material harm.
+## 按可验证行为拆分
 
-Prefer stable behavior and interface decisions over fragile file paths or speculative code snippets.
+每项贯穿必要层次，交付一个狭窄但完整的行为，能独立演示或验证。记录标题、结果、验收、真实阻塞关系、受保护行为与兼容约束。不要拆成三项互不工作的“数据库、接口、界面任务”。
 
-## Break Work Into Vertical Slices
+宽范围机械重构可采用 `design-testing.md` 的扩展、迁移、收缩。预重构必须确实使当前需求更安全或简单，不能顺手改造架构。议题系统可选；未获授权不创建议题或本地文档，仅在对话中给方案。
 
-Each work item should deliver a narrow but complete behavior through the necessary layers. It must be independently demonstrable or verifiable and small enough for one focused implementation cycle.
+## 大任务决策图
 
-For every item, record:
+只维护目标、已决定及证据、目前能明确的问题、尚不明确但在范围内的部分，以及范围外事项。从当前可推进的问题开始，每次解决一个决定，不把模糊区域硬拆成虚构任务。规划默认只读，产品实现和外部记录写入分别授权。
 
-- title;
-- user-visible behavior delivered;
-- acceptance criteria;
-- blockers that must finish first;
-- protected behavior and compatibility constraints.
+## 固定审查范围
 
-Do not split primarily by “database task”, “API task”, and “UI task” when none works alone. Use horizontal work only for a genuinely wide mechanical refactor; then use expand–migrate–contract from `design-testing.md`.
+确认用户指定提交、标签、分支或安全可确定的基线。分支审查按仓库约定比较共同基点，例如 `git diff <base>...HEAD` 并记录 `git log <base>..HEAD --oneline`。无效引用或空差异先说明，不凭空生成发现。
 
-A preliminary refactor is justified only when it makes the requested change materially safer or simpler. Do not turn ordinary implementation into an architecture cleanup project.
+工作区审查必须另外包含未提交、暂存与未跟踪的本次改动；分支提交差异不能冒充当前工作区差异。找不到可靠基线时只问真正缺失的一项。
 
-An external issue tracker is optional. Use the repository's existing tracker when configured; otherwise present the plan in chat or the user-authorized local document. Do not create issues merely because this reference was loaded.
+## 寻找需求和规范来源
 
-## Map Large Uncertain Work
+依次查提交或分支关联议题、用户给定路径、项目规格/方案/决策和当前对话验收。没有来源就写“没有可用规格”，不虚构需求。代码规范来自最近的 `AGENTS.md`、贡献文档、约定、测试、工具与架构决定；不要重复报告工具已强制处理的格式噪声。
 
-For work too uncertain to specify end to end, maintain a low-resolution decision map:
+## 两个维度分别结论
 
-- **Destination**: the concrete state that ends planning.
-- **Decisions made**: short conclusions with evidence pointers.
-- **Open decisions**: precise questions that can be resolved now.
-- **Not yet precise**: in-scope uncertainty that cannot yet be phrased as a useful question.
-- **Out of scope**: work beyond the destination.
+**规范与质量**：项目规则是否遵守，命名是否含糊，是否重复逻辑/数据群/分支判断、改动分散、一个文件承担无关职责、过度抽象、无价值转发或测试耦合实现。没有明确项目条款时，这些是需判断的信号，不是自动违规。
 
-Resolve one decision at a time from the current frontier. Do not pre-slice vague uncertainty into fake tickets. Planning remains read-only unless the user separately authorizes implementation or tracker writes.
+**需求与意图**：是否漏做或半做需求、增加未授权行为、实现与验收矛盾、遗漏失败/兼容/回滚，测试是否真正证明结果。一个维度通过不能掩盖另一个失败。
 
-## Pin A Review Fixed Point
+## 输出
 
-Before reviewing code:
+每个维度内按严重性列证据位置、影响和触发条件、最小修复、必要验证。分别汇报规范与质量、需求与意图、覆盖缺口、各维度发现数量和最严重问题。没有规格要直接说明。环境支持时可并行审查，但不强制启动子代理，也不假称独立复核。
 
-1. resolve the supplied commit, tag, branch, or base branch;
-2. compare from the merge base (`git diff <base>...HEAD`) unless repository policy requires another form;
-3. record `git log <base>..HEAD --oneline`;
-4. stop early for an invalid ref or empty diff.
-
-If the user gives no fixed point and the repository cannot infer the normal base branch safely, ask one focused question.
-
-## Find The Intent And Standards Sources
-
-Intent/spec sources, in order:
-
-1. linked issue or spec named in commits/branch metadata;
-2. user-provided path or URL;
-3. matching repository spec/plan/ADR;
-4. the explicit acceptance criteria in the current conversation.
-
-If no source exists, state “no spec available”; do not manufacture requirements.
-
-Standards sources include the nearest `AGENTS.md`, contribution/coding guides, project conventions, tests, linters, and architecture decisions. Tool-enforced formatting should not be repeated as manual review noise.
-
-## Review On Two Independent Axes
-
-### Standards And Quality
-
-Check whether the diff follows project rules and preserves sound design. Useful heuristics include:
-
-- unclear names;
-- duplicated logic;
-- repeated primitive groups that deserve a domain type;
-- repeated branching on the same concept;
-- one logical change scattered across many files;
-- one file changing for unrelated reasons;
-- speculative abstraction;
-- pass-through wrappers that add no leverage;
-- tests coupled to implementation.
-
-These are judgement calls unless a repository rule makes them mandatory. Repository-specific standards win.
-
-### Spec And Intent
-
-Check:
-
-- requirements missing or only partly implemented;
-- behavior added without authorization;
-- behavior that appears implemented but contradicts the acceptance criteria;
-- failure paths, compatibility, or rollback requirements omitted;
-- tests that do not prove the intended outcome.
-
-A change can pass one axis and fail the other. Keep the reports separate so neither masks the other.
-
-## Review Output
-
-Lead with findings ordered by severity within each axis. For each finding include:
-
-- evidence: file/hunk, rule, spec statement, or command;
-- impact and triggering condition;
-- smallest safe correction;
-- verification needed.
-
-Then report:
-
-- **Standards and quality**: findings or pass with reviewed scope.
-- **Spec and intent**: findings, pass, or “no spec available”.
-- **Coverage gaps**: areas not inspected or evidence unavailable.
-- **Summary**: finding count and worst issue inside each axis, without collapsing both into one score.
-
-Parallel reviewers may be used when the environment supports them, but they are an optimization, not a dependency.
-
-See `upstream-notes.md` for methodology attribution.
+来源见 `upstream-notes.md`，正常执行不必读取来源文件。
