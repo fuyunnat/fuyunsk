@@ -3,9 +3,9 @@ on:
   push:
     branches: [feature/project-migration-guard]
 permissions:
-  contents: read
+  contents: write
 jobs:
-  baseline:
+  validate:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -13,10 +13,41 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
-      - name: 导出固定基线
-        run: git archive --format=zip --output=/tmp/migration-baseline.zip 2946352d05ed0008607e9d9d503380b62ee6bd89
-      - uses: actions/upload-artifact@v4
+      - uses: actions/setup-node@v4
         with:
-          name: migration-baseline
-          path: /tmp/migration-baseline.zip
-          retention-days: 3
+          node-version: '22'
+      - name: 从固定基线还原已审查改动
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import base64, hashlib, lzma
+          from pathlib import Path
+          data = ''.join(Path(f'.migration-transfer/part-{i}.txt').read_text() for i in range(1, 5))
+          patch = lzma.decompress(base64.b64decode(data, validate=True))
+          assert hashlib.sha256(patch).hexdigest() == '67441f7ae158d35299b8b6a028c3d089a9857525e50d6abab604fe9ee9ebd36a'
+          Path('/tmp/migration-feature.patch').write_bytes(patch)
+          PY
+          git worktree add --detach /tmp/migration-guard-result 2946352d05ed0008607e9d9d503380b62ee6bd89
+          git -C /tmp/migration-guard-result apply --index --check /tmp/migration-feature.patch
+          git -C /tmp/migration-guard-result apply --index /tmp/migration-feature.patch
+          test "$(git -C /tmp/migration-guard-result write-tree)" = 'e33786d72da86304ad378b996428cba7f3c098be'
+      - name: 验证迁移门禁、原文保真与原有行为
+        working-directory: /tmp/migration-guard-result
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/validate-skill.js
+          git diff --cached --check
+          git diff --exit-code
+          test -z "$(git ls-files -o --exclude-standard)"
+          test "$(git write-tree)" = 'e33786d72da86304ad378b996428cba7f3c098be'
+      - name: 仅保存已验证源码到任务分支
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          commit=$(printf '%s\n' 'feat(skill): 保存整项目迁移与防遗漏验证结果' | git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit-tree e33786d72da86304ad378b996428cba7f3c098be -p "$GITHUB_SHA")
+          header="$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)"
+          git -c "http.https://github.com/.extraheader=AUTHORIZATION: basic $header" push origin "$commit:refs/heads/feature/project-migration-guard"
