@@ -1,75 +1,49 @@
 ---
 name: production-engineering
-description: "Explicit opt-in workflow for real software projects: implementation, debugging, code/security review, Git, databases, deployment, admin UI, and engineering docs. Use when the user explicitly invokes $production-engineering. Do not use for greetings, ordinary chat, generic programming explanations, translation, or one-line commands."
+description: "用于真实项目的实现、修复、调试、前端界面、代码与安全审查、Git 交付、数据库和部署任务。按用户原始工程规范执行，先查证、再最小修改、验证并用中文交付。普通问候、闲聊、翻译、简单计算和脱离真实项目的概念解释不触发。"
 ---
 
-# Production Engineering
+# 生产级工程
 
-Use this skill only after the user explicitly invokes `$production-engineering`. The explicit-only default keeps ordinary Codex turns small and prevents this engineering workflow from being injected into greetings, simple explanations, translations, and one-line commands.
+默认中文沟通。提交标题与正文、评审请求标题与描述、报告和面向用户的说明使用中文；项目明确要求其他语言时遵守原文例外。命令、路径、协议字段、程序标识和分支名保持技术原样。
 
-## First Steps
+## 执行入口
 
-1. Read `references/routing.md`.
-2. For implementation, delivery, high-risk, or uncertain-impact work, read `references/task-lanes.md`.
-3. Read only the specialized reference selected by `routing.md`; never preload the whole `references/` directory.
-4. Inspect the real repository, its nearest `AGENTS.md`, current Git state, and user-owned changes before writing.
-5. Run `scripts/task-state.js resume` only for an actual continuation, handoff, multi-stage task, or context-loss risk. Do not run it merely because a conversation is new.
+用户直接说工程目标即可，不要求每次手写技能名。明确点名 `$production-engineering` 也可调用，但点名不代表授权写入。普通聊天不启动工程流程。
 
-Before reading or modifying project business files, say:
+1. 先判断只读、实现、安全审计或高风险模式，明确目标与验收；能查证的技术问题自行检查，不把清单逐项反问用户。
+2. 使用下表读取对应的**原文条款文件**；同一任务只读一次已读且未变的部分。多个领域取并集，不重复读取。路径相对于本技能。
+3. 写入前检查真实项目、最近的 `AGENTS.md`、Git 差异、用户已有改动和恢复点。非 Git 文件先备份；不凭经验猜接口、配置、表或运行命令。
+4. 只改明确范围，按项目职责分层，保护正常旧行为；验证当前改动及其受影响旧流程后再交付。没有实际验证不得写“全部正常”。
 
-`已使用 $production-engineering，并已读取 SKILL.md / routing.md。`
+| 当前步骤 | 必须读取的原文或专项说明 |
+| --- | --- |
+| 所有工程任务开始 | `references/rules/00-00.md`、`references/rules/01-00.md`、`references/rules/02-01.md` |
+| 明确局部、可恢复、无外部副作用的小改 | `references/rules/00-01.md`、`references/rules/03-00.md`；验证按原文第二十章裁剪 |
+| 不满足快速条件、存在高风险或任务变大 | `references/rules/00-02.md`、`references/task-lanes.md` |
+| 实现前、职责划分、注释与回归 | 原文第六、七章；按 `references/routing.md` 定位 |
+| 前端页面或后台界面 | 原文第九章 + `references/frontend-interface-quality.md` |
+| 后端、接口、性能、数据库、并发、配置、依赖、安全、日志 | `references/routing.md` 中对应原文章节，不遗漏命中的领域 |
+| 提交、推送、评审、合并、回滚 | 原文第四章的当前阶段；不是每次修改都读完整 Git 章节 |
+| 完整通道、长任务、多文件、多阶段、交付或恢复旧任务 | 原文第二章第六节 + `references/context-memory-continuity.md` |
+| 验证和最终交付 | 原文第二十至二十四章的适用条款；快速任务只输出最小证据 |
 
-Also name any extra reference loaded.
+可直接读取文件，不需要运行初始化脚本。已具备 Node.js 时，也可一次取所需条款：`node <技能目录>/scripts/read-rules.js --topic 前端`。不要为了读取说明安装依赖。完整目录与逐段来源见 `references/rules-index.md`，仅需要查找时读取。
 
-## Core Rules
+## 不能被提速削弱的要求
 
-- Answer-only questions stay answer-only. Do not inspect Git, initialize task state, or load the full production specification just to explain a command, status, rule, or performance issue.
-- Keep changes scoped. Do not reformat, refactor, rename, or clean unrelated files.
-- Protect user work and secrets. Never expose or commit credentials, tokens, `.env` files, private data, logs, database files, dependencies, releases, or unrelated generated output.
-- Move deletions to the system trash/recycle bin or a recoverable backup. If that cannot be done, stop before permanent deletion.
-- Treat production, database writes, data deletion, credentials, payments, balances, orders, permissions, security policy, CI/CD, deployment, force push, direct formal-branch writes, and remote settings as high risk.
-- A local change request authorizes scoped local edits and validation only. Push, review requests, formal-branch merge, release, and deployment require separate user authorization.
-- Evolve existing database schemas and historical data compatibly by default. Do not silently rename, drop, repurpose, rebuild, truncate, or bulk-overwrite.
-- Validate the current diff with the smallest sufficient checks. Never claim a test, commit, push, review, merge, deployment, audit, or online result without current evidence.
+- 原文优先级、八荣八耻、第一性原理校验和最小改动原则仍然适用。通道只决定检查深度，不能把只读变成实现，也不能扩大授权。
+- 不覆盖、回滚或混入用户已有改动，不顺手重构、全仓格式化或迁移技术栈。不同职责应拆分，高内聚闭环不机械按行数拆分；保留 300/400/600 行、函数 80 行等原文评估信号。
+- 删除进入回收站或可恢复备份；无法安全处理先确认，禁止以清理临时文件为由永久删除。保护密钥、隐私、日志和数据。
+- UI 是交付要求，不只是功能能用；新后台按原文默认 Vue 3、Vite、Ant Design Vue、普通 `.vue/.js`，已有项目优先现有技术栈，依赖只按需使用。
+- API、旧数据、配置、权限与原有流程默认兼容。数据库、生产、支付、权限、密钥、部署和其他高风险写入先说明影响、证据与回滚，并取得确认。
+- 完整通道的普通工程交付保留原文条件式任务分支推送和评审流程；不简化为“所有远端一律禁止”，也不扩大为“默认允许主线写入”。主线、合并、强推、远端删除与设置变更守原文授权边界。
+- 不能靠删测试、弱化断言、无限重试或伪造证据制造完成。报告区分通过、失败、未配置、无法执行和未验证。
 
-## Cost Control
+## 读取与速度边界
 
-Use progressive disclosure:
+原文拆分是逐字节切片，不是删减摘要；所有规则以最后上传的 `source-original.md` 为基准。另一份原稿与重构前完整规范原样保留，差异见 `references/source-policy.md`。存在冲突时不暗自重写规则。
 
-- Always loaded: skill frontmatter only.
-- On explicit invocation: this file and `routing.md`.
-- For implementation or delivery: add `task-lanes.md`.
-- For a specialized task: add only the matching reference.
-- Load `full-production-engineering.md` by heading only when a narrower reference is insufficient.
-- Use task state only when the task genuinely needs continuity.
+只加载当前阶段需要的章节，不预读全目录，不因新对话自动恢复任务，不重复同一检查、不为同一任务反复建分支或写状态日记。需要读取的长条款分段读完，不能因长度预算而丢弃要求。外部方法仅按需补充，不能覆盖原规范。
 
-The full specification supplies detail but cannot broaden authorization, reclassify a cheaper lane, or force task-state work that `task-lanes.md` does not require.
-
-## Beginner-First Communication
-
-The user states the goal in ordinary language after invoking the skill. Codex owns repository inspection, branch choice, validation, commit mechanics, and rollback details unless a business decision or risky authorization is missing.
-
-Final reports should state:
-
-- what changed;
-- what was verified;
-- whether it was saved locally or remotely;
-- whether it entered the formal version;
-- how to recover;
-- what remains unverified.
-
-## Reference Routing
-
-- Lane choice, validation depth, and remote delivery: `references/task-lanes.md`.
-- Hard bugs, intermittent failures, and performance regressions: `references/diagnosis-feedback-loop.md`.
-- Module/interface design, test seams, vertical implementation, refactoring, and throwaway prototypes: `references/design-testing.md`.
-- Specifications, work breakdown, decision maps, and review against both standards and intent: `references/spec-review.md`.
-- Continuation, handoff, compaction, or durable state: `references/context-memory-continuity.md`.
-- Broad risk review, security, vulnerabilities, or backdoors: `references/code-risk-review.md`.
-- README, docs, release notes, PR text, customer notes, and UI copy: `references/content-writing-quality.md`.
-- Frontend/admin/UI: `references/frontend-interface-quality.md`.
-- Wrapped desktop workspaces: `references/wrapped-workspace-ui.md`.
-- Architecture understanding and repository onboarding: `references/project-understanding.md`.
-- Detailed backend, API, database, performance, Git, deployment, and testing rules: relevant headings in `references/full-production-engineering.md`.
-
-Load only what the current task needs. `references/upstream-notes.md` records methodology attribution and is not a runtime prerequisite.
+最终用中文说明：改了什么、为何如此、如何验证、保存及主线状态、剩余风险和最小回滚方式。未完成项如实列出。

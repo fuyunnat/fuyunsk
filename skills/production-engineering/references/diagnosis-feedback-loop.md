@@ -1,109 +1,41 @@
-# Diagnosis Feedback Loop
+# 问题诊断与反馈闭环
 
-Use this reference for hard bugs, intermittent failures, incorrect output, crashes, and performance regressions. The goal is evidence-backed diagnosis, not a plausible story.
+用于难复现故障、偶发失败、错误结果、崩溃和性能退化。依据原文进行只读定位，不能把猜测包装成根因。
 
-## Safety And Authorization
+## 安全
 
-- Redact credentials, cookies, private data, auth headers, and sensitive payloads from commands, logs, screenshots, and reports.
-- Prefer environment variables over putting secrets in command arguments or captured artifacts.
-- Read-only diagnosis may inspect and measure. Product-code changes, persistent instrumentation, production changes, and external writes still require the authorization selected by `routing.md` and `task-lanes.md`.
+命令、日志、截图和报告先脱敏，不展示凭证、Cookie、授权头、隐私或敏感请求。密钥优先来自环境，不出现在命令参数或捕获文件。只读诊断不授权产品修改、持久插桩、生产或外部写入。
 
-## 1. Define The Exact Symptom
+## 定义症状
 
-Write down:
+说明预期行为、实际行为、最小已知触发、环境和时间条件，以及能观察到的成败标准。性能问题先记录基准，不能以“感觉慢”代替测量。首个响应头、首个有效内容和总耗时是不同指标，不混为一谈。
 
-- expected behavior;
-- observed behavior;
-- the smallest known trigger;
-- environment and timing conditions;
-- one observable pass/fail verdict.
+## 建立最短可用闭环
 
-For performance work, record a baseline number before proposing a fix. “Feels slow” is not a baseline.
+按真实故障路径选择局部失败测试、受控服务的 HTTP 请求、固定夹具的命令行测试、浏览器 DOM/控制台/网络检查、脱敏事件回放、模块小型验证程序、好坏版本差分、有限重复压力或版本二分。
 
-## 2. Build The Tightest Useful Feedback Loop
+闭环必须命中用户的准确症状、可重复或能量化失败概率、减少无关启动且足够快，并能按记录独立复跑。先把现有闭环收紧，不立刻扩大到全仓调查。涉及真实收费、通知和生产副作用的操作不能作为普通测试。
 
-Prefer the cheapest loop that reaches the real failure path:
+## 复现和缩小
 
-1. focused failing test at a public behavior seam;
-2. `curl` or HTTP script against a controlled service;
-3. CLI command with a fixed fixture and expected output;
-4. headless browser check over DOM, console, and network;
-5. replay of a redacted request, event, trace, or payload;
-6. small harness around the affected module;
-7. differential check between known-good and failing versions/configurations;
-8. repeat/stress loop for flaky failures;
-9. automated bisection when a known good and bad revision exist.
+实际运行并留证，再逐项减少输入、配置、调用方、服务和步骤；每减少一项都重跑。只保留仍触发同一症状的简化，不能偷偷换成更容易复现的其他错误。
 
-A useful loop is:
+## 验证假设
 
-- **specific**: it detects the user's symptom, not merely any nearby error;
-- **repeatable**: repeated runs give a dependable verdict, or a measured failure rate for flaky bugs;
-- **fast enough**: narrow setup and skip unrelated initialization;
-- **agent-runnable**: it can be re-run without undocumented manual steps.
+根据证据列出少量可证伪假设：“若原因是甲，则改变或观察乙应产生丙”。一次测试一个预测，证据改变就重新排序，不把第一个合理解释直接宣布为原因。用户业务知识确能改变判断时再展示关键问题，普通技术选择自行核对。
 
-Tighten an existing loop before broadening the investigation.
+## 定向观察
 
-## 3. Reproduce And Minimize
+优先调试器、交互检查、边界日志/计数器；性能问题用耗时分段、追踪、分析器或查询计划。临时记录加唯一标记，如 `[DIAG-7f3a]`，不要全部记录后再搜索。每个观察对应具体预测，一次只改变一个变量。
 
-Run the loop and capture the exact failure evidence. Then remove inputs, configuration, callers, services, and steps one at a time. Keep a removal only when the same failure still occurs.
+## 在正确边界锁定回归
 
-The minimized case should preserve the original symptom while shrinking the number of possible causes. Do not silently substitute a different, easier-to-reproduce failure.
+有合适公开边界时，将最小复现变成先失败的测试，再改最小代码、确认通过，最后重跑原始未缩小场景。不能因私有方法好测就绕过真实调用关系。没有能诚实表达问题的边界时说明架构限制，参考 `design-testing.md`，不能用无效测试制造信心。
 
-## 4. Rank Falsifiable Hypotheses
+## 清理和报告
 
-Create two to five ranked hypotheses. Each must include a prediction:
+确认原始症状与回归检查结果，性能与基准对照；临时插桩和捕获数据按原文可恢复地处理，不能永久删除用户资料。报告症状、复现命令、证据、确认或暂未确认的根因、最小改动、回归结果、清理和未知项。
 
-> If X is the cause, changing or observing Y should produce Z.
+无法建立足够闭环时，列出尝试和最小缺失条件，例如脱敏请求、日志、追踪、时间戳录像或复现环境；结论保持待确认。不能因证据不足而编造确定根因。
 
-Test one prediction at a time. Re-rank when evidence changes. Do not present the first plausible explanation as the root cause.
-
-When user domain knowledge can materially re-rank the list, show the short list; do not block progress on routine technical choices.
-
-## 5. Instrument Deliberately
-
-Prefer:
-
-1. debugger or REPL inspection;
-2. targeted boundary logs or counters;
-3. profiler, trace, query plan, allocation data, or timing spans for performance;
-4. version/config/data bisection.
-
-Every temporary log must have a unique searchable marker such as `[DIAG-7f3a]`. Do not “log everything and grep later.” Change one variable per probe so the result can distinguish hypotheses.
-
-## 6. Lock The Bug At The Correct Seam
-
-When a stable public behavior seam exists:
-
-1. turn the minimized reproduction into a failing regression check;
-2. confirm it fails before the fix;
-3. apply the smallest correction;
-4. confirm the regression check passes;
-5. re-run the original, non-minimized feedback loop.
-
-Do not test private methods or internal wiring merely because they are convenient. If no honest seam can express the bug, record that as an architecture limitation and use `design-testing.md` before inventing a misleading test.
-
-## 7. Cleanup And Completion
-
-Before declaring the bug fixed:
-
-- original symptom is green under the original loop;
-- minimized regression is green, or the missing seam is explicitly documented;
-- performance is compared with the recorded baseline;
-- all temporary `[DIAG-...]` instrumentation is removed;
-- throwaway captures are deleted, moved to an approved debug location, or deliberately retained with a reason;
-- the confirmed cause and evidence are stated separately from discarded hypotheses.
-
-If no adequate loop can be built, list the attempts and request the smallest missing artifact or access: a redacted request, log, trace, dump, recording with timestamps, reproducible environment, or permission for narrowly scoped instrumentation. The result remains provisional.
-
-## Report Shape
-
-Report:
-
-- symptom and feedback-loop command;
-- baseline or failing evidence;
-- confirmed cause, or “not yet confirmed”;
-- fix and affected behavior;
-- regression evidence;
-- remaining uncertainty and cleanup status.
-
-See `upstream-notes.md` for methodology attribution.
+来源见 `upstream-notes.md`，正常执行不必读取来源文件。

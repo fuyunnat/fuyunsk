@@ -1,163 +1,54 @@
-# fuyunsk
+# fuyunsk：中文工程技能
 
-`fuyunsk` 当前维护一个 Codex Skill：`production-engineering`。
+这是按用户完整自定义指令组织的中文 `production-engineering` 技能，用于真实工程实现、修复、前端界面、代码审计、验证、Git 交付、数据库和部署。
 
-当前版本以性能优先。这个 Skill 默认仅支持**显式调用**，普通聊天不会自动携带完整工程工作流。
-
-## 为什么这样调整
-
-旧版本同时使用隐式调用、较长的全局兜底规则、可选个性化提示词，以及新对话自动恢复。安全性较高，但代价是普通问候也可能加载大量工程规则。现在只有用户明确输入 `$production-engineering` 后，才会加载工程指导。
+**保留原文，不靠删规则提速；工程任务允许自动匹配，普通聊天不加载工程正文。**
 
 ## 使用方法
 
-普通聊天直接正常交流即可。
-
-处理真实项目时，在目标前加上 `$production-engineering`：
+直接描述工程目标，例如“修一下这个页面的按钮，只改本地并验证”。需要明确点名或排查匹配时可写：
 
 ```text
-$production-engineering 修一下这个报错，先只改本地并验证。
+$production-engineering 做一个后台配置页，沿用当前项目技术栈。
+$production-engineering 检查这个仓库有没有漏洞，先不要改文件。
 ```
 
-```text
-$production-engineering 检查这个仓库有没有隐藏 Bug，先别改。
-```
+自动匹配取决于客户端与模型，不把静态测试通过当作所有真实请求均命中的保证。
 
-```text
-$production-engineering 优化完成后提交到仓库，但不要合并主线。
-```
+## 原始规范怎么保留
 
-显式前缀是刻意设计的：只多输入几个字符，就能换来更稳定的性能，并避免无关工程上下文被注入普通对话。
+两份上传原稿分别固定为 `references/source-original.md` 和 `references/source-speed.md`；重构前仓库完整规范也未删除。`source-lock.json` 固定校验值；生成器按章节逐字节切片，顺序拼接必须与原稿完全相同。最后上传原文是执行基准，速度稿补充及冲突单独记录，不静默改变“必须”“禁止”和例外。
 
-## 方法工具箱
+[逐段覆盖表](skills/production-engineering/references/rules-index.md)给出源行号和实际读取位置。[差异与采用说明](skills/production-engineering/references/source-policy.md)记录两版的通道、状态、Git 检查和授权差异。
 
-显式调用后，路由器只加载当前任务真正需要的方法：
+## 核心要求
 
-- `diagnosis-feedback-loop.md`：建立准确、快速的反馈闭环；复现并缩小问题；验证可证伪假设；证明回归已经消失。
-- `design-testing.md`：围绕清晰接缝设计小型公开接口；测试外部行为而不是内部实现；按纵向切片交付；大范围迁移使用“扩展 → 迁移 → 收缩”。
-- `spec-review.md`：根据已有上下文整理规格；把工作拆成可独立验证的任务；记录尚未解决的决策；分别审查代码质量与需求实现情况。
-- 其他现有 reference 继续负责安全与风险审查、前端质量、文档、上下文续航、数据库安全、部署和 Git 交付。
+保留中文沟通和中文提交评审、八荣八耻、第一性原理检查、真实项目查证、用户改动保护、Git 门禁、可恢复删除、最小改动、职责分层、原有功能回归、API 兼容、数据库迁移、幂等、安全审计、证据和回滚要求。
 
-这些方法参考 [`mattpocock/skills`](https://github.com/mattpocock/skills) 在提交 `3cca18b368ae95cdbdebbff572ccafa662551015` 时的设计思路，并结合本仓库规则重新提炼。来源说明和设计差异记录在 [`references/upstream-notes.md`](skills/production-engineering/references/upstream-notes.md)。上游采用 MIT 许可证，本 Skill 运行时不依赖上游仓库。
+前端不是只求能用：保留设计系统、布局、状态、响应式和视觉验收。已有项目不换栈；新后台默认 Vue 3、Vite、Ant Design Vue、普通 `.vue/.js`，只按需使用路由、状态管理和其他依赖。
 
-## 授权边界
+完整通道保留原文条件式任务分支推送和评审流程；只读、小改、不具备远端条件等按原文处理。**提交或推送不等于允许合并主线、强推、删除远端分支或操作生产。**
 
-| 用户说法 | 已授权的结果 |
-| --- | --- |
-| “改一下 / 修一下 / 做一个” | 在本地做范围明确的修改和验证 |
-| “保存好 / 留个恢复点” | 建立本地提交或可恢复备份 |
-| “上传仓库 / 提交到仓库” | 验证后推送任务分支 |
-| “开 PR / 提交审核” | 创建或更新评审请求 |
-| “搞到主线 / 正式用这个版本” | 检查通过后按仓库流程进入正式分支 |
-| “上线 / 部署” | 先确认具体环境、风险和回滚方式 |
+## 速度从哪里来
 
-生产环境、数据库写入、数据删除、密钥、支付、权限、安全策略、CI/CD、强推、直接写正式分支和远端设置仍属于高风险操作，必须先调查并说明影响和恢复方式，再取得明确授权。
+初始匹配只需要简短名称与描述；选中技能后读取短入口。原文已在维护阶段拆好，运行时只读当前领域和阶段的片段，不启动生成器、不联网拉规则、不默认恢复任务、不反复扫描或运行相同检查。完整任务仍须覆盖所有适用条款。
 
-## 安装
+[只读条款助手](skills/production-engineering/scripts/read-rules.js)是可选工具，无第三方依赖；也可以直接用文件工具读取切片。文件体积和本地读取基准不等于模型端到端速度，实际改善需要在同一环境对照测量。
 
-让 Codex 执行：
+## 安装和升级
 
-```text
-请安装或原位更新这个 Skill：
-https://github.com/fuyunnat/fuyunsk/tree/main/skills/production-engineering
+[安装教程](docs/ai-installation.md)说明原位更新、备份、去重和本机验收。同名技能只安装一份，不把全文复制进全局指令；[短全局模板](global-AGENTS.example.md)和[个性化模板](docs/personal-custom-instructions.md)最多选择一个。
 
-保持 policy.allow_implicit_invocation: false。
-不要默认合并 global-AGENTS.example.md 或 docs/personal-custom-instructions.md。
-同名 Skill 只保留一份。
-```
+## 按需方法
 
-客户端会自行识别当前有效的用户级 Skill 目录。不要在 `~/.agents/skills` 和 `~/.codex/skills` 中同时安装两份同名 Skill。
-
-更完整的迁移和验证步骤见 [AI 安装教程](docs/ai-installation.md)。
-
-## 性能模型
-
-工作流采用渐进加载：
-
-1. 普通对话：不加载 `production-engineering` 工程工作流。
-2. 显式调用：加载 `SKILL.md` 和 `references/routing.md`。
-3. 实现或交付任务：再加载 `references/task-lanes.md`。
-4. 专项任务：只加载匹配的方法或 reference。
-5. 完整规范：只搜索并读取当前需要的标题。
-6. 任务状态恢复：仅用于续作、交接、多阶段任务或上下文丢失风险。
-
-不要同时安装两份全局兜底文档，大多数用户不需要其中任何一份。`upstream-notes.md` 仅用于维护和来源说明，正常任务不会加载它。
-
-## 能力范围
-
-显式调用后，这个 Skill 可以处理：
-
-- 功能实现、调试、重构和针对性验证；
-- 反馈闭环优先的问题诊断和性能测量；
-- 接口与接缝设计、行为测试、TDD、纵向切片和原型验证；
-- 规格整理、任务拆分、决策地图和双轴差异审查；
-- 代码与安全审查、漏洞和后门排查；
-- Git 提交、推送、评审请求、正式合并和回滚说明；
-- 数据库兼容演进和生产风险控制；
-- 前端与后台界面质量、工程文档；
-- 真正长任务或中断任务的可恢复状态。
-
-## 目录结构
-
-```text
-skills/production-engineering/
-  SKILL.md
-  agents/openai.yaml
-  scripts/task-state.js
-  scripts/task-state-core.js
-  references/routing.md
-  references/task-lanes.md
-  references/diagnosis-feedback-loop.md
-  references/design-testing.md
-  references/spec-review.md
-  references/upstream-notes.md
-  references/context-memory-continuity.md
-  references/code-risk-review.md
-  references/content-writing-quality.md
-  references/frontend-interface-quality.md
-  references/wrapped-workspace-ui.md
-  references/project-understanding.md
-  references/full-production-engineering.md
-
-global-AGENTS.example.md
-docs/personal-custom-instructions.md
-docs/ai-installation.md
-scripts/validate-skill.js
-scripts/validate-routing-cases.js
-tests/routing-cases.json
-```
-
-## 可选全局兜底
-
-`global-AGENTS.example.md` 和 `docs/personal-custom-instructions.md` 都是可选的短兜底规则，最多选择其中一份。它们都不应自动加载这个 Skill。
-
-高级用户确实需要自动调用时，可以改成：
-
-```yaml
-policy:
-  allow_implicit_invocation: true
-```
-
-这不是推荐默认值，因为它可能增加上下文体积和响应延迟。
+在原文规则之外，保留此前从 `mattpocock/skills` 提炼的诊断闭环、模块设计、行为测试、纵向切片和双轴审查；全部使用中文说明，不能覆盖原规范。来源与许可证见[来源说明](skills/production-engineering/references/upstream-notes.md)。
 
 ## 验证
 
-维护本仓库时运行：
-
 ```bash
+node scripts/build-rules.js --check
 node scripts/validate-skill.js
 git diff --check
 ```
 
-校验脚本会检查显式调用策略、提示词体积预算、专项方法路由、上游来源说明、仓库卫生和任务状态助手。
-
-## 从旧版本迁移
-
-1. 备份当前 Skill 目录和全局指令。
-2. 原位更新 Skill。
-3. 从全局 `AGENTS.md` 中移除旧版较长的 `production-engineering` 规则块。
-4. 删除重复的个性化或全局副本。
-5. 确认 `allow_implicit_invocation: false`。
-6. 客户端没有自动刷新时，彻底退出并重新打开 Codex。
-7. 分别测试一次普通问候和一次显式 `$production-engineering` 请求。
-
-旧提交仍保留在 Git 历史中，可用于回退。
+校验包含原稿锁定、逐段重建、主题读取、中文入口、路径与错误处理、状态助手、秘密与产物检查。程序测试不代表真实 Codex 行为测试；安装后的触发、中文交付和实际耗时需按教程另行验收。

@@ -1,94 +1,45 @@
-# Design And Testing
+# 模块设计与行为测试
 
-Use this reference for feature implementation, refactoring, module/interface design, testability, TDD, wide migrations, and throwaway prototypes.
+用于功能实现、重构、接口设计、测试、大范围兼容迁移与原型。原文第六、七、二十、二十一章优先，本文件只补充方法。
 
-## Start From Project Language
+## 从项目出发
 
-Read the nearest project rules, existing public interfaces, tests, and architecture decisions. If the repository has a glossary such as `CONTEXT.md` or ADRs, use their terms and constraints.
+先查最近的项目规则、已有公开接口、测试、术语和架构决定。已有术语表或决策记录应沿用；不要自动创建新文档。只有用户要求、术语冲突阻塞正确性，或难以逆转且需要解释的真实取舍，才考虑记录。
 
-Do not create a glossary or ADR automatically. Create or update one only when the user asks, a terminology conflict blocks correctness, or a hard-to-reverse and surprising trade-off needs a durable explanation.
+## 用小接口承载完整职责
 
-## Design A Deep Module
+模块可以是函数、类、包或一段业务闭环。接口不仅是参数类型，也包括不变量、调用顺序、错误、副作用、配置和性能约定。
 
-A module may be a function, class, package, or larger slice. Its **interface** is everything callers must know: operations, invariants, ordering, errors, configuration, and performance expectations.
+- 用少量清楚的操作隐藏有意义的复杂性，避免只增加一层转发。
+- 调用方和测试从同一公开边界观察行为；依赖在边界传入，不在业务深处偷偷创建。
+- 明确返回结果，把必要副作用隔离在适配实现内；只有真实变化需要时才增加适配层。
+- 修改尽量在一个职责位置修好、测好，避免知识和条件判断散落调用方。
+- 设想移除该模块：若复杂性也消失而不需要移到调用方，可能只是没有价值的包装；这是设计判断，不是自动删除指令。
 
-Prefer:
+重构前说明受保护行为和接口为何更清晰、便于测试。不为想象中的未来需求添加抽象，不能以“深模块”为由混合原文要求分开的职责。
 
-- a small interface that hides meaningful implementation complexity;
-- one clear seam where callers and tests observe behavior;
-- dependencies supplied at the seam instead of constructed deep inside business logic;
-- results returned explicitly, with side effects isolated behind an adapter;
-- adapters only where behavior genuinely varies, not for hypothetical flexibility;
-- locality: one change should be fixed and verified in one place rather than scattered across callers.
+## 测试公开行为
 
-Use the deletion test: if deleting the module merely removes pass-through code and leaves no complexity to relocate, the module may be too shallow.
+测试应像可观察能力的验收说明，内部重构后只要行为没变就仍成立。避免测试私有方法、内部调用顺序、非契约协作者的模拟、通过存储旁路代替公开行为、没有聚焦信号的大快照。
 
-Before refactoring, state the protected behavior and why the new interface improves leverage, locality, or testability. Do not add abstractions solely for imagined future needs.
+预期值来自独立算例、规格或已知正确夹具，不能用与实现相同算法重新计算后自证。先确定重要验证边界；通常技术放置由项目代码决定，不反问普通用户。只有会改变业务、兼容或验收范围时才问。
 
-## Test Through Public Behavior
+## 一次完成一个纵向切片
 
-A durable test reads like a capability and crosses a public seam. It should survive internal refactoring when behavior is unchanged.
+每轮选择一个外部可见行为，写能因原问题失败的检查，实际看到失败，再做最小实现、看检查通过，保持行为不变地整理设计，然后进入下一行为。不先写满整层测试再猜整层实现。
 
-Avoid:
+过程中用快速类型、风格和局部测试反馈；当前差异完成后运行全部适用检查。验证深度按原文风险裁剪，不把“局部通过”说成全系统通过。
 
-- tests of private methods or internal call order;
-- mocks of collaborators that are not part of the public contract;
-- assertions that recompute the expected value with the same algorithm as production code;
-- database or implementation side channels when the real interface can verify the behavior;
-- broad snapshots with no focused behavioral signal.
+## 大范围兼容改动
 
-Expected values should come from a worked example, a specification, a known-good fixture, or another independent source of truth.
+单次改动影响大量调用方、不能独立保持可用时，使用“扩展 → 迁移 → 收缩”：先新旧并存，再按边界分批迁移并验证，最后确认无旧调用且获得清理授权后处理旧形式。数据库、历史数据、生产和删除仍分别守原文安全规则。
 
-Identify the critical test seams before writing tests. Codex should choose ordinary technical placement from the repository. Ask the user only when the seam changes business behavior, external compatibility, or acceptance scope.
+## 一次性原型
 
-## Implement In Vertical Slices
+原型只回答一个明确问题：状态/逻辑是否合理，或界面应如何组合。标记为原型，尽量一条命令或一个文件运行，默认内存状态，展示每次操作后的相关状态；不提前做生产级抽象和大套测试。原型不直接等于正式实现，不默认提交主线；将验证过的决定带入生产代码，不能把偶然结构一起照搬。保留或清理遵守授权与可恢复删除。
 
-Prefer one narrow end-to-end behavior at a time:
+## 完成前检查
 
-1. choose one externally observable capability;
-2. add one failing check at the agreed seam;
-3. confirm the check can fail for the intended reason;
-4. implement only enough behavior to pass;
-5. run the focused check;
-6. clean the design without changing behavior;
-7. repeat for the next capability.
+接口是否清楚、变化是否真实、调用方是否需要知道内部顺序或存储细节、测试是否独立证明行为、每个切片能否验证、是否产生无价值包装或散乱职责。
 
-Do not write an entire horizontal layer of tests followed by an entire layer of implementation. Each slice should be independently demonstrable or verifiable.
-
-Run fast type/lint/focused checks during the work, then the broadest relevant suite once the current diff is ready. Validation depth still comes from `task-lanes.md`.
-
-## Wide Refactors And Compatibility
-
-When one mechanical change has a wide blast radius and cannot land as an independently green vertical slice, use expand–migrate–contract:
-
-1. **Expand**: add the new form beside the old while preserving compatibility.
-2. **Migrate**: move callers in bounded batches; keep both forms working.
-3. **Contract**: remove the old form only after no caller remains and cleanup is separately authorized.
-
-For schema or historical-data changes, the database compatibility rules remain authoritative and destructive cleanup stays a separate high-risk step.
-
-## Throwaway Prototypes
-
-A prototype answers one design question; it is not an early production implementation.
-
-- Name the question first: logic/state behavior or UI shape.
-- Mark the artifact clearly as disposable.
-- Make it trivial to run.
-- Keep state in memory unless persistence is the question being tested.
-- Skip production polish, generalized abstractions, and broad test suites.
-- Surface relevant state so the user can see what changed.
-- Keep it out of the formal branch unless the user explicitly asks to retain it.
-- Carry the validated decision into production code; do not carry accidental prototype structure.
-
-## Design Review Questions
-
-Before finishing, ask:
-
-- Is the interface smaller and clearer than the behavior it hides?
-- Does each seam correspond to real variability or observation?
-- Can callers use the module without knowing internal ordering or storage details?
-- Do tests prove behavior rather than implementation?
-- Is each change slice independently verifiable?
-- Did the diff introduce speculative hooks, pass-through wrappers, or scattered responsibility?
-
-See `upstream-notes.md` for methodology attribution.
+来源见 `upstream-notes.md`，正常执行不必读取来源文件。

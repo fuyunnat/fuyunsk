@@ -5,6 +5,7 @@ const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 const { spawnSync } = require('node:child_process');
+const { labels, reverse, valueOut, valueIn } = require('./task-state-language');
 
 const FIELD_ORDER = [
   'Task ID',
@@ -88,7 +89,7 @@ function runGit(repo, args, allowFailure = false) {
 
   if (result.status !== 0 && !allowFailure) {
     const detail = (result.stderr || result.stdout || '').trim();
-    throw new Error(`Git command failed: git ${args.join(' ')}${detail ? `\n${detail}` : ''}`);
+    throw new Error(`Git 命令失败：git ${args.join(' ')}${detail ? `\n${detail}` : ''}`);
   }
   return result;
 }
@@ -100,7 +101,7 @@ function isGitRepository(candidate) {
 function canonicalProject(input) {
   const candidate = path.resolve(input || process.cwd());
   if (!fs.existsSync(candidate)) {
-    throw new Error(`Project path does not exist: ${candidate}`);
+    throw new Error(`项目路径不存在：${candidate}`);
   }
 
   if (isGitRepository(candidate)) {
@@ -127,7 +128,7 @@ function readJsonFile(file, label) {
   try {
     parsed = JSON.parse(fs.readFileSync(file, 'utf8'));
   } catch (error) {
-    throw new Error(`${label} is not valid JSON: ${file}\n${error.message}`);
+    throw new Error(`${label} 不是有效 JSON：${file}\n${error.message}`);
   }
   return parsed;
 }
@@ -138,9 +139,9 @@ function readLegacyRegistry() {
     return { version: 1, projects: {} };
   }
 
-  const parsed = readJsonFile(file, 'Legacy task-state registry');
+  const parsed = readJsonFile(file, '旧任务状态索引');
   if (!parsed || parsed.version !== 1 || !parsed.projects || Array.isArray(parsed.projects) || typeof parsed.projects !== 'object') {
-    throw new Error(`Legacy task-state registry has an unsupported structure: ${file}`);
+    throw new Error(`旧任务状态索引格式不支持：${file}`);
   }
   return parsed;
 }
@@ -148,9 +149,9 @@ function readLegacyRegistry() {
 function readRegistryRecord(repo) {
   const file = registryRecordPath(repo);
   if (fs.existsSync(file)) {
-    const record = readJsonFile(file, 'Task-state registry record');
+    const record = readJsonFile(file, '任务状态索引记录');
     if (!record || record.version !== 1 || record.repository !== repo || typeof record.statePath !== 'string') {
-      throw new Error(`Task-state registry record has an unsupported structure: ${file}`);
+      throw new Error(`任务状态索引记录格式不支持：${file}`);
     }
     return record;
   }
@@ -169,9 +170,9 @@ function readAllRegistryRecords() {
       continue;
     }
     const file = path.join(directory, entry.name);
-    const record = readJsonFile(file, 'Task-state registry record');
+    const record = readJsonFile(file, '任务状态索引记录');
     if (!record || record.version !== 1 || typeof record.repository !== 'string' || typeof record.statePath !== 'string') {
-      throw new Error(`Task-state registry record has an unsupported structure: ${file}`);
+      throw new Error(`任务状态索引记录格式不支持：${file}`);
     }
     records[record.repository] = record;
   }
@@ -223,7 +224,8 @@ function parseState(content) {
   for (const line of content.split(/\r?\n/)) {
     const match = line.match(/^- ([^:]+):\s*(.*)$/);
     if (match) {
-      fields[match[1].trim()] = match[2].trim();
+      const key = reverse[match[1].trim()] || match[1].trim();
+      fields[key] = valueIn(key, match[2].trim());
     }
   }
   return fields;
@@ -234,9 +236,9 @@ function singleLine(value) {
 }
 
 function renderState(fields) {
-  const lines = ['# Task State', ''];
+  const lines = ['# 任务状态', ''];
   for (const field of FIELD_ORDER) {
-    lines.push(`- ${field}: ${singleLine(fields[field])}`);
+    lines.push(`- ${labels[field] || field}: ${singleLine(valueOut(field, fields[field]))}`);
   }
   return `${lines.join('\n')}\n`;
 }
@@ -303,7 +305,7 @@ function gitSummary(repo) {
     return {
       branch: '(non-git)',
       head: '(non-git)',
-      changes: 'non-Git project; use backups and explicit file evidence',
+      changes: '非 Git 项目；使用备份和明确文件证据',
     };
   }
 
@@ -313,7 +315,7 @@ function gitSummary(repo) {
   return {
     branch,
     head,
-    changes: changed ? 'present; inspect exact status before editing' : 'none; worktree clean',
+    changes: changed ? '存在改动；编辑前检查具体状态' : '没有改动；工作区干净',
   };
 }
 
@@ -346,7 +348,7 @@ function workingTreeDescriptor(repo, relativePath) {
     if (error.code === 'ENOENT') {
       return `${relativePath}:missing`;
     }
-    throw new Error(`Unable to fingerprint untracked path ${relativePath}: ${error.message}`);
+    throw new Error(`无法计算未跟踪路径的指纹：${relativePath}: ${error.message}`);
   }
 
   const mode = (stat.mode & 0o7777).toString(8);
@@ -450,8 +452,8 @@ function refreshStaleVerification(fields, currentFingerprint) {
   fields['Verification status'] = 'pending';
   fields['Verified fingerprint'] = 'none';
   fields['Current fingerprint'] = currentFingerprint;
-  fields['Next step'] = 'Re-run required validation for the current diff before completion.';
-  fields['Unverified risk'] = 'Repository content changed after the recorded passing verification.';
+  fields['Next step'] = '完成前重新验证当前差异。';
+  fields['Unverified risk'] = '记录验证通过后，仓库内容又发生变化。';
   return true;
 }
 
@@ -482,7 +484,7 @@ function redactCommand(args) {
 function requireState(repo) {
   const state = readState(repo);
   if (!state.fields) {
-    throw new Error(`No task state found for ${repo}. Run init first.`);
+    throw new Error(`没有找到 ${repo} 的任务状态，请先运行 init。`);
   }
   return state;
 }

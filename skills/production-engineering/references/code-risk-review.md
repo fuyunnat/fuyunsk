@@ -1,75 +1,31 @@
-# Code Risk Review
+# 代码风险与安全审查
 
-Use this reference when the user asks for code review, "有没有问题", "帮我看看代码", hidden bug hunting, bug diagnosis, security audit, vulnerability review, backdoor review, or suspicious behavior analysis.
+用于代码评审、隐藏 Bug、风险、安全、漏洞、后门和可疑行为检查。原文第十六至十九章以及相关领域条款优先；只读请求不授权修复。不要浅扫后只说“没明显问题”。
 
-The goal is to make vague review requests concrete. Do not answer only "looks fine" or "no obvious issue" after a shallow scan. Inspect the real code paths and report evidence, uncertainty, and unverified areas.
+## 确定范围
 
-## Default Scope
+按请求检查相关入口、数据流、状态变化、外部调用、权限、错误路径和日志。仓库太大时按风险缩小并说明未覆盖范围，不用清单装作全审。
 
-For broad or vague review requests, inspect at least the touched entrypoints, data flow, state changes, external calls, authorization path, error path, and logs. If the repository is too large, narrow by risk and tell the user what was covered.
+重点检查空值、缺字段与部分响应；重复点击/请求/回调和幂等；并发、锁、事务、唯一约束、丢更新；身份、角色、所有权、租户隔离和后端执行；超时、取消、重试与外部失败；异常吞噬、错误回退、补偿；响应、日志、界面、缓存与差异中的敏感信息。
 
-Always check these high-value bug classes when applicable:
+## 方法
 
-- Empty, null, undefined, zero, missing field, empty array, empty string, and partial API response handling.
-- Duplicate requests, double-click submit, retry replay, repeated webhook/callback, repeated payment/order/balance operation, and idempotency.
-- Concurrency, race conditions, locks, transactions, unique constraints, stale reads, lost updates, and state-machine transitions.
-- Authentication, authorization, role checks, ownership checks, tenant isolation, admin-only paths, route guards, and backend enforcement.
-- Timeout, cancellation, retry, backoff, circuit breaking, long-running jobs, and external service failure.
-- Exception handling, panic/crash paths, swallowed errors, fallback behavior, rollback/compensation, and user-visible error feedback.
-- Sensitive information leakage in responses, logs, console output, errors, metrics, traces, screenshots, exports, cache, local storage, and Git diff.
+先明确保护的数据、资金、权限、可用性或正确性，再从入口追踪到持久化或副作用，检查正常、失败、边界及共享调用路径。前端校验不能代替后端安全。用代码位置、调用链、请求形态、配置或测试证明；已确认、怀疑和未审范围分开。
 
-## Review Method
+## 接口和状态
 
-1. Identify what the code is supposed to protect: data, money, orders, permissions, credentials, user actions, availability, or correctness.
-2. Trace the real request or execution path from entrypoint to persistence or external side effect.
-3. Check the happy path, then check failure paths and boundary inputs.
-4. Search for duplicate call paths and shared helpers so the same bug is not hidden behind another route or component.
-5. Verify whether frontend checks are backed by backend checks. Treat frontend-only permission or validation as insufficient for security.
-6. Prefer concrete proof: file and line, call chain, request/response shape, config, test, log, or command result.
-7. Separate confirmed findings from suspicions and from areas not reviewed.
+检查字段类型、空体、非法 JSON、大小、枚举；未登录、会话过期、越租户越所有权、禁用/删除资源；分页排序过滤、时区和精度；刷新/重试引起重复写；超时取消与旧错误格式。
 
-## Web And API Checklist
+事务应覆盖相关写入；重复业务由唯一约束、幂等或状态机保护，拒绝无效跳转和重复终态。半成功不能破坏资金、库存、配额或权限。后台任务可安全重试，迁移正确处理旧行和空历史数据。
 
-- Missing required field, wrong type, empty body, malformed JSON, oversized body, and unexpected enum values.
-- Unauthorized, forbidden, expired session, wrong tenant, wrong owner, deleted resource, and disabled account.
-- Pagination, sorting, filtering, search, date range, timezone, and numeric precision boundaries.
-- Duplicate create/update/delete from refresh, retry, double click, network reconnect, or client race.
-- API timeout and cancellation behavior; no request should hang indefinitely without user feedback.
-- Error response compatibility; old clients should still receive stable codes and fields unless a breaking change was requested.
+## 界面
 
-## Data And State Checklist
+检查加载、空、失败、重试、只读、禁用、提交、未授权、过期、离线和超时；防重复操作且按钮标签稳定；切页、筛选、组件销毁后的过时响应不覆盖新状态；长输入、粘贴、输入法和慢网络可用。控制台、地址、提示和埋点不能泄露敏感数据。
 
-- Transaction boundary covers all related writes.
-- Unique constraints or idempotency keys prevent duplicate business effects.
-- State transitions reject invalid jumps and repeated terminal-state operations.
-- Partial failure does not leave money, inventory, permissions, quota, or order status inconsistent.
-- Background jobs, queues, cron tasks, webhooks, and callbacks can retry safely.
-- Migration/default values handle old rows and null historical data.
+## 安全
 
-## Frontend Checklist
+资源边界验证后端权限，日志只保留诊断所需的脱敏摘要。校验路径、跳转、URL、命令、SQL 片段、模板与对象键。排查隐藏参数、调试路由、测试账号、特殊硬编码角色和安装构建钩子。疑似后门保留证据，不运行、不擅自清理。
 
-- Loading, empty, error, retry, disabled, submitting, permission denied, login expired, offline, and timeout states render cleanly.
-- Buttons that trigger mutations prevent duplicate submission while preserving clear labels.
-- Requests are cancelled or ignored when components unmount, filters change, or stale responses return out of order.
-- User input validation handles empty values, long values, pasted values, IME input, and slow network.
-- Sensitive tokens, private IDs, full responses, and user data are not printed to console, toasts, URL, local storage, or analytics.
+## 报告
 
-## Security And Privacy Checklist
-
-- Backend authorization is checked at the resource boundary, not only at the menu, route, or UI button.
-- Logs and errors are useful for diagnosis but do not expose passwords, tokens, cookies, private keys, personal data, or full payment/order secrets.
-- File paths, redirects, URLs, template names, commands, SQL fragments, and object keys are validated before use.
-- Feature flags, debug routes, test accounts, hidden parameters, and hardcoded roles do not create hidden admin paths.
-- Dependency, script, and build hooks are not trusted without source and purpose review.
-
-## Output Requirements
-
-Lead with findings, not general encouragement. For each issue, include:
-
-- Severity: Critical, High, Medium, Low, or Info.
-- Evidence: file path, line, call chain, config, or command result.
-- Impact: what can go wrong and under what condition.
-- Fix: smallest safe correction.
-- Verification: how to prove the issue is fixed or absent.
-
-If no confirmed issue is found, say exactly what was checked and what was not checked. Avoid absolute claims such as "没有任何问题" unless the reviewed scope is truly exhaustive and verified.
+按严重、较高、中等、较低、提示排序；需要兼容工具时可附原文等级标识。每项包含文件行号/调用链、证据、条件、影响、最小修复及证明方式。无确认问题只说“本次审计未发现已确认的漏洞或后门”，同时说明命令、覆盖和未知，不作绝对安全保证。

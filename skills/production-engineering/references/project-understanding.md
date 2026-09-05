@@ -1,92 +1,21 @@
-# Project Understanding
+# 项目理解与架构分析
 
-Use this file for read-only project understanding, architecture teardown, codebase onboarding, and "help me understand this repository" tasks.
+用于理解、接手、梳理项目、解释架构和核心流程，或继续已有架构讨论。目标是说明真实项目为何这样组织，不是列完全部模块。普通修复、界面、文档和 Git 任务不默认经过架构长报告。
 
-The goal is to explain why the project is shaped this way, not to produce a long module inventory. Keep the analysis tied to the real files, runtime paths, and observable project structure.
+## 只读边界
 
-## When To Use
+不修改文件、Git、数据库、服务、浏览器状态或远端。不默认创建架构文档、图表、任务记录或安装第三方分析、记忆和技能。不运行未知脚本来理解代码。发现问题说明证据与影响，用户要求修复后才写入；真正需要续航时按原文状态边界处理。
 
-Read this file when the user asks to:
+## 第一遍只给全景
 
-- Understand,拆解,接手,梳理,学习, or explain a project.
-- Explain the architecture, main flow, module responsibilities, or system design.
-- Compare why a project uses caching, async jobs, queues, RAG, memory, middleware, storage layers, permissions, deployment boundaries, or observability.
-- Continue a previous architecture deep dive.
+证据足够时说明项目本质、解决的问题、主要请求/任务/数据流、核心约束，以及最值得先理解的二至四个机制。只引用证明结论的关键文件、路由、配置和命令，不罗列全部命中路径。
 
-Do not use this as the default path for ordinary bug fixing, implementation, README editing, UI work, deployment work, or Git delivery. Those tasks should stay on the normal production-engineering lanes unless the user explicitly asks to understand the project first.
+## 继续深入
 
-## Hard Boundary
+每次围绕一个核心问题：什么压力让机制存在，没有它会怎样，当前方案如何工作、何时触发、与上下游怎样连接、牺牲什么、何时需要升级。避免变成与仓库无关的通用架构课。
 
-Project understanding is read-only by default.
+## 证据与输出
 
-- Do not modify files, Git, databases, services, browser state, remotes, or external systems.
-- Do not create `architecture.md`, diagrams, reports, task-state files, or other artifacts unless the user explicitly asks for a file.
-- Do not install, copy, or depend on third-party skills, hooks, memory services, or analysis frameworks.
-- Do not run unknown project scripts or binaries just to understand architecture.
-- If a bug, security issue, or risky design is discovered, report evidence and impact; fix only after the user explicitly asks to modify.
+区分已确认、合理推断、尚未确认、下一项检查。局部扫描不能说全架构都已理解，说明已看与未看范围。常用输出是“一句话判断、项目主线、核心流程、关键机制、证据与未知”。用户没有要求文件时在对话回答；有明确产物请求才按指定位置生成。
 
-## First Pass
-
-For the first explanation, give a global map only. Avoid trying to explain every module.
-
-Answer these points when the real project provides enough evidence:
-
-- One-sentence judgment: what this project essentially is.
-- Main user or business problem it solves.
-- Core request, task, or data flow through the system.
-- The central architecture idea or constraint.
-- The 2 to 4 mechanisms most worth understanding first.
-- What should be examined next if the user wants a deeper dive.
-
-Keep code paths selective. Mention the few files, routes, commands, configs, or modules that prove the judgment, not every matching file.
-
-## Deep Dive
-
-For follow-up questions, focus on one core problem per answer.
-
-Good deep dives explain:
-
-- What pressure or constraint forced this mechanism to exist.
-- What would break or become costly without it.
-- What the current solution does in plain language.
-- How it is triggered and implemented at a concrete level.
-- How it connects to upstream and downstream modules.
-- What it trades off.
-- When this layer would need to be upgraded.
-
-Do not drift into a generic architecture lecture. Keep every claim tied back to this project: "this repository does X because its flow/config/state shows Y".
-
-## Evidence Standard
-
-Separate these clearly:
-
-- **Confirmed**: directly supported by files, configs, routes, tests, docs, logs, or runtime output.
-- **Reasonable inference**: likely from structure or naming, but not directly proven.
-- **Unknown**: not visible from the inspected scope.
-- **Next check**: the most useful file, flow, command, or question to inspect next.
-
-Never claim the whole architecture is understood after a narrow scan. State the reviewed scope and the important areas not inspected.
-
-## Output Shape
-
-For a normal chat answer, prefer this short structure:
-
-```text
-一句话判断
-
-项目主线
-
-核心流程
-
-最值得先懂的 2-4 个机制
-
-已确认 / 推断 / 未确认
-
-下一步最值得看什么
-```
-
-If the user explicitly asks for a Markdown document, write a concise document under the path they request. If no path is given, ask before creating files or provide the content in chat.
-
-## Source Note
-
-This workflow can learn from public project-teardown style methods, but it must remain this repository's own rule set. Do not copy third-party skill text wholesale, do not require third-party skill installation, and do not turn learning-oriented teardown into a mandatory step for every engineering task.
+可以借鉴公开分析方法，但不能整套复制第三方技能，也不能把学习型拆解强加给每个工程任务。

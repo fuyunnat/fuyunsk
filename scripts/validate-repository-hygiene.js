@@ -12,7 +12,7 @@ const result = spawnSync('git', ['ls-files', '-co', '--exclude-standard', '-z'],
 });
 
 if (result.status !== 0) {
-  throw new Error(`Unable to list Git-visible files:\n${(result.stderr || result.stdout || '').trim()}`);
+  throw new Error(`无法列出 Git 可见文件：\n${(result.stderr || result.stdout || '').trim()}`);
 }
 
 const secretPatterns = [
@@ -22,6 +22,7 @@ const secretPatterns = [
   /\bgithub_pat_[A-Za-z0-9_]{20,}\b/,
   /\bsk-(?:proj-)?[A-Za-z0-9_-]{24,}\b/,
   /\bxox[baprs]-[A-Za-z0-9-]{20,}\b/,
+  /\bfuyun-[A-Za-z0-9_-]{20,}\b/,
 ];
 
 function assertLocalMarkdownLinks(relPath, content) {
@@ -38,30 +39,30 @@ function assertLocalMarkdownLinks(relPath, content) {
     try {
       fileTarget = decodeURIComponent(target.split('#')[0]);
     } catch {
-      throw new Error(`Invalid encoded Markdown link in ${relPath}: ${target}`);
+      throw new Error(`Markdown 链接编码无效： ${relPath}: ${target}`);
     }
     if (fileTarget && !fs.existsSync(path.resolve(root, path.dirname(relPath), fileTarget))) {
-      throw new Error(`Broken local Markdown link in ${relPath}: ${target}`);
+      throw new Error(`本地 Markdown 链接失效： ${relPath}: ${target}`);
     }
   }
 }
 
 for (const relPath of result.stdout.split('\0').filter(Boolean)) {
   if (/(^|\/)(?:node_modules|dist|build|coverage)(\/|$)|(^|\/)\.DS_Store$/.test(relPath)) {
-    throw new Error(`Unexpected generated or dependency path: ${relPath}`);
+    throw new Error(`不应出现的产物或依赖路径： ${relPath}`);
   }
 
   const fullPath = path.join(root, relPath);
   const stat = fs.lstatSync(fullPath);
   if (stat.isFile() && stat.size > 2 * 1024 * 1024) {
-    throw new Error(`Unexpected large Git-visible file: ${relPath} (${stat.size} bytes)`);
+    throw new Error(`不应出现的大文件： ${relPath} (${stat.size} bytes)`);
   }
 
   if (stat.isFile() && /\.(?:md|js|json|ya?ml|txt)$/i.test(relPath)) {
     const content = fs.readFileSync(fullPath, 'utf8');
     for (const pattern of secretPatterns) {
       if (pattern.test(content)) {
-        throw new Error(`Potential secret detected in ${relPath}: ${pattern}`);
+        throw new Error(`发现疑似敏感信息： ${relPath}: ${pattern}`);
       }
     }
     if (relPath.endsWith('.md')) {
@@ -70,4 +71,4 @@ for (const relPath of result.stdout.split('\0').filter(Boolean)) {
   }
 }
 
-console.log('repository hygiene validation passed');
+console.log('仓库卫生检查通过');

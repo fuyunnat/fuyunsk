@@ -1,83 +1,31 @@
-# AI Installation Guide
+# 安装和升级
 
-Install the skill in performance-first, explicit-only mode.
-
-## Installation Request
-
-Send this to Codex:
+把下面内容交给本机 Codex：
 
 ```text
-请安装或原位更新这个 skill：
-
-https://github.com/fuyunnat/fuyunsk/tree/main/skills/production-engineering
-
-要求：
-1. 识别当前客户端实际使用的用户级 skill 目录；同名 skill 只保留一份，不要同时安装到 ~/.agents/skills 和 ~/.codex/skills。
-2. 已有同名 skill 时，先做可恢复备份，再原位更新。
-3. 安装后确认 SKILL.md、agents/openai.yaml、references/routing.md、references/task-lanes.md 和 scripts/task-state.js 存在。
-4. 确认 agents/openai.yaml 中 policy.allow_implicit_invocation 为 false。
-5. 默认不要把 global-AGENTS.example.md 或 docs/personal-custom-instructions.md 合并到全局上下文。确需兜底时二选一，并保持内容最小。
-6. 发现旧版长全局规则、旧个性化提示词或两个目录中的重复 skill 时，先备份，再移除重复或替换为当前短版；不要直接覆盖用户其他规则。
-7. 运行 node <SKILL_DIR>/scripts/task-state.js self-test。
-8. 用“你好”和“解释一下 JavaScript 闭包”验证不会自动加载 skill。
-9. 再用“$production-engineering 看看当前项目有没有问题，先别改”验证显式调用可用。
-10. 不要因为新对话自动运行 task-state resume；只有继续旧任务、交接、多阶段工作或上下文丢失风险时才运行。
-11. 最后报告实际安装路径、备份路径、是否存在重复副本、隐式调用是否关闭，以及三项验证结果。
+请原位安装或更新 https://github.com/fuyunnat/fuyunsk/tree/main/skills/production-engineering 。
+先识别当前客户端实际使用的技能目录；同名技能只保留一份，不在 ~/.agents/skills 和 ~/.codex/skills 重复安装。
+升级前给旧技能和将要修改的全局规则建立带时间戳的可恢复备份。
+读取新版 SKILL.md；确认中文说明、原文切片和来源校验文件齐全，allow_implicit_invocation 为 true。
+不要把完整原文复制进全局 AGENTS.md 或个性化提示词，不改 API Key、模型、MCP、沙箱或其他无关配置。
+旧版要求“只有手写技能名才执行”的规则应只在本技能管理的范围内更新；保留我的其他规则。
+报告安装位置、备份位置和验证结果，未实际执行的检查不要说通过。
 ```
 
-## Expected Layout
+## 安装后检查
 
-```text
-<SKILL_DIR>/
-  SKILL.md
-  agents/openai.yaml
-  scripts/task-state.js
-  scripts/task-state-core.js
-  references/routing.md
-  references/task-lanes.md
-  references/context-memory-continuity.md
-```
+技能目录应包含 `SKILL.md`、`agents/openai.yaml`、`references/source-original.md`、`references/source-speed.md`、`references/rules/`、`references/rules-speed/`、`references/rules-manifest.json` 和 `references/rules-index.md`。原文切片已随仓库发布，正常使用不需要先运行生成器。
 
-Use the directory selected by the current Codex client. Do not copy another machine's absolute path.
+客户端未刷新时退出重开。在全新会话分别验证：普通“你好”没有工程读文件或任务恢复；“修一下当前项目的按钮文案，先只改本地”能匹配工程规范；“审计但不要改”不会写入；实际提交和评审说明为中文。检查工具轨迹与真实文件，不能仅凭助手自称已使用。
 
-## Performance Rules
+## 原文和生成文件
 
-- Install the skill itself first.
-- Do not preload the whole repository.
-- Do not install both global fallback files.
-- Keep `allow_implicit_invocation: false`.
-- Invoke the workflow explicitly with `$production-engineering`.
-- Load `routing.md` first, then only the reference needed.
-- Do not run task-state recovery for ordinary new conversations.
+从仓库根运行 `node scripts/build-rules.js --check` 校验原稿与切片一致；维护者改生成逻辑后执行 `node scripts/build-rules.js`。未经用户明确变更规则，不更新原稿锁定值。完整自检运行 `node scripts/validate-skill.js`。
 
-## Migration From Older Versions
+## 本机延迟对比
 
-Older releases recommended implicit invocation plus a large global `AGENTS.md` fallback. That could make every turn carry engineering policy even when the user only said “hi”.
+使用相同客户端、模型、推理设置、项目与网络，各做几次旧版/新版对照，记录发送到首个实际内容和整个请求耗时。排除首次加载、缓存与上游波动；查看是否额外扫描、初始化或重试。只读助手的本地耗时不是 Codex 总响应时间，不承诺所有请求秒回。
 
-Migration:
+## 回退
 
-1. Back up the current global `AGENTS.md`, personal instructions, and installed skill directory.
-2. Update the skill in place.
-3. Remove the old production-engineering block from global instructions, or replace it with the current minimal example.
-4. Do not keep the same rules in both global instructions and personal instructions.
-5. Remove duplicate installations after confirming the active directory.
-6. Restart Codex only when the client does not refresh skills automatically.
-7. Verify both a normal chat turn and an explicit skill turn.
-
-## Manual Checks
-
-Replace `<SKILL_DIR>` with the actual path:
-
-```bash
-test -f <SKILL_DIR>/SKILL.md
-test -f <SKILL_DIR>/agents/openai.yaml
-test -f <SKILL_DIR>/references/routing.md
-grep -F 'allow_implicit_invocation: false' <SKILL_DIR>/agents/openai.yaml
-node <SKILL_DIR>/scripts/task-state.js self-test
-```
-
-Normal usage now requires explicit invocation:
-
-```text
-$production-engineering 修一下这个报错，先只改本地并验证。
-```
+保留旧技能备份并在需要时恢复同一安装目录；不要永久删除用户文件。仓库回退使用正常反向提交，不能强推改历史。仓库更新不等于用户电脑自动升级。

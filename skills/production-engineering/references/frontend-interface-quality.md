@@ -1,130 +1,59 @@
-# Frontend Interface Quality
+# 前端界面质量
 
-Use this reference for frontend pages, admin pages, management consoles, configuration pages, operations dashboards, shared UI components, and UI review tasks.
+用于前端、后台、管理台、配置页、共享组件和界面审查。必须结合原文第九章（`rules/09-00.md`）与受影响领域；已有项目设计系统和技术栈优先。以下补充来自此前采用的框架中立界面规则，不需要安装第三方技能。
 
-This file absorbs framework-agnostic interface quality ideas from Vercel Labs `vercel-labs/web-interface-guidelines` and adapts them to this skill. It does not install or depend on that third-party rule set. For existing projects, always follow the real current stack and design system first.
+## 检查深度与职责
 
-## Usage
+快速低风险只看受影响区和相邻布局；新后台、复杂表单表格、共享组件及完整任务检查全部适用项目。包裹式壳层另读 `wrapped-workspace-ui.md`，不替换项目主题。组件库原生属性、焦点、表单、弹窗和表格能力优先；页面、筛选、表格、弹窗、请求、状态、校验与格式化按现有职责落地，不堆进超大 `.vue`。
 
-- For new or changed admin pages, use this together with `full-production-engineering.md` section `## 九`.
-- For quick, low-risk UI changes, check only the touched region and adjacent layout.
-- For full-channel frontend tasks, new admin pages, complex forms, tables, dialogs, shared components, or UI review, apply the full checklist below.
-- For a framed or wrapped workspace shell, read `wrapped-workspace-ui.md` for the shell geometry, footer boundary, separator-line diagnosis, and acceptance checks. Keep this reference complementary to the project’s real stack and design system.
-- In Vue 3 + Vite + Ant Design Vue projects, prefer Ant Design Vue native components and props before custom ARIA, focus, modal, table, form, or tooltip logic.
-- For complex admin pages, keep page shell, filters/forms, table/list, modal/drawer, API service, store/state, validation/constants, and formatting helpers in the project's existing responsibility structure. Do not put multiple independent workflows into one `.vue` file just because it is faster.
+## 交互与可访问性
 
-## Interaction And Accessibility
+- 全部交互支持键盘，焦点可见；去掉轮廓前提供等价焦点样式。
+- 弹窗、抽屉、下拉、浮层正确进入、约束并恢复焦点，安全时支持 Escape。
+- 操作用按钮，跳转用真实链接，控件用标签，数据用表格；不要用可点击 `div` 冒充按钮。
+- 纯图标有可访问名称，必要时补提示；装饰图标对辅助技术隐藏。
+- 组件库未处理时，异步状态和验证用合适的读屏播报；状态不能只靠颜色。
+- 点击范围留容错：桌面至少 24px、触屏 44px 作为本规范设计目标；小图标可扩点击区。不能以此代替完整无障碍验收。
+- 不禁用浏览器缩放；移动输入文字通常不小于 16px，避免不必要的自动缩放。
 
-- All interactive flows must be keyboard-operable.
-- Focus must be visible. Do not remove outlines unless an equivalent `:focus-visible` replacement exists.
-- Modals, drawers, popovers, dropdowns, and confirm dialogs must manage focus: move focus in, trap where appropriate, restore focus on close, support Escape when safe.
-- Use semantic elements first: `button` for actions, `a` or router link for navigation, `label` for controls, `table` for tabular data.
-- Do not use clickable `div` or `span` as a substitute for button or link.
-- Icon-only buttons must have a descriptive accessible name and, when useful, a tooltip.
-- Decorative icons and purely decorative elements must be hidden from assistive tech.
-- Toasts, inline validation, and async status changes should be announced with polite live-region semantics when the component library does not already do this.
-- Status must not rely on color alone; pair color with text, icon shape, or explicit label.
-- Hit targets must be forgiving: at least 24px on desktop and 44px on touch screens; expand hit area when the visible icon is smaller.
-- Do not disable browser zoom. On mobile, keep input text at 16px or larger to avoid unwanted iOS zoom.
+## 表单
 
-## Forms
+- 标签可见或提供可访问名称，占位文本不能代替标签；点击标签能聚焦控件。
+- 合理设置 `name`、`autocomplete`、`type`、`inputmode`；密码、验证码、密钥等不禁粘贴，不破坏密码管理器。
+- 接受输入后显示验证反馈，不随意阻止打字；必要时允许一次提交展示所有错误。
+- 请求真正开始后显示进度并防重，原按钮标签不消失。错误靠近字段，提交后尽可能聚焦首个错误。
+- 未保存离开要提示；复选、单选标签和控件共享宽松点击区。
+- 邮箱、代码、账号等按需关闭拼写检查；去首尾空格在正确验证/提交边界进行，避免打字中意外改写。
 
-- Every field needs a visible label or an accessible label. Placeholder text is not a replacement for a label.
-- Clicking a label should focus or toggle the associated control.
-- Use meaningful `name`, `autocomplete`, `type`, and `inputmode` values.
-- Never block paste in input, textarea, password, OTP, code, phone, email, or token fields.
-- Do not block typing to enforce validation. Accept text, then show clear validation feedback.
-- Keep submit available until the request actually starts; then show submitting/loading state and prevent duplicate submission.
-- Loading buttons should keep their original label and add a spinner or progress indicator.
-- Errors must appear near the relevant field; after submit, focus the first invalid field when feasible.
-- Allow incomplete submission when needed to surface all validation errors at once.
-- Warn before navigation when unsaved user input would be lost.
-- Checkboxes and radios must avoid dead zones: label and control should share one generous hit target.
-- Disable spellcheck only where appropriate, such as emails, codes, usernames, keys, and IDs.
-- Password managers and 2FA flows must not be broken by custom fields.
-- Trim user input only at the correct boundary, such as before validation or submit, and avoid surprising visible edits while typing.
+## 导航与状态
 
-## Navigation And State
+用真实链接支持新标签、复制链接和快捷键。需要分享、刷新或返回时，将筛选、搜索、页签、分页、排序、选中和展开状态反映在 URL 或路由状态；尽可能恢复滚动位置。每个错误和空状态提供重试、返回、取消或恢复路径。危险动作有确认或撤销机制，不应误点一次直接执行。
 
-- Navigation must use real links or router links so Cmd/Ctrl-click, middle-click, copy link, and open in new tab work.
-- Filters, search terms, tabs, pagination, sort order, selected row, and expanded panels should be reflected in the URL when users need refresh, share, history, or back/forward support.
-- Back/Forward should restore meaningful scroll position and view state when feasible.
-- Every page, state, dialog, or error screen should offer a next step, retry, undo, close, back, or recovery path.
-- Destructive actions require confirmation, a clear risk label, or an undo window. They must not execute from accidental single clicks.
+## 布局与内容
 
-## Layout And Visual Quality
+- 对齐到明确网格、边缘或基线，优先 CSS 栅格、弹性和自然布局，不依赖无谓测量。
+- 检查可见滚动条、长内容、横向溢出和移动安全区。图文的重量、尺寸、间距协调。
+- 圆角、边框、背景和阴影表达层级，不为装饰叠加；内层不抢外层重点。
+- 悬停、激活、选中、加载、只读、禁用、错误、成功与焦点清楚且稳定。
+- 后台保留可扫描的信息密度、稳定工具栏和清楚恢复路径，不做营销大页面。
+- 空、短、普通、极长文本均有处理；长 ID、URL、邮箱、型号和路径有明确换行、截断或详情。
+- 需要截断的弹性子项设置 `min-width: 0` 或等价约束；稀疏和部分响应有回退状态。
+- 骨架预留最终形状防跳动；金额、计数和时间等可比较数据使用稳定数字宽度。
+- 时间、货币、数字、文件大小按项目语言环境格式化；品牌、型号、代码和环境变量不误翻译。
+- 错误文案指出下一步，不只说失败。
 
-- Every element must intentionally align to a grid, edge, baseline, or optical center. No accidental floating controls.
-- Prefer CSS flex, grid, and intrinsic layout over JavaScript measurement.
-- Avoid unwanted scrollbars and horizontal overflow; test with visible scrollbars and long content.
-- Respect safe areas on full-bleed or mobile layouts.
-- Text and icon lockups must balance weight, size, spacing, and color.
-- Nested radii should be visually consistent; child radius should not exceed parent radius unless the design system says so.
-- Borders, shadows, and backgrounds should support hierarchy and clarity, not decoration for its own sake.
-- Hover, active, disabled, loading, readonly, selected, error, success, and focus states must be visually distinct and stable.
-- For admin pages, preserve scan efficiency: dense but readable tables, stable toolbars, clear filters, predictable actions, and visible recovery states.
+## 动效与媒体
 
-## Content Handling
+动画可选且服务状态，不用装饰掩盖布局；尊重减少动画偏好。优先组件/CSS现有动效，使用 `transform`、`opacity` 等，禁止 `transition: all`；需改变布局属性时说明测量理由。动效可打断，不无限自动播放；SVG 变换保持跨浏览器兼容，必要时变换外层。
 
-- Text containers must handle empty, short, normal, and very long content.
-- Long labels, IDs, URLs, emails, model names, user names, order numbers, and file paths must truncate, wrap, clamp, or show details intentionally.
-- Flex children that must truncate need `min-width: 0` or the framework equivalent.
-- Empty arrays, empty strings, null values, sparse data, and partial API responses must render clean empty or fallback states.
-- Skeletons and loading placeholders should reserve the final shape to avoid layout shift.
-- Use tabular numbers for comparable numeric columns, counters, prices, balances, quotas, timestamps, and metrics.
-- Dates, times, numbers, currencies, and file sizes should use locale-aware formatting where the project supports it.
-- Brand names, code tokens, model IDs, environment variables, command snippets, and technical identifiers should be protected from unwanted translation when relevant.
-- Error messages should explain the next action, not only state that something failed.
+图片有合适替代文字，装饰图留空；明确尺寸/比例防位移。首屏关键图片按项目策略优先，折叠以下懒加载，避免过大媒体。
 
-## Animation And Motion
+## 性能
 
-- Animation is optional and must serve clarity. Do not add decorative motion to hide weak layout.
-- Respect reduced-motion preferences.
-- Prefer CSS transitions or component-library motion before adding animation dependencies.
-- Animate compositor-friendly properties such as `transform` and `opacity`.
-- Do not use `transition: all`; list the actual properties.
-- Avoid animating layout properties such as width, height, top, left, margin, and padding unless there is a measured reason.
-- Animations should be interruptible and tied to user input or state changes, not unbounded autoplay.
-- SVG transforms should be applied in a cross-browser-safe way; when needed, animate a wrapper group instead of fragile child geometry.
+大表分页、懒加载或虚拟化，不默认渲染大量重行。渲染期不反复读取布局，必要测量批量处理。搜索筛选联想有防抖、取消或低成本更新；请求慢时即时反馈进度、防重并提供重试。字体预加载、预连接仅指向真实使用的资源，不滥加域名。有性能问题时在受限设备和网络下测量。
 
-## Images And Media
+## 视觉验收
 
-- Images must include useful alt text, or empty alt text when decorative.
-- Reserve image dimensions or aspect ratio to prevent layout shift.
-- Critical above-fold images may be preloaded or prioritized when the stack supports it; below-fold images should lazy-load.
-- Do not ship oversized media when a smaller asset satisfies the viewport and density needs.
+按适用范围检查标签、键盘、焦点、表单错误、防重和未保存提示；真实链接、返回和危险确认；对齐间距、滚动条、长文本、空/稀疏/密集/失败状态；表格列宽、数字、操作、分页；减少动画和图片加载；桌面、笔记本、平板与手机。快速任务只验受影响区域，完整任务不能只看一张正常态截图。
 
-## Performance
-
-- Large lists and tables need pagination, lazy loading, virtualization, or `content-visibility` style containment; do not render hundreds of heavy rows by default.
-- Avoid layout reads and DOM measurement during render. Batch reads and writes when measurement is unavoidable.
-- Search, filter, autocomplete, and expensive input-driven operations need debounce, cancellation, or cheap per-keystroke updates.
-- Mutating requests should give quick feedback; if slow, show progress, disable duplicate actions, and make retry/rollback clear.
-- Preconnect, preload fonts, and asset hints should follow project conventions and only target domains actually used by the page.
-- Profile on constrained CPU/network when performance is part of the issue.
-
-## Frontend Review Checklist
-
-When reviewing or final-verifying UI code, check:
-
-- Accessibility: labels, accessible names, semantic controls, keyboard path, focus ring, live regions, color-independent status.
-- Forms: labels, autocomplete, input mode, paste support, validation, first-error focus, submit loading, duplicate-submit protection, unsaved-change warning.
-- Navigation: real links, URL state, back/forward behavior, recovery path, destructive confirmation.
-- Layout: alignment, spacing, safe areas, overflows, scrollbars, long content, empty/sparse/dense/error states.
-- Tables/lists: stable columns, tabular numbers, long text handling, pagination/virtualization, row actions, bulk actions, loading and empty states.
-- Motion: reduced-motion support, no `transition: all`, transform/opacity preference, interruptible state-driven animation.
-- Media: alt text, explicit dimensions/aspect ratio, lazy loading or priority where appropriate.
-- Performance: large render loops, layout measurement, unnecessary re-renders, input cost, image/font loading.
-- Responsive: desktop, normal laptop, tablet, mobile, ultra-wide where relevant.
-
-## Review Output
-
-For UI review tasks, lead with concrete findings. Use file and line references when available:
-
-```text
-src/views/AdminUsers.vue:42 - icon-only action button needs aria-label or tooltip.
-src/views/AdminUsers.vue:88 - filter state is local only; pagination/search should be URL-backed for refresh/back support.
-src/views/AdminUsers.vue:137 - table amount column should use tabular numbers and stable alignment.
-```
-
-If no issue is found, say the checked scope passed and list any unverified browser, device, account, data, or screenshot limitations.
+报告具体文件与行号，例如“纯图标操作缺少可访问名称”“筛选分页无法在返回后恢复”“金额列对齐不稳定”。无法运行浏览器、拿到账号或截图时明确未完成视觉验收，不能说已全面通过。
