@@ -30,7 +30,9 @@ const {
 function usage() {
   process.stdout.write(`用法：
   task-state.js resume --repo <路径> [--json]
-  task-state.js init --repo <路径> --goal <文字> --lane <文字> [选项]
+  task-state.js init --repo <路径> --goal <文字> --lane <文字> [--migration <迁移台账>] [选项]
+  task-state.js attach-migration --repo <路径> --migration <迁移台账>
+  task-state.js extend-migration --repo <路径> --migration <新台账> --reason <扩充原因>
   task-state.js update --repo <路径> [字段选项]
   task-state.js implementation-complete --repo <路径> [--next-step <文字>]
   task-state.js run --repo <路径> -- <程序> <参数...>
@@ -85,6 +87,8 @@ function resumeResult(repository, statePath, fields, discoveredFromScope = '') {
     repositoryExists,
     statePath,
     discoveredFromScope: discoveredFromScope || undefined,
+    migrationManifest: fields['Migration manifest'] || '',
+    migrationBaseline: fields['Migration baseline'] || '',
     taskId: fields['Task ID'] || '',
     taskStatus: status,
     implementationStatus: fields['Implementation status'] || '',
@@ -182,6 +186,7 @@ function commandInit(repo, options) {
   const summary = gitSummary(repo);
   const current = fingerprint(repo);
   const fields = {
+    ...(options.migration ? require('./migration-core').bindMigration(repo, options.migration) : {}),
     'Task ID': options['task-id'] && options['task-id'] !== true ? options['task-id'] : taskId(),
     'Latest user goal': options.goal,
     'Acceptance criteria': options.acceptance && options.acceptance !== true ? options.acceptance : '明确并验证请求结果，不扩大范围。',
@@ -227,6 +232,9 @@ function validateUpdateTransitions(options) {
 }
 
 function commandUpdate(repo, options) {
+  if (['migration', 'migration-manifest', 'migration-baseline', 'migration-history'].some(key => options[key] !== undefined)) {
+    throw new Error('迁移绑定不能通过 update 清除或替换；首次登记使用 attach-migration。');
+  }
   validateUpdateTransitions(options);
   const state = requireState(repo);
   const current = fingerprint(repo);
@@ -340,7 +348,8 @@ function commandCheck(repo, options) {
     state.fields['Verified fingerprint'] === current
   );
   const complete = state.fields['Task status'] === 'complete';
-  const readyToFinalize = implementationComplete && verificationCurrent;
+  const migration = migrationGate(repo, state.fields);
+  const readyToFinalize = implementationComplete && verificationCurrent && migration.ok;
   const ok = (
     missing.length === 0 &&
     !stale &&
@@ -355,6 +364,7 @@ function commandCheck(repo, options) {
   output({
     ok,
     readyToFinalize,
+    migration,
     complete,
     statePath: state.statePath,
     missing,
@@ -398,6 +408,9 @@ function commandFinalize(repo, options) {
     throw new Error('已验证指纹与当前差异不一致。');
   }
 
+  const migration = migrationGate(repo, state.fields);
+  if (!migration.ok) throw new Error(`迁移完成检查未通过：${migration.errors.join('；')}`);
+
   state.fields['Task status'] = 'complete';
   state.fields['Current fingerprint'] = current;
   state.fields['Next step'] = '任务完成；保留证据并清楚报告交付状态。';
@@ -407,6 +420,25 @@ function commandFinalize(repo, options) {
     : '未声明';
   writeState(repo, state.statePath, state.fields);
   output({ finalized: true, statePath: state.statePath, fingerprint: current });
+}
+
+
+function migrationGate(repo, fields) {
+  if (!fields['Migration manifest'] && !fields['Migration baseline']) return { applicable: false, ok: true };
+  return require('./migration-core').checkBoundMigration(repo, fields);
+}
+
+function commandAttachMigration(repo, options, extend = false) {
+  const state = requireState(repo);
+  if (!['active', 'blocked'].includes(state.fields['Task status'])) throw new Error('只能给未完成任务登记迁移');
+  if (!extend && (state.fields['Migration manifest'] || state.fields['Migration baseline'])) throw new Error('迁移已经绑定，不能覆盖盘点基线');
+  if (typeof options.migration !== 'string') throw new Error('需要 --migration <迁移台账>');
+  const migration = require('./migration-core');
+  Object.assign(state.fields, extend ? migration.extendBinding(repo, state.fields, options.migration, options.reason) : migration.bindMigration(repo, options.migration));
+  state.fields['Verification status'] = 'pending';
+  state.fields['Verified fingerprint'] = 'none';
+  writeState(repo, state.statePath, state.fields);
+  output({ attached: true, manifest: state.fields['Migration manifest'], baseline: state.fields['Migration baseline'] });
 }
 
 function commandSelfTest() {
@@ -492,6 +524,12 @@ function main() {
       break;
     case 'init':
       commandInit(repo, options);
+      break;
+    case 'extend-migration':
+      commandAttachMigration(repo, options, true);
+      break;
+    case 'attach-migration':
+      commandAttachMigration(repo, options);
       break;
     case 'update':
       commandUpdate(repo, options);

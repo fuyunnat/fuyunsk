@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "sourceRevision": "替换为已核实的完整旧提交SHA或内容哈希",
+  "sourceLanguage": "填写实际旧语言与版本",
+  "targetLanguage": "填写目标语言与版本",
+  "scope": "填写实际迁移范围、不可改变的业务和不属于本次的项目",
+  "reviewReference": "填写盘点审阅记录位置，不得伪造已审阅",
+  "discovery": [
+    {"surface": "页面、API、权限、初始化、任务、队列、回调、配置、部署", "evidence": "分别列真实入口和交叉核对的证据；不适用项说明依据"}
+  ],
+  "features": [
+    {
+      "id": "example-feature",
+      "name": "示意功能，安装不会自动盘点真实项目",
+      "oldLocations": ["填写旧实现与调用方位置"],
+      "behavior": "填写成功、失败、权限、数据与副作用的兼容约定",
+      "dependsOn": [],
+      "requiredChecks": ["example-success", "example-failure"]
+    }
+  ],
+  "acceptanceChecks": [
+    {"id": "full-regression", "description": "目标冻结后全量适用回归，覆盖旧请求、旧数据及共享依赖"},
+    {"id": "resume-drill", "description": "无历史聊天的新会话恢复演练，有可核对报告"},
+    {"id": "rollback-drill", "description": "隔离环境核对代码、数据与配置回退，不操作生产"}
+  ]
+}
