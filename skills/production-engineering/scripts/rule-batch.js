@@ -17,6 +17,7 @@ const stages = {
 
 // 对齐 routing.md 的领域并集。旧 --topic 仍为原有精确主题，不改变其含义。
 const domains = {
+  '整项目迁移': { topics: ['代码组织', '接口', '灰度回滚', '验证'], ids: ['06-00'], references: ['project-migration.md', 'design-testing.md'] },
   '前端': { topics: ['代码组织', '前端', '性能', '验证'], ids: ['06-00'], references: ['frontend-interface-quality.md'] },
   '后端': { topics: ['代码组织', '后端', '接口', '性能', '日志', '验证'], references: ['design-testing.md'] },
   '接口': { topics: ['后端', '接口', '并发', '安全', '日志', '验证'], references: [] },
@@ -33,11 +34,12 @@ const referenceNames = new Set([
   'task-lanes.md', 'context-memory-continuity.md', 'frontend-interface-quality.md',
   'wrapped-workspace-ui.md', 'design-testing.md', 'diagnosis-feedback-loop.md',
   'code-risk-review.md', 'content-writing-quality.md', 'spec-review.md',
-  'project-understanding.md', 'source-policy.md',
+  'project-understanding.md', 'source-policy.md', 'project-migration.md',
 ]);
 
 function planBatch(stage, topics = [], references = []) {
   if (!Object.hasOwn(stages, stage)) throw new Error(`未知读取阶段：${stage}`);
+  if (stage === '小改' && topics.includes('整项目迁移')) throw new Error('整项目迁移不能使用小改阶段；先只读规划，再按实现阶段执行');
   const chosen = stages[stage];
   const result = {
     stage,

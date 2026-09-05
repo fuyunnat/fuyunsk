@@ -72,3 +72,7 @@ node "<技能目录>/scripts/read-rules.js" --id 00-00 --json
 相同客户端、模型、推理设置、项目及网络下重复少量前后对照，区分首次加载、缓存和上游波动。文件读取耗时不等于模型首字延迟，不承诺所有请求秒回；不为跑分更改用户配置。
 
 安装路径和覆盖行为以当前客户端实际情况及官方文档为准：[个性化设置](https://developers.openai.com/codex/app/settings)、[个人与项目指令](https://developers.openai.com/codex/guides/agents-md)、[技能目录和自动调用](https://developers.openai.com/codex/skills)。这些是客户端机制说明，不替代用户原始工程规范。
+
+## 迁移专项的安装验收
+
+完整复制技能时包含 `references/project-migration.md`、`scripts/migration-check.js`、`scripts/migration-core.js` 和 `templates/` 两份迁移示例。示例不能当成用户项目的实际盘点，也不能在安装时运行迁移或建立业务台账。普通聊天与页面小改不加载迁移专项；只有整项目重写、跨语言或全量架构迁移按入口绑定台账。安装验证可只运行 `migration-check.js --help`，完整仓库自检已包含独立夹具测试。
