@@ -1,0 +1,78 @@
+name: 聊天源目录与动态清单验证
+on:
+  push:
+    branches: [feat/root-workflow-20260906]
+    paths:
+      - .github/scripts/project-source-binding.py
+      - .github/workflows/project-source-binding.yml
+permissions:
+  contents: write
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: 在固定主线准备定向改动
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REPOSITORY" = fuyunnat/fuyunsk
+          test "$GITHUB_REF_NAME" = feat/root-workflow-20260906
+          git worktree add --detach "$RUNNER_TEMP/source-binding-candidate" 333924e4bd12e1946d09436495228d75a26d5c57
+          python3 .github/scripts/project-source-binding.py "$RUNNER_TEMP/source-binding-candidate"
+      - name: 验证目录与动态清单契约及全部原有测试
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP/source-binding-candidate"
+          node --check tests/workflow-checklist.test.js
+          node scripts/validate-skill.js
+          git diff --check
+          git diff --stat
+      - name: 保存已验证源码，不直接修改主线
+        shell: bash
+        env:
+          GIT_AUTHOR_NAME: github-actions[bot]
+          GIT_AUTHOR_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
+          GIT_COMMITTER_NAME: github-actions[bot]
+          GIT_COMMITTER_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP/source-binding-candidate"
+          python3 - <<'PY'
+          from pathlib import Path
+          import os
+          p=Path('工作流程.md')
+          s=p.read_text()
+          s=s.replace('当前项：S002；下一步：运行完整自检并核对差异。','当前项：S003；下一步：提交已验证源码到主线，成功并复核后回填交付。')
+          s=s.replace('- [ ] S002【进行中】验证入口、模板、安装边界、动态清单契约与原有自检。','- [x] S002【已完成】验证入口、模板、安装边界、动态清单契约与原有自检；证据：GitHub Actions '+os.environ['GITHUB_RUN_ID']+' 已成功执行 node scripts/validate-skill.js、语法与差异检查；静态契约不冒充实际模型隔离行为。')
+          s=s.replace('- [ ] S003【待做】','- [ ] S003【进行中】')
+          p.write_text(s)
+          assert s.count('## 任务：source-root-binding-20260906')==1
+          assert '- [ ] S003【进行中】' in s
+          PY
+          git add -- README.md docs/ai-installation.md docs/personal-custom-instructions.md global-AGENTS.example.md skills/production-engineering/SKILL.md skills/production-engineering/references/workflow-checklist.md skills/production-engineering/references/context-memory-continuity.md skills/production-engineering/templates/workflow.example.md tests/workflow-checklist.test.js 工作流程.md
+          git diff --cached --check
+          test "$(git diff --cached --name-only | wc -l | tr -d ' ')" = 10
+          test -z "$(git diff --name-only)"
+          test -z "$(git ls-files -o --exclude-standard)"
+          TREE=$(git write-tree)
+          COMMIT=$(printf '%s\n' 'fix(skill): 保存已验证的聊天源目录绑定和动态清单' | git commit-tree "$TREE" -p "$GITHUB_SHA")
+          echo "VERIFIED_TREE=$TREE"
+          echo "VERIFIED_COMMIT=$COMMIT"
+          git archive --format=zip --output="$RUNNER_TEMP/project-root-verified.zip" "$TREE"
+          printf 'BASE=%s\nTREE=%s\nCOMMIT=%s\n' 333924e4bd12e1946d09436495228d75a26d5c57 "$TREE" "$COMMIT" > "$RUNNER_TEMP/project-root-verified.txt"
+          git push origin "$COMMIT:refs/heads/feat/root-workflow-20260906"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: project-root-verified
+          path: |
+            ${{ runner.temp }}/project-root-verified.zip
+            ${{ runner.temp }}/project-root-verified.txt
+          retention-days: 3
