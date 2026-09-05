@@ -1,14 +1,16 @@
 # 原文执行路由
 
-入口负责通用边界，本文件负责把当前任务映射到原文。正文不是替代原文的缩写。读取 `rules-index.md` 可以找到每段的精确位置；以下主题也可通过只读助手一次提取：
+入口负责通用边界，本文件负责领域补查，不是每次必经的串行步骤。正文不替代原文。已知阶段与领域时先一次取齐原文和专项说明；未知条款才查 `rules-index.md`：
 
 ```bash
-node <技能目录>/scripts/read-rules.js --topic 前端
+node <技能目录>/scripts/read-rules.js --stage 实现 --topic 前端
 node <技能目录>/scripts/read-rules.js --topic 接口,数据库
 node <技能目录>/scripts/read-rules.js --id 04-04
 ```
 
-没有 Node.js 时直接按索引读文件，不安装运行环境。助手只读本技能条款，不扫描项目、不联网、不执行 Git、不恢复状态。
+没有 Node.js 时直接按索引读文件，不安装运行环境。助手只读本技能条款，不扫描项目、不联网、不执行 Git、不恢复状态。`--stage` 按下表扩展领域并集并一并返回专项文件，不只取单章；旧 `--topic` / `--id` 的条款与原始文本不变；第九章附带 `amendments` 当前选型，不能只取原文旧默认。额外专项可用 `--reference design-testing.md` 同批读取。
+
+阶段由模型依据任务模式、风险和授权选择，不由读取器猜测。只读不写入；小改必须满足全部快速条件，不能用参数降级高风险。验证、提交等阶段只取当前阶段；新任务从中途开始需同批追加 `--topic 通用,适用方式`。只有内容仍在上下文且版本未变才不重读；截断、压缩丢失或升级后重新读取所缺部分。
 
 ## 领域路由
 
@@ -18,7 +20,7 @@ node <技能目录>/scripts/read-rules.js --id 04-04
 | 明确局部小改 | 零章快速条件、三、六、七的适用部分 | 不读整个 Git 交付流程 |
 | 内容和工程文档 | 二章内容补充、六、二十一、二十三 | `content-writing-quality.md` |
 | 后端 | 七、八、十、十一、十八、二十 | `design-testing.md` |
-| 前端与后台 | 六、七、九、十一、二十 | `frontend-interface-quality.md`；只检查适用视觉范围 |
+| 前端与后台（所有页面） | 六、七、九、十一、二十 | `frontend-stack.md` 替代旧默认，统一 shadcn/ui + Tailwind CSS；`frontend-interface-quality.md` 负责质量 |
 | 包裹式工作台 | 同前端 | `wrapped-workspace-ui.md` |
 | API、回调与联调 | 八、十、十四、十七、十八、二十 | 按实际影响补数据库、配置 |
 | 性能与容量 | 十一及受影响领域 | `diagnosis-feedback-loop.md`，先基准后修复 |

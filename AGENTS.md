@@ -4,7 +4,7 @@
 
 ## 规则保真
 
-用户最后上传原文是执行基准。两份上传原文和重构前完整规范由 `references/source-lock.json` 锁定。未经用户明确授权不得改原稿字节、更新锁值、删除约束或弱化验证。生成的 `rules/` 和 `rules-speed/` 必须由 `node scripts/build-rules.js` 更新，不手工改切片。每段都要有原文范围与校验；差异、冲突和例外必须明示。
+用户最后上传原文是执行基准。两份上传原文和重构前完整规范由 `references/source-lock.json` 锁定。最新用户的前端选型修改记录在 `skills/production-engineering/references/frontend-stack.md`，它只覆盖旧默认；其他原文要求不变。未经用户明确授权不得改原稿字节、更新锁值、删除约束或弱化验证。生成的 `rules/` 和 `rules-speed/` 必须由 `node scripts/build-rules.js` 更新，不手工改切片。每段都要有原文范围与校验；差异、冲突和例外必须明示。
 
 ## 修改边界
 
