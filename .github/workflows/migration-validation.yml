@@ -1,0 +1,22 @@
+name: 整项目迁移专项验证
+on:
+  push:
+    branches: [feature/project-migration-guard]
+permissions:
+  contents: read
+jobs:
+  baseline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: 导出固定基线
+        run: git archive --format=zip --output=/tmp/migration-baseline.zip 2946352d05ed0008607e9d9d503380b62ee6bd89
+      - uses: actions/upload-artifact@v4
+        with:
+          name: migration-baseline
+          path: /tmp/migration-baseline.zip
+          retention-days: 3
