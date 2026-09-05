@@ -38,7 +38,7 @@
 
 ## 四、分开验证文件与实际调用
 
-**文件验证**：确认有效技能目录包含 `SKILL.md`、`agents/openai.yaml`、`references/source-original.md`、`references/source-speed.md`、`references/source-lock.json`、`references/rules/`、`references/rules-speed/`、`references/rules-manifest.json`、`references/rules-index.md` 和 `scripts/read-rules.js`；与本次固定提交的对应文件校验一致。确认短块写入位置、路径、覆盖关系和重复副本处理结果。
+**文件验证**：确认有效技能目录包含 `SKILL.md`、`agents/openai.yaml`、`references/source-original.md`、`references/source-speed.md`、`references/source-lock.json`、`references/rules/`、`references/rules-speed/`、`references/rules-manifest.json`、`references/rules-index.md` 、`references/frontend-stack.md`、`scripts/rule-batch.js` 和 `scripts/read-rules.js`；与本次固定提交的对应文件校验一致。确认短块写入位置、路径、覆盖关系和重复副本处理结果。
 
 有 Node.js 时，先检查脚本再执行只读验证：
 
@@ -58,6 +58,8 @@ node "<技能目录>/scripts/read-rules.js" --id 00-00 --json
 | `审查当前测试项目有没有明显代码问题，先别修改。` | 能进入审查流程，同时保持只读 |
 
 测试使用无敏感信息的独立小项目，不能拿生产操作或真实用户数据验证。缺少新会话控制、CLI、权限或模型访问时，明确“文件安装已完成，实际自动调用待验证”，给出一个必要下一步；不要让用户重新做 AI 已能完成的安装步骤。显式 `$production-engineering` 仅用于调用失败后的定位，不能算自动触发通过。
+
+新增页面验收还要确认当前规则是 shadcn/ui + Tailwind CSS，不再把原稿 Vue/Ant 默认当作新页面选型。只读检查批量命令可以使用 `--stage 只读 --topic 前端`；这只验证读取，不执行页面创建或迁移。
 
 ## 五、完成报告与恢复
 

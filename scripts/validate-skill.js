@@ -10,10 +10,13 @@ const entry=read(skill+'SKILL.md');assert.match(entry,/^---\nname: production-en
 assert.match(read(skill+'agents/openai.yaml'),/allow_implicit_invocation: true/);
 budget(skill+'SKILL.md',6000);budget(skill+'references/routing.md',5000);budget('global-AGENTS.example.md',1800);
 const description=entry.match(/^description: "(.*)"$/m)[1];assert.ok(Buffer.byteLength(description)<700,'自动匹配描述过长');
-includes(skill+'SKILL.md',['默认中文','八荣八耻','第一性原理','300/400/600','函数 80','Ant Design Vue','回归','原文第四章','高风险','不因新对话','无法']);
+includes(skill+'SKILL.md',['默认中文','八荣八耻','第一性原理','300/400/600','函数 80','shadcn/ui','Tailwind CSS','回归','原文第四章','高风险','不因新对话','无法']);
 includes(skill+'references/routing.md',['前端与后台','中文提交格式','只读','04-00.md','source-policy.md']);
 includes(skill+'references/source-policy.md',['最后上传','原始字节','差异','冲突','不擅自']);
-includes('README.md',['原文','中文','验证','不等于']);
+includes(skill+'references/frontend-stack.md',['最新用户要求','新建前端页面','shadcn/ui + Tailwind CSS','tsx: false','已有项目的边界','其他要求继续执行']);
+includes('README.md',['原文','中文','验证','不等于','仅维护本技能','--stage']);
+includes(skill+'SKILL.md',['--stage 实现','业务任务跑业务项目测试','输出截断必须续读']);
+includes(skill+'references/task-lanes.md',['同一仓库写操作不并行','退出码','之前的测试证据']);
 // 安装说明的静态契约不等于已在用户电脑完成安装或自动调用验证。
 includes('README.md',['## 让 AI 自动安装','个性化 / Codex 说明','AGENTS.override.md','不要求你每次手写技能名','文件安装和自动调用要分别验证']);
 includes('docs/ai-installation.md',['默认安装必须完成本步骤','保留块外所有无关要求','扫描目录之外','同一短块','实际自动调用待验证','不能算自动触发通过']);
@@ -36,7 +39,7 @@ for(const p of docs){
  for(const match of s.matchAll(/`(references\/[a-zA-Z0-9_./-]+\.md)`/g))assert.ok(fs.existsSync(path.join(root,skill,match[1])),`入口引用缺失：${match[1]}`);
 }
 run(['scripts/build-rules.js','--check']);
-run(['--test','tests/rules.test.js','tests/task-state-behavior.test.js']);
+run(['--test','tests/rules.test.js','tests/task-state-behavior.test.js','tests/rule-batch.test.js','tests/frontend-stack.test.js']);
 run(['scripts/validate-routing-cases.js']);
 run(['scripts/validate-repository-hygiene.js']);
 run(['scripts/validate-task-state.js']);
