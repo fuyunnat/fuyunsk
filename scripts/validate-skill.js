@@ -18,7 +18,9 @@ includes('README.md',['原文','中文','验证','不等于','仅维护本技能
 includes(skill+'SKILL.md',['--stage 实现','业务任务跑业务项目测试','输出截断必须续读']);
 includes(skill+'references/task-lanes.md',['同一仓库写操作不并行','退出码','之前的测试证据']);
 includes(skill+'references/project-migration.md',['旧功能对照','恢复演练','不等于','只读','shadcn/ui + Tailwind CSS']);
-includes(skill+'SKILL.md',['整项目迁移','迁移台账']);
+includes(skill+'SKILL.md',['整项目迁移','迁移台账','工作流程.md']);
+budget(skill+'references/workflow-checklist.md',8500);
+assert.ok(fs.existsSync(path.join(root,skill,'templates/workflow.example.md')));
 budget(skill+'references/project-migration.md',14000);
 // 安装说明的静态契约不等于已在用户电脑完成安装或自动调用验证。
 includes('README.md',['## 让 AI 自动安装','个性化 / Codex 说明','AGENTS.override.md','不要求你每次手写技能名','文件安装和自动调用要分别验证']);
@@ -42,7 +44,7 @@ for(const p of docs){
  for(const match of s.matchAll(/`(references\/[a-zA-Z0-9_./-]+\.md)`/g))assert.ok(fs.existsSync(path.join(root,skill,match[1])),`入口引用缺失：${match[1]}`);
 }
 run(['scripts/build-rules.js','--check']);
-run(['--test','tests/rules.test.js','tests/task-state-behavior.test.js','tests/rule-batch.test.js','tests/migration.test.js','tests/frontend-stack.test.js','tests/intent-source.test.js']);
+run(['--test','tests/rules.test.js','tests/task-state-behavior.test.js','tests/rule-batch.test.js','tests/migration.test.js','tests/frontend-stack.test.js','tests/intent-source.test.js','tests/workflow-checklist.test.js']);
 run(['scripts/validate-routing-cases.js']);
 run(['scripts/validate-repository-hygiene.js']);
 run(['scripts/validate-task-state.js']);
