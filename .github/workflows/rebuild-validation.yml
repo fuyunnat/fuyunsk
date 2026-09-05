@@ -1,0 +1,22 @@
+name: 中文规范重构验证
+on:
+  push:
+    branches: [refactor/chinese-source-preservation-20260905]
+permissions:
+  contents: read
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: 导出固定基线（不运行仓库代码）
+        run: git archive --format=zip --output=/tmp/fuyunsk-baseline.zip 36f9f3b4afa1c63da67d09fcf4267a8e88b738b2
+      - uses: actions/upload-artifact@v4
+        with:
+          name: fuyunsk-baseline
+          path: /tmp/fuyunsk-baseline.zip
+          retention-days: 3
