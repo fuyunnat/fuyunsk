@@ -4,6 +4,7 @@ on:
     branches: [feat/root-workflow-20260906]
     paths:
       - .github/scripts/project-source-binding.py
+      - .github/scripts/compact-project-checklist.py
       - .github/workflows/project-source-binding.yml
 permissions:
   contents: write
@@ -26,6 +27,7 @@ jobs:
           test "$GITHUB_REF_NAME" = feat/root-workflow-20260906
           git worktree add --detach "$RUNNER_TEMP/source-binding-candidate" 333924e4bd12e1946d09436495228d75a26d5c57
           python3 .github/scripts/project-source-binding.py "$RUNNER_TEMP/source-binding-candidate"
+          python3 .github/scripts/compact-project-checklist.py "$RUNNER_TEMP/source-binding-candidate"
       - name: 验证目录与动态清单契约及全部原有测试
         shell: bash
         run: |
@@ -50,7 +52,9 @@ jobs:
           import os
           p=Path('工作流程.md')
           s=p.read_text()
-          s=s.replace('当前项：S002；下一步：运行完整自检并核对差异。','当前项：S003；下一步：提交已验证源码到主线，成功并复核后回填交付。')
+          old='当前项：S002；下一步：首次校验因说明超体积预算失败，已合并重复表述，保留原门槛后重新验证。'
+          assert old in s
+          s=s.replace(old,'当前项：S003；下一步：提交已验证源码到主线，成功并复核后回填交付。\n验证记录：首次因说明超出 8500 字节预算失败；精简重复表述至 8066 字节后重验，未提高门槛。')
           s=s.replace('- [ ] S002【进行中】验证入口、模板、安装边界、动态清单契约与原有自检。','- [x] S002【已完成】验证入口、模板、安装边界、动态清单契约与原有自检；证据：GitHub Actions '+os.environ['GITHUB_RUN_ID']+' 已成功执行 node scripts/validate-skill.js、语法与差异检查；静态契约不冒充实际模型隔离行为。')
           s=s.replace('- [ ] S003【待做】','- [ ] S003【进行中】')
           p.write_text(s)
