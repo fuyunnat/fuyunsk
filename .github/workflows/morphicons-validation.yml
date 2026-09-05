@@ -1,0 +1,54 @@
+name: Morphicons 图标规则验证
+on:
+  push:
+    branches: [docs/morphicons-policy-20260906]
+permissions:
+  contents: write
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: 在固定基线上修改已审查文件
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REPOSITORY" = fuyunnat/fuyunsk
+          test "$GITHUB_REF_NAME" = docs/morphicons-policy-20260906
+          git worktree add --detach "$RUNNER_TEMP/morphicons-candidate" b7bc0d3191738fe1ee942ce1869ba9e8a70791d6
+          python3 .github/scripts/update-morphicons.py "$RUNNER_TEMP/morphicons-candidate"
+      - name: 验证原文、图标读取、模板与旧行为
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP/morphicons-candidate"
+          node --check tests/frontend-stack.test.js
+          node scripts/validate-skill.js
+          git diff --check
+          git diff --stat
+      - name: 保存通过验证的源码，不修改主线
+        shell: bash
+        env:
+          GIT_AUTHOR_NAME: github-actions[bot]
+          GIT_AUTHOR_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
+          GIT_COMMITTER_NAME: github-actions[bot]
+          GIT_COMMITTER_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP/morphicons-candidate"
+          git add -- README.md global-AGENTS.example.md docs/personal-custom-instructions.md skills/production-engineering/SKILL.md skills/production-engineering/references/frontend-stack.md tests/frontend-stack.test.js
+          git diff --cached --check
+          test "$(git diff --cached --name-only | wc -l | tr -d ' ')" = 6
+          test -z "$(git diff --name-only)"
+          test -z "$(git ls-files -o --exclude-standard)"
+          TREE=$(git write-tree)
+          COMMIT=$(printf '%s\n' 'feat(skill): 保存已验证的 Morphicons 图标规范' | git commit-tree "$TREE" -p "$GITHUB_SHA")
+          echo "VERIFIED_TREE=$TREE"
+          echo "VERIFIED_COMMIT=$COMMIT"
+          git push origin "$COMMIT:refs/heads/docs/morphicons-policy-20260906"
