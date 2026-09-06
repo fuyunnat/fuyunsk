@@ -18,13 +18,13 @@ node <技能目录>/scripts/read-rules.js --id 04-04
 | --- | --- | --- |
 | 通用协作、判断模式 | 零、一、二的适用部分 | 八荣八耻、第一性原理不能省略 |
 | 明确局部小改 | 零章快速条件、三、六、七的适用部分 | 不读整个 Git 交付流程 |
-| Bug、报错、功能异常且用户要求修复 | 快速条件、六、七、二十的适用部分 | 先 `bugfix-fast-loop.md`；只有升级条件才读 `diagnosis-feedback-loop.md` |
+| Bug、报错、功能异常且用户要求修复 | 快速条件、六、七、二十的适用部分 | 先 `bugfix-fast-loop.md`；只有升级条件才读 `diagnosis-feedback-loop.md`，普通 Bug 不加载外部工程增强层 |
 | 内容和工程文档 | 二章内容补充、六、二十一、二十三 | `content-writing-quality.md` |
 | 后端 | 七、八、十、十一、十八、二十 | `design-testing.md` |
 | 前端与后台（所有页面） | 六、七、九、十一、二十 | `frontend-stack.md` 替代旧默认，统一 shadcn/ui + Tailwind CSS；`frontend-interface-quality.md` 负责质量 |
 | 包裹式工作台 | 同前端 | `wrapped-workspace-ui.md` |
 | API、回调与联调 | 八、十、十四、十七、十八、二十 | 按实际影响补数据库、配置 |
-| 性能与容量 | 十一及受影响领域 | `diagnosis-feedback-loop.md`，先基准后修复 |
+| 性能与容量 | 十一及受影响领域 | `diagnosis-feedback-loop.md` + `proven-engineering-methods.md`，先测量，再按影响优先处理 |
 | 开关、灰度与回滚 | 十二、第四章回滚部分 | 代码、数据、配置回滚分开验证 |
 | 数据库和迁移 | 十、十二、十三、十四、二十 | 旧数据和旧代码兼容，不只测新库 |
 | 并发、资金与权益 | 十四、十七、十八、二十 | 实际数据库、权限和高风险确认 |
@@ -35,8 +35,8 @@ node <技能目录>/scripts/read-rules.js --id 04-04
 | 安全审计、漏洞、后门 | 十六至十九及二十三 | 默认只读，可疑代码不运行，证据不删除 |
 | 删除与清理 | 第一章删除策略（`01-01.md`）、第五章风险分级 | 精确范围、回收站或备份，不永久删除 |
 | 任务续航 | 二章第六节 | 先读根目录 `工作流程.md`；`context-memory-continuity.md` |
-| 设计、重构、测试 | 六、七、二十、二十一 | `design-testing.md` |
-| 规格、拆任务、评审 | 六、二十、二十二、二十三 | `spec-review.md` |
+| 设计、重构、测试 | 六、七、二十、二十一 | `design-testing.md`；大型/多阶段且确需外部方法时再加 `proven-engineering-methods.md` |
+| 规格、拆任务、评审 | 六、二十、二十二、二十三 | `spec-review.md`；大型 diff 需要限制审查范围时可补 `proven-engineering-methods.md` |
 | 项目理解 | 零、一、二和实际领域 | `project-understanding.md`，不默认写文件 |
 | 完成与报告 | 二十至二十四 | 不适用项省略，不能伪造已完成 |
 
@@ -50,7 +50,11 @@ node <技能目录>/scripts/read-rules.js --id 04-04
 
 ## 非原文方法
 
-普通 Bug 修复先读取 `bugfix-fast-loop.md`；只有难复现、偶发、跨边界、连续两次最小修复失败或高风险时才升级读取 `diagnosis-feedback-loop.md`。设计与测试读取 `design-testing.md`；规格与双轴评审读取 `spec-review.md`。这些方法只补充执行方法，不覆盖本次原文。`upstream-notes.md` 只在维护来源时读取。
+普通 Bug 修复先读取 `bugfix-fast-loop.md`；只有难复现、偶发、跨边界、连续两次最小修复失败或高风险时才升级读取 `diagnosis-feedback-loop.md`。设计与测试读取 `design-testing.md`；规格与双轴评审读取 `spec-review.md`。
+
+`proven-engineering-methods.md` 只提供已审查的非冲突补充：影响优先、When NOT to Use、审查范围预算、blast radius 与 Skill 维护方法。它的优先级低于用户当前要求和本 Skill 现有规则；普通 Bug、小改、已明确任务不得因为它升级流程。需要时可用 `--topic 工程增强` 或 `--reference proven-engineering-methods.md` 同批读取。
+
+这些方法只补充执行方法，不覆盖本次原文。`upstream-notes.md` 只在维护来源时读取。
 
 ## 补充稿
 
