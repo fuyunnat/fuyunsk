@@ -31,7 +31,7 @@ const domains = {
   '内容': { topics: ['内容'], references: ['content-writing-quality.md'] },
 };
 const referenceNames = new Set([
-  'task-lanes.md', 'context-memory-continuity.md', 'frontend-interface-quality.md', 'ui-design-workflow.md',
+  'novice-clarification.md', 'task-lanes.md', 'context-memory-continuity.md', 'frontend-interface-quality.md', 'ui-design-workflow.md',
   'wrapped-workspace-ui.md', 'design-testing.md', 'diagnosis-feedback-loop.md',
   'code-risk-review.md', 'content-writing-quality.md', 'spec-review.md',
   'project-understanding.md', 'source-policy.md', 'project-migration.md', 'workflow-checklist.md', 'project-write-boundary.md',
@@ -45,7 +45,7 @@ function planBatch(stage, topics = [], references = []) {
     stage,
     topics: new Set(chosen.topics),
     ids: new Set(),
-    references: new Set([...chosen.references, ...(stage === '只读' ? [] : ['workflow-checklist.md', 'project-write-boundary.md'])]),
+    references: new Set(['novice-clarification.md', ...chosen.references, ...(stage === '只读' ? [] : ['workflow-checklist.md', 'project-write-boundary.md'])]),
   };
   for (const topic of topics) {
     const domain = Object.hasOwn(domains, topic) ? domains[topic] : { topics: [topic] };
