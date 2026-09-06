@@ -17,11 +17,11 @@ const stages = {
 
 // 对齐 routing.md 的领域并集。旧 --topic 仍为原有精确主题，不改变其含义。
 const domains = {
-  '整项目迁移': { topics: ['代码组织', '接口', '灰度回滚', '验证'], ids: ['06-00'], references: ['project-migration.md', 'design-testing.md', 'database-upgrade-safety.md'] },
+  '整项目迁移': { topics: ['代码组织', '接口', '灰度回滚', '日志', '验证'], ids: ['06-00'], references: ['project-migration.md', 'design-testing.md', 'database-upgrade-safety.md'] },
   '故障修复': { topics: ['实现', '验证'], references: ['bugfix-fast-loop.md'] },
   '工程增强': { topics: ['实现', '验证'], references: ['proven-engineering-methods.md'] },
-  '前端': { topics: ['代码组织', '前端', '性能', '验证'], ids: ['06-00'], references: ['frontend-interface-quality.md', 'ui-design-workflow.md'] },
-  '后端': { topics: ['代码组织', '后端', '接口', '性能', '日志', '验证'], references: ['design-testing.md'] },
+  '前端': { topics: ['代码组织', '前端', '验证'], ids: ['06-00'], references: ['frontend-interface-quality.md', 'ui-design-workflow.md'] },
+  '后端': { topics: ['代码组织', '后端', '接口', '日志', '验证'], references: ['design-testing.md'] },
   '接口': { topics: ['后端', '接口', '并发', '安全', '日志', '验证'], references: [] },
   '性能': { topics: ['性能'], references: ['diagnosis-feedback-loop.md', 'proven-engineering-methods.md'] },
   '数据库': { topics: ['接口', '灰度回滚', '数据库', '并发', '验证'], references: ['database-upgrade-safety.md'] },
