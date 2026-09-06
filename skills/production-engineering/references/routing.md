@@ -18,6 +18,7 @@ node <技能目录>/scripts/read-rules.js --id 04-04
 | --- | --- | --- |
 | 通用协作、判断模式 | 零、一、二的适用部分 | 八荣八耻、第一性原理不能省略 |
 | 明确局部小改 | 零章快速条件、三、六、七的适用部分 | 不读整个 Git 交付流程 |
+| Bug、报错、功能异常且用户要求修复 | 快速条件、六、七、二十的适用部分 | 先 `bugfix-fast-loop.md`；只有升级条件才读 `diagnosis-feedback-loop.md` |
 | 内容和工程文档 | 二章内容补充、六、二十一、二十三 | `content-writing-quality.md` |
 | 后端 | 七、八、十、十一、十八、二十 | `design-testing.md` |
 | 前端与后台（所有页面） | 六、七、九、十一、二十 | `frontend-stack.md` 替代旧默认，统一 shadcn/ui + Tailwind CSS；`frontend-interface-quality.md` 负责质量 |
@@ -49,7 +50,7 @@ node <技能目录>/scripts/read-rules.js --id 04-04
 
 ## 非原文方法
 
-Bug 诊断可读取 `diagnosis-feedback-loop.md`；设计与测试读取 `design-testing.md`；规格与双轴评审读取 `spec-review.md`。这些方法来自先前授权的外部方法融合，只补充执行方法，不覆盖本次原文。`upstream-notes.md` 只在维护来源时读取。
+普通 Bug 修复先读取 `bugfix-fast-loop.md`；只有难复现、偶发、跨边界、连续两次最小修复失败或高风险时才升级读取 `diagnosis-feedback-loop.md`。设计与测试读取 `design-testing.md`；规格与双轴评审读取 `spec-review.md`。这些方法只补充执行方法，不覆盖本次原文。`upstream-notes.md` 只在维护来源时读取。
 
 ## 补充稿
 
