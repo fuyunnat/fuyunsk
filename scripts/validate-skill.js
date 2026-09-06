@@ -22,6 +22,9 @@ includes(skill+'SKILL.md',['整项目迁移','迁移台账','工作流程.md']);
 budget(skill+'references/workflow-checklist.md',8500);
 assert.ok(fs.existsSync(path.join(root,skill,'templates/workflow.example.md')));
 budget(skill+'references/project-migration.md',14000);
+budget(skill+'references/project-write-boundary.md',9000);
+includes(skill+'SKILL.md',['references/project-write-boundary.md','所有写入']);
+run(['--check',skill+'scripts/project-path-check.js']);
 // 安装说明的静态契约不等于已在用户电脑完成安装或自动调用验证。
 includes('README.md',['## 让 AI 自动安装','个性化 / Codex 说明','AGENTS.override.md','不要求你每次手写技能名','文件安装和自动调用要分别验证']);
 includes('docs/ai-installation.md',['默认安装必须完成本步骤','保留块外所有无关要求','扫描目录之外','同一短块','实际自动调用待验证','不能算自动触发通过']);
@@ -44,7 +47,7 @@ for(const p of docs){
  for(const match of s.matchAll(/`(references\/[a-zA-Z0-9_./-]+\.md)`/g))assert.ok(fs.existsSync(path.join(root,skill,match[1])),`入口引用缺失：${match[1]}`);
 }
 run(['scripts/build-rules.js','--check']);
-run(['--test','tests/rules.test.js','tests/task-state-behavior.test.js','tests/rule-batch.test.js','tests/migration.test.js','tests/frontend-stack.test.js','tests/intent-source.test.js','tests/workflow-checklist.test.js']);
+run(['--test','tests/rules.test.js','tests/task-state-behavior.test.js','tests/rule-batch.test.js','tests/migration.test.js','tests/frontend-stack.test.js','tests/intent-source.test.js','tests/workflow-checklist.test.js','tests/project-path-check.test.js']);
 run(['scripts/validate-routing-cases.js']);
 run(['scripts/validate-repository-hygiene.js']);
 run(['scripts/validate-task-state.js']);
