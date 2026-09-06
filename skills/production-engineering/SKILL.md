@@ -9,21 +9,21 @@ description: "用于真实项目的实现、修复、调试、前端 UI、安全
 
 ## 执行入口
 
-工程任务可自动调用或点名 `$production-engineering`，不扩权。已有真实项目上下文时，把“这个、这里、它、页面、功能、继续”等结合项目理解；能从项目查明的文件、框架、组件、启动/测试命令和 Git 做法由 AI 自己查，只有关键业务歧义、权限缺失、边界异常或高风险授权才问。清单固定在 `PROJECT_ROOT/工作流程.md`；续作先读、漏项追加、验后打勾，未授权只读不写。
+工程任务可自动调用或点名 `$production-engineering`，不扩权。已有项目上下文时把“这个、这里、继续”等结合项目理解。用户只需说结果：技术细节由 AI 自查；若存在会导致明显不同结果的合理解释，必须用人话反问，给 2–3 个结果选项和推荐，不把技术选择甩给用户。详见 `references/novice-clarification.md`。清单固定在 `PROJECT_ROOT/工作流程.md`；续作先读、验后打勾，未授权只读不写。
 
 1. 先读用户提供的源码、入口、样式、资源和行为实现；列目录不算已读。明确“改变什么、保留什么、依据在哪”，不得忽略源码另造方案。
-2. 能从源码查明的不反问；查证后仍影响结果的关键歧义，只暂停受影响修改并问具体阻塞点。已明确要求直接执行，不反复确认。
+2. 能查明的事实不反问；“原样迁移还是重做视觉”“只修问题还是扩大范围”“是否允许高风险副作用”等结果歧义不能擅猜；用户明确选择后不重复确认。
 3. 判断模式与风险，按阶段批量读原文和专项；最新明确要求优先于默认选型，迁移不等于重新设计。写入前查项目规则、Git 差异、用户改动和恢复点；非 Git 先备份。
 4. 所有写入先按 `references/project-write-boundary.md` 核对根身份、真实目标和工作目录；越界停止。沿用分层，对照源码验证原貌与行为，构建成功不等于验收。
 
 | 当前步骤 | 必须读取的原文或专项说明 |
 | --- | --- |
-| 所有工程任务开始 | `references/rules/00-00.md`、`references/rules/01-00.md`、`references/rules/02-01.md` |
-| 明确局部、可恢复、无外部副作用的小改 | `references/rules/00-01.md`、`references/rules/03-00.md`；验证按第二十章裁剪 |
+| 所有工程任务开始 | `references/novice-clarification.md` + `references/rules/00-00.md`、`01-00.md`、`02-01.md` |
+| 明确局部、可恢复、无外部副作用的小改 | `references/rules/00-01.md`、`03-00.md`；验证按第二十章裁剪 |
 | 不满足快速条件、存在高风险或任务变大 | `references/rules/00-02.md`、`references/task-lanes.md` |
 | 实现前、职责划分、注释与回归 | 原文第六、七章；按 `references/routing.md` 定位 |
 | 整项目重写、换语言或全量架构迁移 | `整项目迁移` + `references/project-migration.md`；功能对照、迁移台账、逐项验收 |
-| 前端页面或后台界面 | `references/frontend-stack.md` + 原文第九章 + `references/frontend-interface-quality.md` + `references/ui-design-workflow.md` |
+| 前端页面或后台界面 | `references/frontend-stack.md` + 原文第九章 + `frontend-interface-quality.md` + `ui-design-workflow.md` |
 | 后端、接口、性能、数据库、并发、配置、依赖、安全、日志 | `references/routing.md` 中对应领域 |
 | 提交、推送、评审、合并、回滚 | 原文第四章当前阶段；不是每次修改都读完整 Git 章节 |
 | 长任务、多文件、多阶段或恢复旧任务 | 原文第二章第六节 + `references/context-memory-continuity.md` |
@@ -40,7 +40,7 @@ description: "用于真实项目的实现、修复、调试、前端 UI、安全
 - 删除进入回收站或可恢复备份；无法安全处理先确认。保护密钥、隐私、日志和数据。
 - UI 是一级验收：源码迁移保留原貌与交互；新设计默认 shadcn/ui + Tailwind CSS，指定 Vue 等框架时按 `frontend-stack.md` 适配；图标统一 Morphicons。单一 `production-engineering` 已内置设计、反模板和浏览器验收工作流，不依赖额外 UI Skill。
 - API、旧数据、配置、权限和原流程默认兼容。数据库、生产、支付、权限、密钥、部署等高风险写入先说明影响、证据和回滚，并取得确认。
-- 完整通道保留条件式任务分支推送与评审；不默认授权主线、合并、强推、远端删除或设置变更。
+- 不默认授权主线、合并、强推、远端删除或设置变更。
 - 不能靠删测试、弱化断言、无限重试或伪造证据制造完成；报告区分通过、失败、未配置、无法执行和未验证。
 
 ## 读取与速度边界
