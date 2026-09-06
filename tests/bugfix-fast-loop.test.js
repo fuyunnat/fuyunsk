@@ -16,13 +16,14 @@ const routing = read(path.join(refs, 'routing.md'));
 const skill = read(path.join(skillDir, 'SKILL.md'));
 const { planBatch } = require(path.join(skillDir, 'scripts/rule-batch.js'));
 
-test('普通 Bug 明确是修复任务，短诊断后尽快落代码', () => {
+test('普通 Bug 明确是修复任务，短诊断后尽快落代码且不盲试', () => {
   for (const value of [
     '修 Bug 默认是修复任务，不是只读诊断任务',
     '一个相关源码读取批次加一个针对性复现/验证批次',
-    '足够证据即可试最小修复',
-    '修完马上验证，失败再扩大一层',
-    '连续两次修复尝试都失败',
+    '证据优先，禁止盲目试错',
+    '为什么怀疑这里、改动会影响什么、改完马上怎么验证',
+    '不得为了试错同时改多个互不确定的点',
+    '第二次修复只有在第一次失败后取得了**新的、能区分假设的证据**时才允许',
     '行为锁不能变成修复前的全量盘点',
   ]) assert.ok(fast.includes(value), `缺少 Bug 快速修复规则：${value}`);
 });
