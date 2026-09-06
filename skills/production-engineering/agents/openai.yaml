@@ -1,6 +1,6 @@
 interface:
   display_name: "生产级工程"
-  short_description: "按原始规范完成工程实现、界面、验证、审计与交付"
-  default_prompt: "使用 $production-engineering 处理当前工程目标：先查真实项目，按需读取原文条款，保护旧行为，完成验证并用中文说明交付和回滚。"
+  short_description: "真实项目里连口语短句也自动进入工程、UI、Git 与验证流程"
+  default_prompt: "使用 $production-engineering 处理当前工程目标。用户只需说结果；结合当前项目识别‘这个/这里/继续/太丑/跑起来/不像/没反应/补上/保存一下’等口语工程意图，先查真实项目，自行确定能查明的文件、技术栈、组件、启动测试和 Git 做法，保护旧行为并完成验证。"
 policy:
   allow_implicit_invocation: true
