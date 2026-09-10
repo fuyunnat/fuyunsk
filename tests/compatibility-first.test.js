@@ -13,6 +13,9 @@ const { planBatch } = require(path.join(skillDir, 'scripts/rule-batch.js'));
 const behavior = read(path.join(refs, 'behavior-preservation.md'));
 const database = read(path.join(refs, 'database-upgrade-safety.md'));
 const bugfix = read(path.join(refs, 'bugfix-fast-loop.md'));
+const agent = read(path.join(skillDir, 'agents/openai.yaml'));
+const globalAgents = read(path.join(root, 'global-AGENTS.example.md')).trim();
+const personal = read(path.join(root, 'docs/personal-custom-instructions.md'));
 
 test('全局行为保护明确要求旧新兼容而不是一刀切', () => {
   for (const value of [
@@ -55,4 +58,15 @@ test('所有会写代码的常见通道仍加载行为兼容保护', () => {
     const plan = planBatch(stage, topics);
     assert.ok(plan.references.includes('behavior-preservation.md'), `${stage}/${topics.join(',')} 未加载行为兼容保护`);
   }
+});
+
+test('自动调用入口也明确兼容优先且短模板继续受限', () => {
+  assert.match(agent, /涉及旧接口、旧数据、旧配置或旧客户端时兼容优先/);
+  assert.match(agent, /先让旧新共存并验证，再单独处理旧路径下线/);
+  assert.match(globalAgents, /旧业务\/接口\/权限\/数据\/配置\/客户端先兼容共存，验证后再淘汰/);
+  assert.ok(Buffer.byteLength(globalAgents) <= 1800, 'global AGENTS 模板超过 1800 bytes');
+
+  const block = personal.match(/```markdown\n([\s\S]*?)\n```/);
+  assert.ok(block, '个人模板缺少 markdown 调度块');
+  assert.equal(block[1].trim(), globalAgents);
 });
