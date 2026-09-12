@@ -21,6 +21,7 @@ const domains = {
   '故障修复': { topics: ['实现', '验证'], references: ['bugfix-fast-loop.md'] },
   '上游同步': { topics: ['代码组织', '验证'], references: ['upstream-sync.md'] },
   'SEO': { topics: ['前端', '性能', '配置部署', '验证'], references: ['seo-engineering.md'] },
+  '模板二开': { topics: ['代码组织', '前端', '接口', '验证'], ids: ['06-00'], references: ['parallel-template-development.md', 'frontend-interface-quality.md', 'configuration-localization.md'] },
   '工程增强': { topics: ['实现', '验证'], references: ['proven-engineering-methods.md'] },
   '配置化': { topics: ['配置部署', '验证'], references: ['configuration-localization.md'] },
   '前端': { topics: ['代码组织', '前端', '验证'], ids: ['06-00'], references: ['frontend-interface-quality.md', 'ui-design-workflow.md', 'configuration-localization.md'] },
@@ -36,7 +37,7 @@ const domains = {
   '内容': { topics: ['内容'], references: ['content-writing-quality.md'] },
 };
 const referenceNames = new Set([
-  'novice-clarification.md', 'behavior-preservation.md', 'database-upgrade-safety.md', 'bugfix-fast-loop.md', 'upstream-sync.md', 'seo-engineering.md', 'proven-engineering-methods.md', 'configuration-localization.md', 'task-lanes.md', 'context-memory-continuity.md', 'frontend-interface-quality.md', 'ui-design-workflow.md',
+  'novice-clarification.md', 'behavior-preservation.md', 'database-upgrade-safety.md', 'bugfix-fast-loop.md', 'upstream-sync.md', 'seo-engineering.md', 'parallel-template-development.md', 'proven-engineering-methods.md', 'configuration-localization.md', 'task-lanes.md', 'context-memory-continuity.md', 'frontend-interface-quality.md', 'ui-design-workflow.md',
   'wrapped-workspace-ui.md', 'design-testing.md', 'diagnosis-feedback-loop.md',
   'code-risk-review.md', 'content-writing-quality.md', 'spec-review.md',
   'project-understanding.md', 'source-policy.md', 'project-migration.md', 'workflow-checklist.md', 'project-write-boundary.md',
