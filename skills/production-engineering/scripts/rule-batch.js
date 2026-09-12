@@ -22,6 +22,7 @@ const domains = {
   '上游同步': { topics: ['代码组织', '验证'], references: ['upstream-sync.md'] },
   '工程增强': { topics: ['实现', '验证'], references: ['proven-engineering-methods.md'] },
   '配置化': { topics: ['配置部署', '验证'], references: ['configuration-localization.md'] },
+  '文案润色': { topics: ['内容'], references: ['content-writing-quality.md', 'writing-polish.md'] },
   '前端': { topics: ['代码组织', '前端', '验证'], ids: ['06-00'], references: ['frontend-interface-quality.md', 'ui-design-workflow.md', 'configuration-localization.md'] },
   '后端': { topics: ['代码组织', '后端', '接口', '日志', '验证'], references: ['design-testing.md', 'configuration-localization.md'] },
   '接口': { topics: ['后端', '接口', '并发', '安全', '日志', '验证'], references: ['configuration-localization.md'] },
@@ -37,7 +38,7 @@ const domains = {
 const referenceNames = new Set([
   'novice-clarification.md', 'behavior-preservation.md', 'database-upgrade-safety.md', 'bugfix-fast-loop.md', 'upstream-sync.md', 'proven-engineering-methods.md', 'configuration-localization.md', 'task-lanes.md', 'context-memory-continuity.md', 'frontend-interface-quality.md', 'ui-design-workflow.md',
   'wrapped-workspace-ui.md', 'design-testing.md', 'diagnosis-feedback-loop.md',
-  'code-risk-review.md', 'content-writing-quality.md', 'spec-review.md',
+  'code-risk-review.md', 'content-writing-quality.md', 'writing-polish.md', 'spec-review.md',
   'project-understanding.md', 'source-policy.md', 'project-migration.md', 'workflow-checklist.md', 'project-write-boundary.md',
 ]);
 
