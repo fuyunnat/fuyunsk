@@ -21,6 +21,7 @@ node <技能目录>/scripts/read-rules.js --id 04-04
 | Bug、报错、功能异常且用户要求修复 | 快速条件、六、七、二十的适用部分 | 先 `bugfix-fast-loop.md`；只有升级条件才读 `diagnosis-feedback-loop.md`，普通 Bug 不加载外部工程增强层 |
 | 二开/派生项目同步上游、官方修复或新功能 | 六、七、二十及实际受影响领域 | `upstream-sync.md`；只吸收目标 diff，保护派生功能，不默认整仓 merge/rebase |
 | SEO、收录、Google/Bing、robots、sitemap、canonical、Schema、GEO、hreflang | 前端/性能/配置/内容及二十章的实际适用部分 | `seo-engineering.md`；明确 SEO 走完整模式，公开可索引前台新增/重写只做轻量 SEO Guard |
+| 前端模板并行二开、V1 保留/V2 新建、旧模板不要动 | 六、七、九、二十及前端实际适用部分 | `parallel-template-development.md`；旧模板只读、固定功能分母、新模板独立并行，公开模板再按需补 `seo-engineering.md` |
 | 内容和工程文档 | 二章内容补充、六、二十一、二十三 | `content-writing-quality.md` |
 | 后端 | 七、八、十、十八、二十 | `design-testing.md` + `configuration-localization.md`；只有真实性能问题才追加十一章/性能专项 |
 | 前端与后台（所有页面） | 六、七、九、二十 | `frontend-stack.md` 替代旧默认；`frontend-interface-quality.md` 负责质量；`configuration-localization.md` 负责前台多语言与可运营配置；公开可索引前台新增/重写再按需补 `seo-engineering.md`，后台/私有页不加载；只有真实性能问题才追加十一章/性能专项 |
@@ -59,6 +60,14 @@ node <技能目录>/scripts/read-rules.js --id 04-04
 用户不需要知道 canonical、hreflang、robots、JSON-LD 或 Core Web Vitals。能从源码、页面响应和当前官方资料判断的技术方案由 AI 自查。SEO 规则有时效性：Schema 支持、富媒体资格、AI 搜索、Crawler、CWV 和搜索引擎政策等以执行时 Google Search Central / web.dev / Schema.org / 对应搜索引擎官方资料为准，不能把 Skill 内旧知识当最新事实。
 
 公开页面模板、路由、SSR/SSG、多语言 URL、商品/分类模板等发生明显变化时，修改前后要做受影响范围的 SEO Drift 对比；不能只看 build 或页面 200。批量 URL、canonical、noindex、robots、hreflang、sitemap 范围和结构化数据体系变化属于高影响 SEO 变更，继续受行为锁和高风险确认约束。
+
+## 前端模板二开是并行新增，不是覆盖改版
+
+用户要求“重新二开一套前端模板、旧模板不要动、V1 保留再做 V2、功能不能漏”时，读取 `parallel-template-development.md`，并使用 `模板二开` topic。旧模板目录默认只读作为行为基线，新模板使用独立目录/入口并行开发；共享业务层可以复用，但任何共享层变化都要回归旧模板。
+
+实现前先建立固定功能分母：页面、路由、导航、交互、loading/empty/error、表单、API、权限、副作用、响应式、多语言、公开 SEO 和资源都要交叉盘点。每个能力有稳定编号；开发中发现遗漏只能追加，不能删掉旧条目让完成率变好。只有 `verified` 或用户明确批准的 `approved-omit` 才进入完成分子；`implemented` 仍算未完成。
+
+这不是整项目迁移：普通模板 V2 不自动加载 `project-migration.md`。如果用户实际要求整个项目换语言/全量架构重写，再切到整项目迁移。公开可索引模板追加 SEO Guard；后台/私有模板不因此加载完整 SEO。普通页面小改、单组件换皮和 Bug 修复不加载模板二开专项。
 
 ## 配置化和前台多语言不是“把一切塞进 .env”
 
