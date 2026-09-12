@@ -20,9 +20,10 @@ node <技能目录>/scripts/read-rules.js --id 04-04
 | 明确局部小改 | 零章快速条件、三、六、七的适用部分 | 不读整个 Git 交付流程 |
 | Bug、报错、功能异常且用户要求修复 | 快速条件、六、七、二十的适用部分 | 先 `bugfix-fast-loop.md`；只有升级条件才读 `diagnosis-feedback-loop.md`，普通 Bug 不加载外部工程增强层 |
 | 二开/派生项目同步上游、官方修复或新功能 | 六、七、二十及实际受影响领域 | `upstream-sync.md`；只吸收目标 diff，保护派生功能，不默认整仓 merge/rebase |
+| SEO、收录、Google/Bing、robots、sitemap、canonical、Schema、GEO、hreflang | 前端/性能/配置/内容及二十章的实际适用部分 | `seo-engineering.md`；明确 SEO 走完整模式，公开可索引前台新增/重写只做轻量 SEO Guard |
 | 内容和工程文档 | 二章内容补充、六、二十一、二十三 | `content-writing-quality.md` |
 | 后端 | 七、八、十、十八、二十 | `design-testing.md` + `configuration-localization.md`；只有真实性能问题才追加十一章/性能专项 |
-| 前端与后台（所有页面） | 六、七、九、二十 | `frontend-stack.md` 替代旧默认；`frontend-interface-quality.md` 负责质量；`configuration-localization.md` 负责前台多语言与可运营配置；只有真实性能问题才追加十一章/性能专项 |
+| 前端与后台（所有页面） | 六、七、九、二十 | `frontend-stack.md` 替代旧默认；`frontend-interface-quality.md` 负责质量；`configuration-localization.md` 负责前台多语言与可运营配置；公开可索引前台新增/重写再按需补 `seo-engineering.md`，后台/私有页不加载；只有真实性能问题才追加十一章/性能专项 |
 | 包裹式工作台 | 同前端 | `wrapped-workspace-ui.md` |
 | API、回调与联调 | 八、十、十四、十七、十八、二十 | `configuration-localization.md`；按实际影响补数据库、配置 |
 | 性能与容量 | 十一及受影响领域 | `diagnosis-feedback-loop.md` + `proven-engineering-methods.md`，先测量，再按影响优先处理 |
@@ -50,6 +51,14 @@ node <技能目录>/scripts/read-rules.js --id 04-04
 不得把“同步官方”解释成整仓覆盖、重置成本地官方版、默认 merge `upstream/main` 或整仓 rebase。上游同名文件只是证据，不自动拥有覆盖派生文件的权限；上游删除功能也不自动授权删除二开功能。只有目标 commit 足够独立、历史关系明确且 diff 证明不会破坏派生改动时才考虑直接 cherry-pick，否则按当前派生结构做语义补丁。
 
 如果上游改动同时触及前端、后端、接口、数据库、配置、依赖、安全等领域，再追加对应 topic；不要为了上游同步预读全部领域。普通本地 Bug 修复不因为存在上游仓库就自动加载本规则。
+
+## SEO 是开发能力，但按公开页面与明确目标加载
+
+`seo-engineering.md` 分两层：公开且希望被搜索引擎发现的前台页面在新建、重写、迁移或大改模板时只做轻量 SEO Guard；用户明确说“SEO、收录、Google、sitemap、Schema、多语言 SEO、商品 SEO、GEO/AI 搜索”等时才进入完整 SEO Engineering。后台、登录后页面和普通 Bug 不因为项目有网站就自动做全站审计。
+
+用户不需要知道 canonical、hreflang、robots、JSON-LD 或 Core Web Vitals。能从源码、页面响应和当前官方资料判断的技术方案由 AI 自查。SEO 规则有时效性：Schema 支持、富媒体资格、AI 搜索、Crawler、CWV 和搜索引擎政策等以执行时 Google Search Central / web.dev / Schema.org / 对应搜索引擎官方资料为准，不能把 Skill 内旧知识当最新事实。
+
+公开页面模板、路由、SSR/SSG、多语言 URL、商品/分类模板等发生明显变化时，修改前后要做受影响范围的 SEO Drift 对比；不能只看 build 或页面 200。批量 URL、canonical、noindex、robots、hreflang、sitemap 范围和结构化数据体系变化属于高影响 SEO 变更，继续受行为锁和高风险确认约束。
 
 ## 配置化和前台多语言不是“把一切塞进 .env”
 
