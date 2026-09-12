@@ -1,0 +1,62 @@
+{
+  "version": 1,
+  "sourceTemplateRoot": "frontend/templates/v1",
+  "targetTemplateRoot": "frontend/templates/v2",
+  "sourceRevision": "替换为已核实的旧模板 Git 提交 SHA 或内容哈希",
+  "scope": "填写本次新模板范围、旧模板保持项和明确不属于本次的内容",
+  "reviewReference": "填写盘点审阅记录位置，不得伪造已审阅",
+  "publicIndexable": true,
+  "discovery": [
+    {
+      "surface": "页面/路由/导航/交互/状态/API/权限/副作用/响应式/多语言/SEO/资源",
+      "evidence": "分别填写真实入口、源码、调用关系、现有测试或运行证据；未知项不能直接省略"
+    }
+  ],
+  "features": [
+    {
+      "id": "example-feature",
+      "name": "示意功能，安装不会自动盘点真实项目",
+      "sourceLocations": ["frontend/templates/v1/example.vue"],
+      "behavior": "描述旧模板对用户可观察的成功、失败、权限与边界行为",
+      "states": ["normal", "loading", "empty", "error"],
+      "dependencies": ["GET /api/example"],
+      "requiredChecks": ["example-success", "example-error"],
+      "targetLocations": ["frontend/templates/v2/example.vue"],
+      "status": "pending",
+      "evidence": [],
+      "approvalSource": null
+    }
+  ],
+  "acceptanceChecks": [
+    {
+      "id": "source-template-unchanged",
+      "description": "旧模板目录仍与基线一致；共享层变化已单独回归旧模板",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "parallel-run",
+      "description": "同一代码版本可分别访问旧模板和新模板，互不覆盖",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "full-feature-reconciliation",
+      "description": "从旧模板台账逆向逐项核对，新模板无 pending/implementing/implemented/unknown",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "responsive-and-states",
+      "description": "关键桌面/移动和 loading/empty/error/permission 状态已真实验证",
+      "status": "pending",
+      "evidence": []
+    },
+    {
+      "id": "public-seo-regression",
+      "description": "仅公开可索引模板适用：SEO Guard/多语言 SEO 未回归；私有模板填 not-applicable 并说明依据",
+      "status": "pending",
+      "evidence": []
+    }
+  ]
+}
