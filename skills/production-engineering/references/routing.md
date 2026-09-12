@@ -20,9 +20,10 @@ node <技能目录>/scripts/read-rules.js --id 04-04
 | 明确局部小改 | 零章快速条件、三、六、七的适用部分 | 不读整个 Git 交付流程 |
 | Bug、报错、功能异常且用户要求修复 | 快速条件、六、七、二十的适用部分 | 先 `bugfix-fast-loop.md`；只有升级条件才读 `diagnosis-feedback-loop.md`，普通 Bug 不加载外部工程增强层 |
 | 二开/派生项目同步上游、官方修复或新功能 | 六、七、二十及实际受影响领域 | `upstream-sync.md`；只吸收目标 diff，保护派生功能，不默认整仓 merge/rebase |
-| 内容和工程文档 | 二章内容补充、六、二十一、二十三 | `content-writing-quality.md` |
+| 内容和工程文档 | 二章内容补充、六、二十一、二十三 | `content-writing-quality.md`；重要对外成稿或用户要求“润色/自然一点/说人话/去 AI 味/别像模板”时再加 `writing-polish.md` |
+| 文案润色、去模板感、说人话 | 内容和工程文档适用部分 | `content-writing-quality.md` + `writing-polish.md`；只处理读者可见文字，不套代码、日志、命令和配置原文 |
 | 后端 | 七、八、十、十八、二十 | `design-testing.md` + `configuration-localization.md`；只有真实性能问题才追加十一章/性能专项 |
-| 前端与后台（所有页面） | 六、七、九、二十 | `frontend-stack.md` 替代旧默认；`frontend-interface-quality.md` 负责质量；`configuration-localization.md` 负责前台多语言与可运营配置；只有真实性能问题才追加十一章/性能专项 |
+| 前端与后台（所有页面） | 六、七、九、二十 | `frontend-stack.md` 替代旧默认；`frontend-interface-quality.md` 负责质量；`configuration-localization.md` 负责前台多语言与可运营配置；只有真实性能问题才追加十一章/性能专项；若本次重点是界面文案自然度，再加 `文案润色` |
 | 包裹式工作台 | 同前端 | `wrapped-workspace-ui.md` |
 | API、回调与联调 | 八、十、十四、十七、十八、二十 | `configuration-localization.md`；按实际影响补数据库、配置 |
 | 性能与容量 | 十一及受影响领域 | `diagnosis-feedback-loop.md` + `proven-engineering-methods.md`，先测量，再按影响优先处理 |
@@ -42,6 +43,14 @@ node <技能目录>/scripts/read-rules.js --id 04-04
 | 完成与报告 | 二十至二十四 | 不适用项省略，不能伪造已完成 |
 
 交叉领域取条款并集；订单页面不能漏接口、权限、幂等。
+
+## 写作润色是按需旁路，不拖慢开发主线
+
+`content-writing-quality.md` 是工程文档和界面文案的基础规则；`writing-polish.md` 只在**重要读者可见成稿**或用户明确要求“润色、自然一点、说人话、去 AI 味、别像模板”时追加。普通 Bug、数据库、部署、日志、命令和配置任务不因为输出里有几句话就加载润色层。
+
+润色时先保护数字、版本、路径、命令、API/字段、错误码、引用、责任主体、条件和证据强度，再处理翻译腔、模板段落、空泛拔高、机械对照、匀速句式和仪式化结尾。不要为了“人味”故意造错别字、随机句长、硬塞俚语或编造经历；也不把 AI 检测器分数当验收目标。
+
+如果用户在当前任务里反复改同类文案，可以临时从实际 diff 学习稳定偏好；除非用户明确要求保存个人文风，不自动把一次修改升级成全局长期规则。
 
 ## 派生项目上游同步是选择性吸收，不是追平官方
 
