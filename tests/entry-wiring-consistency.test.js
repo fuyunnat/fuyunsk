@@ -14,7 +14,7 @@ const globalAgents = read('global-AGENTS.example.md').trim();
 const personal = read('docs/personal-custom-instructions.md');
 
 const capabilities = [
-  { domain: '上游同步', ref: 'upstream-sync.md', skill: '二开上游同步', route: '二开/派生项目同步上游', agent: '同步官方这个修复', global: '同步上游' },
+  { domain: '上游同步', ref: 'upstream-sync.md', skill: '上游同步', route: '二开/派生项目同步上游', agent: '同步官方这个修复', global: '同步上游' },
   { domain: 'SEO', ref: 'seo-engineering.md', skill: 'SEO', route: 'SEO、收录', agent: 'SEO搞一下', global: 'SEO/收录' },
   { domain: '模板二开', ref: 'parallel-template-development.md', skill: '模板二开', route: '前端模板并行二开', agent: '再做一套模板', global: '二开模板' },
   { domain: '规划清单', ref: 'planning-persistence.md', skill: '规划清单', route: '先列清单、字段盘点', agent: '先列清单', global: '先列清单' },
@@ -34,13 +34,15 @@ test('用户可见专项能力必须同时接到入口、路由、批量加载�
 
 test('Code Craft 不是独立自然语言领域，但必须从代码实现入口自动可达', () => {
   for (const body of [skill, routing, batch, agent]) assert.ok(body.includes('code-craft.md') || body.includes('Code Craft'));
-  assert.match(skill, /写代码自动补 `code-craft\.md`|原文第六、七章 \+ `references\/code-craft\.md`/);
+  assert.match(skill, /规划清单\/模板二开\/别写死\/写代码.*code-craft\.md/);
   assert.match(routing, /写代码默认应用专业代码工艺/);
   assert.match(batch, /codeCraftStages/);
 });
 
 test('规划清单与禁止业务硬编码在主入口有直接语义，不只藏在专项文件', () => {
-  for (const value of ['先列清单', '字段清单', '旧模板别动', '别写死']) assert.ok(skill.includes(value));
+  for (const value of ['先列清单', '旧模板别动', '别写死']) assert.ok(skill.includes(value));
+  assert.match(agent, /字段清单/);
+  assert.match(globalAgents, /字段清单/);
   assert.match(routing, /planning-persistence\.md/);
   assert.match(routing, /configuration-localization\.md/);
   assert.match(agent, /后台可配置/);
