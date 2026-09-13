@@ -12,6 +12,7 @@ const batch = read('skills/production-engineering/scripts/rule-batch.js');
 const agent = read('skills/production-engineering/agents/openai.yaml');
 const globalAgents = read('global-AGENTS.example.md').trim();
 const personal = read('docs/personal-custom-instructions.md');
+const legacyMigration = read('docs/legacy-personalization-migration.md');
 
 const capabilities = [
   { domain: '上游同步', ref: 'upstream-sync.md', skill: '上游同步', route: '二开/派生项目同步上游', agent: '同步官方这个修复', global: '同步上游' },
@@ -53,6 +54,25 @@ test('全局个性化模板保持同源且仍然轻量', () => {
   assert.ok(block, '个人模板缺少 markdown 调度块');
   assert.equal(block[1].trim(), globalAgents);
   assert.ok(Buffer.byteLength(globalAgents) <= 1800, 'global AGENTS 模板超过 1800 bytes');
+});
+
+test('旧长版个性化必须替换成唯一短调度块，不能两套规则并存', () => {
+  for (const fingerprint of ['# 全局 Codex 工作规则', '## 自动使用生产工程技能', '本机兜底路径', '## 小白优先沟通', '## 轻任务优先']) {
+    assert.ok(legacyMigration.includes(fingerprint), `缺少旧模板识别特征：${fingerprint}`);
+  }
+  for (const requirement of [
+    '旧长块和新短块不能共存',
+    '带时间戳备份',
+    '旧长块之外的用户个人习惯',
+    '原样保留',
+    '不要把旧界面内容再次点保存覆盖新文件',
+    '只有一个 `production-engineering` 短调度块',
+  ]) {
+    assert.ok(legacyMigration.includes(requirement), `缺少旧个性化迁移要求：${requirement}`);
+  }
+  assert.ok(personal.includes('旧长版必须收口'));
+  assert.ok(personal.includes('legacy-personalization-migration.md'));
+  assert.ok(personal.includes('不能只在文件尾追加新块'));
 });
 
 test('SKILL 主入口保持轻量，详细规则继续按需下沉', () => {
