@@ -4,6 +4,8 @@
 
 此前经用户授权，参考 [mattpocock/skills](https://github.com/mattpocock/skills) 的提交 `3cca18b368ae95cdbdebbff572ccafa662551015`，提炼并重写诊断闭环、公开行为测试、纵向切片、规格整理和双轴审查。对应 `diagnosis-feedback-loop.md`、`design-testing.md`、`spec-review.md`。上游 MIT 许可证，版权归 Matt Pocock（2026）；不把上游的自动提交、外部工具依赖或原型清理方式覆盖到用户原文。
 
+经用户再次明确授权，参考 [obra/superpowers](https://github.com/obra/superpowers)（MIT，作者 Jesse Vincent）中的 `brainstorming`、`systematic-debugging`、`test-driven-development`、`writing-plans`、`executing-plans`、`subagent-driven-development`、`dispatching-parallel-agents`、`requesting-code-review`、`receiving-code-review`、`verification-before-completion`、`using-git-worktrees`、`finishing-a-development-branch`、`writing-skills` 和 `using-superpowers`。只提炼计划预审、持续执行、最小上下文子代理、独立任务并行、双阶段评审、评审意见验证、fresh verification、可选隔离工作区与 Skill 行为测试等方法；没有安装该技能集合，也没有照搬其“所有任务先 brainstorming”“测试不先写就删生产代码”“所有相关 Skill 在任何响应前强制调用”等绝对策略。对应 `agentic-execution.md`、`spec-review.md` 和仓库 `AGENTS.md`。
+
 前端质量补充此前参考 Vercel Labs 的 `vercel-labs/web-interface-guidelines`，并按当前项目与原始规范调整；没有安装该规则集。来源说明不是执行前置，不要求正常任务联网获取这些仓库。
 
 本次新增的原文保真切片以用户上传文件为准；重构只调整组织和语言，不把第三方方法当作更高优先级。
@@ -35,3 +37,5 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
+
+`obra/superpowers` 同样声明 MIT 许可（其插件元数据标注 `license: MIT`）；本仓库仅保留上面的来源说明与中文重写方法，不复制其完整技能正文。
