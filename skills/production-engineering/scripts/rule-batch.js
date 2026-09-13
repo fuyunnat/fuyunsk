@@ -3,10 +3,10 @@
 // 只把调用方已判定的阶段与领域组合成读取清单，不识别自然语言、不授权操作。
 const stages = {
   '只读': { topics: ['通用', '适用方式'], references: [] },
-  '小改': { topics: ['通用', '适用方式', '小改', '实现', '验证', '完成', '报告'], references: ['code-craft.md'] },
+  '小改': { topics: ['通用', '适用方式', '小改', '实现', '验证', '完成', '报告'], references: [] },
   '实现': {
     topics: ['通用', '适用方式', '完整', '实现'],
-    references: ['task-lanes.md', 'context-memory-continuity.md', 'code-craft.md'],
+    references: ['task-lanes.md', 'context-memory-continuity.md'],
   },
   '验证': { topics: ['验证', '完成', '报告', '禁止行为'], references: [] },
   '提交': { topics: ['Git提交', '验证', '续航'], references: [] },
@@ -43,6 +43,8 @@ const referenceNames = new Set([
   'code-risk-review.md', 'content-writing-quality.md', 'spec-review.md',
   'project-understanding.md', 'source-policy.md', 'project-migration.md', 'workflow-checklist.md', 'project-write-boundary.md',
 ]);
+const codeCraftStages = new Set(['小改', '实现']);
+const nonCodeDomains = new Set(['内容', '规划清单']);
 
 function planBatch(stage, topics = [], references = []) {
   if (!Object.hasOwn(stages, stage)) throw new Error(`未知读取阶段：${stage}`);
@@ -59,6 +61,10 @@ function planBatch(stage, topics = [], references = []) {
     for (const name of domain.topics) result.topics.add(name);
     for (const id of domain.ids || []) result.ids.add(id);
     for (const file of domain.references || []) result.references.add(file);
+  }
+  // 小改/实现通常会写代码；纯内容/规划不加载 Code Craft，避免文档任务无谓变重。
+  if (codeCraftStages.has(stage) && (!topics.length || topics.some(topic => !nonCodeDomains.has(topic)))) {
+    result.references.add('code-craft.md');
   }
   for (const file of references) result.references.add(file);
   for (const file of result.references) {
