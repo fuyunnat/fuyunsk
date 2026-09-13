@@ -9,10 +9,10 @@ const stages = {
     references: ['task-lanes.md', 'context-memory-continuity.md'],
   },
   '验证': { topics: ['验证', '完成', '报告', '禁止行为'], references: [] },
-  '提交': { topics: ['Git提交', '验证', '续航'], references: [] },
-  '推送': { topics: ['Git推送', '续航'], references: [] },
-  '评审': { topics: ['Git评审', '完成', '报告'], references: ['spec-review.md'] },
-  '回滚': { topics: ['Git回滚', '灰度回滚', '验证', '报告'], references: [] },
+  '提交': { topics: ['Git提交', '验证', '续航'], references: ['git-team-delivery.md'] },
+  '推送': { topics: ['Git推送', '续航'], references: ['git-team-delivery.md'] },
+  '评审': { topics: ['Git评审', '完成', '报告'], references: ['git-team-delivery.md', 'spec-review.md'] },
+  '回滚': { topics: ['Git回滚', '灰度回滚', '验证', '报告'], references: ['git-team-delivery.md'] },
 };
 
 // 对齐 routing.md 的领域并集。旧 --topic 仍为原有精确主题，不改变其含义。
@@ -41,7 +41,7 @@ const domains = {
 const referenceNames = new Set([
   'novice-clarification.md', 'behavior-preservation.md', 'database-upgrade-safety.md', 'bugfix-fast-loop.md', 'upstream-sync.md', 'seo-engineering.md', 'parallel-template-development.md', 'planning-persistence.md', 'agentic-execution.md', 'code-craft.md', 'proven-engineering-methods.md', 'configuration-localization.md', 'task-lanes.md', 'context-memory-continuity.md', 'frontend-interface-quality.md', 'ui-design-workflow.md',
   'wrapped-workspace-ui.md', 'design-testing.md', 'diagnosis-feedback-loop.md',
-  'code-risk-review.md', 'content-writing-quality.md', 'spec-review.md',
+  'code-risk-review.md', 'content-writing-quality.md', 'spec-review.md', 'git-team-delivery.md',
   'project-understanding.md', 'source-policy.md', 'project-migration.md', 'workflow-checklist.md', 'project-write-boundary.md',
 ]);
 const codeCraftStages = new Set(['小改', '实现']);
