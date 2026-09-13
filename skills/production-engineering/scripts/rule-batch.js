@@ -38,11 +38,13 @@ const domains = {
   '内容': { topics: ['内容'], references: ['content-writing-quality.md'] },
 };
 const referenceNames = new Set([
-  'novice-clarification.md', 'behavior-preservation.md', 'database-upgrade-safety.md', 'bugfix-fast-loop.md', 'upstream-sync.md', 'seo-engineering.md', 'parallel-template-development.md', 'planning-persistence.md', 'proven-engineering-methods.md', 'configuration-localization.md', 'task-lanes.md', 'context-memory-continuity.md', 'frontend-interface-quality.md', 'ui-design-workflow.md',
+  'novice-clarification.md', 'behavior-preservation.md', 'database-upgrade-safety.md', 'bugfix-fast-loop.md', 'upstream-sync.md', 'seo-engineering.md', 'parallel-template-development.md', 'planning-persistence.md', 'code-craft.md', 'proven-engineering-methods.md', 'configuration-localization.md', 'task-lanes.md', 'context-memory-continuity.md', 'frontend-interface-quality.md', 'ui-design-workflow.md',
   'wrapped-workspace-ui.md', 'design-testing.md', 'diagnosis-feedback-loop.md',
   'code-risk-review.md', 'content-writing-quality.md', 'spec-review.md',
   'project-understanding.md', 'source-policy.md', 'project-migration.md', 'workflow-checklist.md', 'project-write-boundary.md',
 ]);
+const codeCraftStages = new Set(['小改', '实现']);
+const nonCodeDomains = new Set(['内容', '规划清单']);
 
 function planBatch(stage, topics = [], references = []) {
   if (!Object.hasOwn(stages, stage)) throw new Error(`未知读取阶段：${stage}`);
@@ -59,6 +61,10 @@ function planBatch(stage, topics = [], references = []) {
     for (const name of domain.topics) result.topics.add(name);
     for (const id of domain.ids || []) result.ids.add(id);
     for (const file of domain.references || []) result.references.add(file);
+  }
+  // 小改/实现通常会写代码；纯内容/规划不加载 Code Craft，避免文档任务无谓变重。
+  if (codeCraftStages.has(stage) && (!topics.length || topics.some(topic => !nonCodeDomains.has(topic)))) {
+    result.references.add('code-craft.md');
   }
   for (const file of references) result.references.add(file);
   for (const file of result.references) {
