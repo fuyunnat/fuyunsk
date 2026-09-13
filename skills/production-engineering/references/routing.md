@@ -25,6 +25,7 @@ node <技能目录>/scripts/read-rules.js --id 04-04
 | 先列清单、字段盘点、流程方案且后续要实施 | 二章续航、六、二十及实际受影响领域 | `planning-persistence.md`；确认后的详细清单先落 `PROJECT_ROOT/工作流程.md`，不能只留聊天 |
 | 大型/多阶段、多个独立子任务、需要子代理/并行或独立复核 | 六、七、二十、二十二、二十三及实际受影响领域 | `agentic-execution.md` + `spec-review.md`；持续执行到阻塞/完成，独立任务才并行，复杂改动双阶段复核 |
 | 后台可调业务参数、同步频率、阈值、默认值、不要写死 | 配置、实现、验证及实际受影响领域 | `configuration-localization.md`；运行时值统一配置源，真实消费并用非默认值验证生效 |
+| 重新设计、精修、太丑、提升质感、UI/UX 审查、建立设计系统 | 六、七、九、二十及前端实际适用部分 | `frontend-design-intelligence.md`；按品牌/产品语域、设计旋钮、微交互、可用性 QA 与 DESIGN.md 规则执行 |
 | 内容和工程文档 | 二章内容补充、六、二十一、二十三 | `content-writing-quality.md` |
 | 后端 | 七、八、十、十八、二十 | `design-testing.md` + `configuration-localization.md`；只有真实性能问题才追加十一章/性能专项 |
 | 前端与后台（所有页面） | 六、七、九、二十 | `frontend-stack.md` 替代旧默认；`frontend-interface-quality.md` 负责质量；`configuration-localization.md` 负责前台多语言与可运营配置；公开可索引前台新增/重写再按需补 `seo-engineering.md`，后台/私有页不加载；只有真实性能问题才追加十一章/性能专项 |
@@ -47,6 +48,14 @@ node <技能目录>/scripts/read-rules.js --id 04-04
 | 完成与报告 | 二十至二十四 | 不适用项省略，不能伪造已完成 |
 
 交叉领域取条款并集；订单页面不能漏接口、权限、幂等。
+
+## 视觉设计按需加载，不让每个前端任务变重
+
+用户明确要求“重新设计、精修、太丑了、做高级点、提升质感、UI/UX 审查、建立设计系统”时追加 `视觉设计` topic，读取 `frontend-design-intelligence.md`。它吸收设计方向、品牌/产品语域、VARIANCE/MOTION/DENSITY、微交互、Web 可用性 QA 和 `DESIGN.md` 持久化方法。
+
+普通按钮修复、单纯业务功能开发、严格原样迁移不因此加载。严格迁移仍以源码/演示基线为准，不允许“品味提升”覆盖原貌；模板 V2 如果允许重做视觉，可同时加载 `模板二开,视觉设计`，但功能台账与旧模板只读保护仍优先。
+
+多页面长期设计的 `DESIGN.md` 只保存稳定视觉契约；任务状态仍写 `工作流程.md`，不能互相替代。
 
 ## 写代码默认应用专业代码工艺
 

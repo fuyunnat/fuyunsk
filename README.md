@@ -193,3 +193,13 @@ git diff --check
 主自检已包含 `build-rules.js --check`，无需重复执行；只排查切片一致性时才单独运行该命令。含新增文件的提交还要检查已暂存差异。测速是可选维护任务：`node scripts/benchmark-rule-loading.js --runs 7`，不属于日常业务流程。
 
 校验包含原稿锁定、逐段重建、主题读取、中文入口、路径与错误处理、状态助手、秘密与产物检查。程序测试不代表真实 Codex 行为测试；安装后的触发、中文交付和实际耗时需按教程另行验收。
+
+## 前端设计智能
+
+明确说“重新设计、太丑了、高级点、精修一下、UI/UX 审查、做套设计系统”时，按需加载[前端设计智能规则](skills/production-engineering/references/frontend-design-intelligence.md)。普通 Bug、普通前端功能开发和严格原样迁移不会因为项目有前端就自动加载这一层。
+
+这层能力融合了 7 类前端设计 Skill 的有效方法：先判断品牌型/产品型设计语域，用 VARIANCE / MOTION / DENSITY 三个设计旋钮约束方向；设计选择优先依据用户参考、现有品牌/Design System 和真实产品任务，不随机套热门模板；界面精修区分 Critique / Polish / Distill / Harden，不把所有“不够好看”都解释成整页重做。
+
+产品 UI 会重点检查排版、密度、状态连续性、键盘与无障碍、表单、错误恢复、移动端、长文本、safe area、loading/empty/error 等不可见细节；动效必须解释状态变化并支持 reduced motion。多页面或长期设计可维护 `PROJECT_ROOT/DESIGN.md` 保存稳定视觉契约，任务进度仍只写 `工作流程.md`，两者不混用。
+
+严格原样迁移继续以源码/演示基线为准，不能用“品味提升”覆盖旧模板原貌；新设计仍服从当前框架、shadcn/ui + Tailwind CSS、Morphicons、业务行为锁和真实浏览器验收。
