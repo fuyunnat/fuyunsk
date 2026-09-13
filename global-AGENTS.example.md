@@ -1,7 +1,7 @@
 <!-- production-engineering:auto:start -->
 # 工程技能自动调用
 
-技能入口：`<已核实的SKILL.md绝对路径>`
+工程技能：`$production-engineering`
 
 - 默认中文；命令、路径和技术标识保留原样。
 - 用户让 AI 看、改、修、跑、继续、对比、同步上游、SEO/收录、二开模板、先列清单、字段清单、别写死、补功能或提交，就主动用 `$production-engineering`；“这个太丑了”“这里不对”“继续”“旧模板别动”“按钮没反应”等口语短句也结合项目理解。

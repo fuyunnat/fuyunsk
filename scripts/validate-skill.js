@@ -27,14 +27,16 @@ budget(skill+'references/project-write-boundary.md',9000);
 includes(skill+'SKILL.md',['references/project-write-boundary.md','所有写入']);
 run(['--check',skill+'scripts/project-path-check.js']);
 // 安装说明的静态契约不等于已在用户电脑完成安装或自动调用验证。
-includes('README.md',['## 让 AI 自动安装','个性化 / Codex 说明','AGENTS.override.md','不要求你每次手写技能名','文件安装和自动调用要分别验证']);
-includes('docs/ai-installation.md',['默认安装必须完成本步骤','保留块外所有无关要求','扫描目录之外','同一短块','实际自动调用待验证','不能算自动触发通过']);
+includes('README.md',['## 让 AI 自动安装','个性化 / Codex 说明','AGENTS.override.md','不要求你每次手写技能名','文件安装和自动调用要分别验证','不要让我自己复制粘贴','短模板只绑定 `$production-engineering` 技能名']);
+includes('docs/ai-installation.md',['默认安装必须完成本步骤','保留块外所有无关要求','扫描目录之外','同一短块','实际自动调用待验证','不能算自动触发通过','不要把当前 `SKILL.md` 绝对路径写进个性化']);
+includes('docs/legacy-personalization-migration.md',['按 `$production-engineering` 技能名合并','不要把当前 `SKILL.md` 绝对路径写进个性化']);
 const bridge=read('global-AGENTS.example.md').trim();
 const personal=read('docs/personal-custom-instructions.md').match(/```markdown\n([\s\S]*?)\n```/);
 assert.ok(personal,'个性化说明缺少可合并的短模板');
 assert.equal(personal[1].trim(),bridge,'个性化与全局模板必须一致，避免安装两套规则');
 for(const marker of ['<!-- production-engineering:auto:start -->','<!-- production-engineering:auto:end -->'])assert.equal(bridge.split(marker).length-1,1,'短模板的边界标记必须唯一');
-assert.ok(bridge.includes('<已核实的SKILL.md绝对路径>'),'短模板必须要求绑定实际技能入口');
+assert.ok(bridge.includes('工程技能：`$production-engineering`'),'短模板必须按稳定技能名调用');
+assert.ok(!bridge.includes('SKILL.md绝对路径')&&!bridge.includes('<已核实的'),'短模板不得绑定机器绝对路径');
 
 includes(skill+'references/upstream-notes.md',['mattpocock/skills','3cca18b368ae95cdbdebbff572ccafa662551015','MIT License','Copyright (c) 2026 Matt Pocock']);
 for(const name of ['task-state.js','task-state-core.js'])assert.ok(read(skill+'scripts/'+name).split('\n').length<=600,`${name} 超过 600 行`);

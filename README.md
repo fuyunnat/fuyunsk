@@ -16,7 +16,9 @@ https://github.com/fuyunnat/fuyunsk
 本次授权你备份并更新本技能，以及个人全局指令中与本技能有关的自动调用部分。
 必须同时完成：完整技能安装、个性化 / Codex 说明的短规则接入、旧规则冲突检查和验证。
 使用 docs/personal-custom-instructions.md 与 global-AGENTS.example.md 的同一短模板，
-填入真实安装路径，合并到当前生效的个人规则中；检查 CODEX_HOME 和 AGENTS.override.md。
+由你直接合并到当前生效的个人规则中；不要让我自己复制粘贴。
+短模板只绑定 `$production-engineering` 技能名，不写入 `SKILL.md` 绝对路径；
+另外检查 CODEX_HOME、实际技能发现结果和 AGENTS.override.md。
 保留我的其他指令和本机定制；同名技能只留一份有效安装，旧副本移到扫描目录外备份。
 不要把完整工程规范塞回个性化，也不要要求我每次输入 $production-engineering。
 不要更改 API Key、模型、MCP、插件、记忆、沙箱、审批或其他无关配置。
@@ -25,7 +27,7 @@ https://github.com/fuyunnat/fuyunsk
 最后用中文报告来源提交、安装路径、个人规则文件、备份位置、验证结果和剩余待办。
 ```
 
-仅能访问 GitHub 的远端 AI 可以改仓库，不能假装已经安装到你的电脑。有本机文件权限时，AI 应直接完成配置；只有权限审批、无法自动刷新界面等必要步骤才交给你。
+仅能访问 GitHub 的远端 AI 可以改仓库，不能假装已经安装到你的电脑。有本机文件权限时，AI 应直接完成技能安装和个性化文件修改；只有权限审批、无法自动刷新界面等必要步骤才交给你。
 
 ## 个性化怎样自动调用技能
 
@@ -38,7 +40,7 @@ https://github.com/fuyunnat/fuyunsk
 
 不要求你每次手写技能名。个性化短块负责调用，技能保留完整规则；**只安装技能文件、不接入短规则，不算完成本仓库的默认安装流程。** 用户明确要求不改个性化时除外。
 
-桌面个性化与个人 `AGENTS.md` 是同一配置链路，不要当成两个独立地方各塞一整份规则。默认位置是 `~/.codex/AGENTS.md`，自定义 `CODEX_HOME` 或覆盖文件按[安装教程](docs/ai-installation.md)核实；[个性化模板](docs/personal-custom-instructions.md)由 AI 填入实际路径后合并，保护其他原有指令。
+桌面个性化与个人 `AGENTS.md` 是同一配置链路，不要当成两个独立地方各塞一整份规则。默认位置是 `~/.codex/AGENTS.md`，自定义 `CODEX_HOME` 或覆盖文件按[安装教程](docs/ai-installation.md)核实；[个性化模板](docs/personal-custom-instructions.md)由 AI 直接合并，短块只保存稳定技能名，不嵌入固定安装目录。真实技能路径由安装流程另外核实，用于验证和报告，保护其他原有指令。
 
 ## 使用方法
 
@@ -150,6 +152,8 @@ node "<技能目录>/scripts/read-rules.js" --stage 只读 --topic 审计
 ## 安装和升级
 
 [安装教程](docs/ai-installation.md)是给 AI 执行的完整流程，覆盖固定版本下载、原位安装、备份去重、个性化接入、覆盖规则处理和新会话验收。[短全局模板](global-AGENTS.example.md)与[个性化模板](docs/personal-custom-instructions.md)内容相同，只合并一个标记块，不重复追加。
+
+默认安装时，有本机写权限的 AI 必须同步更新“个性化 / Codex 说明”对应的个人规则，不能只安装 Skill 后把模板交给用户。短块按 `$production-engineering` 技能名调用，不写死机器路径；实际安装目录单独验证。
 
 安装完成不等于自动调用已验证。AI 必须区分文件、界面和新会话的实际证据；不能仅凭自己的回答判定成功。更新 GitHub 不会自动更新你本机的技能或个性化。
 
