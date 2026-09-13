@@ -1,6 +1,6 @@
 ---
 name: production-engineering
-description: "用于真实项目的实现、修复、调试、前端 UI、SEO、安全审查、Git、数据库、部署、迁移和二开上游同步。已关联项目时，“这个太丑了”“这里不对”“继续”“跑起来”“跟原站不像”“按钮没反应”“补上功能”“保存一下”等口语短句也属于工程意图；用户无需提供技术术语、文件名或实现方案。普通闲聊、翻译、计算和脱离项目的概念解释不触发。"
+description: "用于实现、修复、调试、UI、模板二开、SEO、Git、数据库、部署、迁移、规划清单、配置化和上游同步。“继续”“先列清单”“旧模板别动”“别写死”等口语也触发；用户无需技术术语。闲聊、翻译、计算和脱离项目解释不触发。"
 ---
 
 # 生产级工程
@@ -21,6 +21,7 @@ description: "用于真实项目的实现、修复、调试、前端 UI、SEO、
 | 所有工程任务开始 | `references/novice-clarification.md` + `references/rules/00-00.md`、`01-00.md`、`02-01.md` |
 | 明确局部、可恢复、无外部副作用的小改 | `references/rules/00-01.md`、`03-00.md`；验证按第二十章裁剪 |
 | Bug、报错、功能异常且用户要求修复 | `references/bugfix-fast-loop.md`；只有升级条件才读 `diagnosis-feedback-loop.md` |
+| 规划清单/模板二开/别写死/写代码 | `routing.md` → `planning-persistence.md`、`parallel-template-development.md`、`configuration-localization.md`、`code-craft.md` |
 | 不满足快速条件、存在高风险或任务变大 | `references/rules/00-02.md`、`references/task-lanes.md` |
 | 实现前、职责划分、注释与回归 | 原文第六、七章；按 `references/routing.md` 定位 |
 | 整项目重写、换语言或全量架构迁移 | `整项目迁移` + `references/project-migration.md`；功能对照、迁移台账、逐项验收 |
