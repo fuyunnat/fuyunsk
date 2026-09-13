@@ -22,6 +22,8 @@ node <技能目录>/scripts/read-rules.js --id 04-04
 | 二开/派生项目同步上游、官方修复或新功能 | 六、七、二十及实际受影响领域 | `upstream-sync.md`；只吸收目标 diff，保护派生功能，不默认整仓 merge/rebase |
 | SEO、收录、Google/Bing、robots、sitemap、canonical、Schema、GEO、hreflang | 前端/性能/配置/内容及二十章的实际适用部分 | `seo-engineering.md`；明确 SEO 走完整模式，公开可索引前台新增/重写只做轻量 SEO Guard |
 | 前端模板并行二开、V1 保留/V2 新建、旧模板不要动 | 六、七、九、二十及前端实际适用部分 | `parallel-template-development.md`；旧模板只读、固定功能分母、新模板独立并行，公开模板再按需补 `seo-engineering.md` |
+| 先列清单、字段盘点、流程方案且后续要实施 | 二章续航、六、二十及实际受影响领域 | `planning-persistence.md`；确认后的详细清单先落 `PROJECT_ROOT/工作流程.md`，不能只留聊天 |
+| 后台可调业务参数、同步频率、阈值、默认值、不要写死 | 配置、实现、验证及实际受影响领域 | `configuration-localization.md`；运行时值统一配置源，真实消费并用非默认值验证生效 |
 | 内容和工程文档 | 二章内容补充、六、二十一、二十三 | `content-writing-quality.md` |
 | 后端 | 七、八、十、十八、二十 | `design-testing.md` + `configuration-localization.md`；只有真实性能问题才追加十一章/性能专项 |
 | 前端与后台（所有页面） | 六、七、九、二十 | `frontend-stack.md` 替代旧默认；`frontend-interface-quality.md` 负责质量；`configuration-localization.md` 负责前台多语言与可运营配置；公开可索引前台新增/重写再按需补 `seo-engineering.md`，后台/私有页不加载；只有真实性能问题才追加十一章/性能专项 |
