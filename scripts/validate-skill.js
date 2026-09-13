@@ -37,6 +37,8 @@ assert.equal(personal[1].trim(),bridge,'个性化与全局模板必须一致，�
 for(const marker of ['<!-- production-engineering:auto:start -->','<!-- production-engineering:auto:end -->'])assert.equal(bridge.split(marker).length-1,1,'短模板的边界标记必须唯一');
 assert.ok(bridge.includes('工程技能：`$production-engineering`'),'短模板必须按稳定技能名调用');
 assert.ok(!bridge.includes('SKILL.md绝对路径')&&!bridge.includes('<已核实的'),'短模板不得绑定机器绝对路径');
+assert.ok(bridge.includes('当前对话项目根目录的 `工作流程.md`'),'短模板必须明确清单属于当前对话项目');
+assert.ok(!bridge.includes('PROJECT_ROOT/工作流程.md'),'个性化不得用内部 PROJECT_ROOT 占位替代当前对话项目位置');
 
 includes(skill+'references/upstream-notes.md',['mattpocock/skills','3cca18b368ae95cdbdebbff572ccafa662551015','MIT License','Copyright (c) 2026 Matt Pocock']);
 for(const name of ['task-state.js','task-state-core.js'])assert.ok(read(skill+'scripts/'+name).split('\n').length<=600,`${name} 超过 600 行`);
