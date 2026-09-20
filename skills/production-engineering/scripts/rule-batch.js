@@ -28,6 +28,7 @@ const domains = {
   '工程增强': { topics: ['实现', '验证'], references: ['proven-engineering-methods.md'] },
   '配置化': { topics: ['配置部署', '验证'], references: ['configuration-localization.md'] },
   '前端': { topics: ['代码组织', '前端', '验证'], ids: ['06-00'], references: ['frontend-interface-quality.md', 'ui-design-workflow.md', 'configuration-localization.md'] },
+  '前端交付': { topics: ['代码组织', '前端', '接口', '验证', 'Git评审'], ids: ['06-00'], references: ['frontend-delivery-loop.md', 'frontend-interface-quality.md', 'ui-design-workflow.md', 'git-team-delivery.md'] },
   '后端': { topics: ['代码组织', '后端', '接口', '日志', '验证'], references: ['design-testing.md', 'configuration-localization.md'] },
   '接口': { topics: ['后端', '接口', '并发', '安全', '日志', '验证'], references: ['configuration-localization.md'] },
   '性能': { topics: ['性能'], references: ['diagnosis-feedback-loop.md', 'proven-engineering-methods.md'] },
@@ -42,7 +43,7 @@ const domains = {
 const referenceNames = new Set([
   'novice-clarification.md', 'behavior-preservation.md', 'database-upgrade-safety.md', 'bugfix-fast-loop.md', 'upstream-sync.md', 'seo-engineering.md', 'parallel-template-development.md', 'planning-persistence.md', 'agentic-execution.md', 'frontend-design-intelligence.md', 'code-craft.md', 'proven-engineering-methods.md', 'configuration-localization.md', 'task-lanes.md', 'context-memory-continuity.md', 'frontend-interface-quality.md', 'ui-design-workflow.md',
   'wrapped-workspace-ui.md', 'design-testing.md', 'diagnosis-feedback-loop.md',
-  'code-risk-review.md', 'content-writing-quality.md', 'spec-review.md', 'git-team-delivery.md',
+  'code-risk-review.md', 'content-writing-quality.md', 'spec-review.md', 'git-team-delivery.md', 'frontend-delivery-loop.md',
   'project-understanding.md', 'source-policy.md', 'project-migration.md', 'workflow-checklist.md', 'project-write-boundary.md',
 ]);
 const codeCraftStages = new Set(['小改', '实现']);
