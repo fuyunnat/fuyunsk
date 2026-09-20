@@ -1,0 +1,18 @@
+'use strict';
+const test = require('node:test');
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
+const root = path.resolve(__dirname, '..');
+const read = file => fs.readFileSync(path.join(root, file), 'utf8');
+const skill = read('skills/production-engineering/SKILL.md');
+const routing = read('skills/production-engineering/references/routing.md');
+const batchSource = read('skills/production-engineering/scripts/rule-batch.js');
+const batch = require(path.join(root, 'skills/production-engineering/scripts/rule-batch.js'));
+const agent = read('skills/production-engineering/agents/openai.yaml');
+const globalAgents = read('global-AGENTS.example.md').trim();
+const personal = read('docs/personal-custom-instructions.md');
+const reference = read('skills/production-engineering/references/frontend-delivery-loop.md');
+test('前端交付专项接入全部入口且按需可批量读取', () => { for (const body of [skill, routing, batchSource, agent, globalAgents, personal, reference]) assert.ok(body.includes('前端交付')); assert.ok(routing.includes('frontend-delivery-loop.md')); assert.ok(batchSource.includes("'前端交付':")); assert.ok(batchSource.includes('frontend-delivery-loop.md')); const plan = batch.planBatch('只读', ['前端交付']); assert.ok(plan.references.includes('frontend-delivery-loop.md')); assert.ok(plan.topics.includes('前端')); });
+test('前端交付不能把缺失工具或未做验收写成完成', () => { for (const phrase of ['不可用/被阻塞', '视觉验收未完成', '不声称已 Review、部署或上线', '未验证']) assert.ok(reference.includes(phrase)); assert.match(reference, /设计上下文[\s\S]*语义代码理解[\s\S]*真实页面验收[\s\S]*协作与预览/); });
+test('普通前端读取不自动加载前端交付专项', () => { const plan = batch.planBatch('实现', ['前端']); assert.ok(!plan.references.includes('frontend-delivery-loop.md')); });
