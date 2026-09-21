@@ -38,4 +38,4 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-`obra/superpowers` 同样声明 MIT 许可（其插件元数据标注 `license: MIT`）；本仓库仅保留上面的来源说明与中文重写方法，不复制其完整技能正文。
+`obra/superpowers` 同样声明 MIT 许可（其插件元数据标注 `license: MIT`）；本仓库仅保留上面的来源说明与中文重写方法，不复制其完整技能正文。\n\n## UI视觉方法（2026-09-21）\n\n经用户明确要求，审查并提炼 [pbakaus/impeccable](https://github.com/pbakaus/impeccable)（Apache-2.0，仓库当前主线）、[mizchi/vlmkit](https://github.com/mizchi/vlmkit)（MIT，仓库当前主线）和 [aochengyu/pixel-twin](https://github.com/aochengyu/pixel-twin)（仓库未声明明确许可证）。仅以独立措辞吸收产品/视觉上下文分离、确定性 UI 缺陷扫描、多视口基线差异、覆盖表、computed styles 和外到内证据闭环；不复制 Pixel Twin 的代码/脚本或任何项目的完整 Skill，不把外部依赖加入本仓库。

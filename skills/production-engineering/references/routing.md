@@ -29,7 +29,7 @@ node <技能目录>/scripts/read-rules.js --id 04-04
 | 内容和工程文档 | 二章内容补充、六、二十一、二十三 | `content-writing-quality.md` |
 | 后端 | 七、八、十、十八、二十 | `design-testing.md` + `configuration-localization.md`；只有真实性能问题才追加十一章/性能专项 |
 | 前端与后台（所有页面） | 六、七、九、二十 | `frontend-stack.md` 替代旧默认；`frontend-interface-quality.md` 负责质量；`configuration-localization.md` 负责前台多语言与可运营配置；公开可索引前台新增/重写再按需补 `seo-engineering.md`，后台/私有页不加载；只有真实性能问题才追加十一章/性能专项 |
-| 前端交付闭环（设计上下文、语义代码理解、浏览器验收、PR、预览） | 六、七、九、二十 | frontend-delivery-loop.md；按工具可用性降级，不把未执行的浏览器、Review 或部署写成已完成 |
+| 前端交付闭环（设计上下文、语义代码理解、浏览器验收、PR、预览） | 六、七、九、二十 | frontend-delivery-loop.md；按工具可用性降级，不把未执行的浏览器、Review 或部署写成已完成 |\n| UI视觉精修、响应式跑版、参考图还原、视觉回归 | 六、七、九、二十 | ui-visual-verification.md；按需选择精修、多视口或参考图层，不安装外部 Skill，不把截图主观评价写成通过 |
 | 包裹式工作台 | 同前端 | `wrapped-workspace-ui.md` |
 | API、回调与联调 | 八、十、十四、十七、十八、二十 | `configuration-localization.md`；按实际影响补数据库、配置 |
 | 性能与容量 | 十一及受影响领域 | `diagnosis-feedback-loop.md` + `proven-engineering-methods.md`，先测量，再按影响优先处理 |
@@ -50,7 +50,7 @@ node <技能目录>/scripts/read-rules.js --id 04-04
 
 交叉领域取条款并集；订单页面不能漏接口、权限、幂等。
 
-## 视觉设计按需加载，不让每个前端任务变重
+## UI视觉验证按需加载，不让每个前端任务变重\n\n用户说“页面别扭、间距对齐、换屏幕跑版、溢出、对照参考图、像素还原或视觉回归”时追加 `UI视觉验证`，读取 `ui-visual-verification.md`。它与 `视觉设计` 分工：前者验收现有页面的测量、视口和参考差异，后者决定新设计方向、语域和设计系统；两者需要时可并用。普通按钮修复、纯业务功能和严格原样迁移不因此加载。\n\n## 视觉设计按需加载，不让每个前端任务变重
 
 用户明确要求“重新设计、精修、太丑了、做高级点、提升质感、UI/UX 审查、建立设计系统”时追加 `视觉设计` topic，读取 `frontend-design-intelligence.md`。它吸收设计方向、品牌/产品语域、VARIANCE/MOTION/DENSITY、微交互、Web 可用性 QA 和 `DESIGN.md` 持久化方法。
 
