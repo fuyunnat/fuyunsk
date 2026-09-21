@@ -25,7 +25,7 @@ description: "用于实现、修复、调试、UI、模板二开、SEO、Git、�
 | 不满足快速条件、存在高风险或任务变大 | `references/rules/00-02.md`、`references/task-lanes.md` |
 | 实现前、职责划分、注释与回归 | 原文第六、七章；按 `references/routing.md` 定位 |
 | 整项目重写、换语言或全量架构迁移 | `整项目迁移` + `references/project-migration.md`；功能对照、迁移台账、逐项验收 |
-| 前端页面或后台界面 | `references/frontend-stack.md` + 原文第九章 + `frontend-interface-quality.md` + `ui-design-workflow.md` |
+| 前端页面或后台界面 | `references/frontend-stack.md` + 原文第九章 + `frontend-interface-quality.md` + `ui-design-workflow.md` |\n| UI视觉精修/跑版/参考图还原 | `ui-visual-verification.md` + 前端交付专项；按需才做多视口或像素核对 |
 | 后端、接口、性能、数据库、并发、配置、依赖、安全、日志 | `references/routing.md` 中对应领域 |
 | 提交、推送、评审、合并、回滚 | 原文第四章当前阶段；不是每次修改都读完整 Git 章节 |
 | 长任务、多文件、多阶段或恢复旧任务 | 原文第二章第六节 + `references/context-memory-continuity.md` |
@@ -46,7 +46,7 @@ description: "用于实现、修复、调试、UI、模板二开、SEO、Git、�
 - 不默认授权主线、合并、强推、远端删除或设置变更。
 - 不能靠删测试、弱化断言、无限重试或伪造证据制造完成；报告区分通过、失败、未配置、无法执行和未验证。
 
-## 读取与速度边界
+## UI视觉专项\n\n“页面别扭、换屏幕就乱、对照参考图还原、视觉回归”时加载 `ui-visual-verification.md`；它补充精修分类、多视口缺陷闭环、覆盖表和证据门禁。普通前端和严格迁移不自动加载。\n\n## 读取与速度边界
 
 原文按字节切片，不以摘要替代；`source-original.md` 为原稿基准，用户当前明确要求优先。历史规范与冲突规则见 `references/source-policy.md`，不暗改。
 
