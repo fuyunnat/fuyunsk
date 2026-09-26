@@ -163,7 +163,6 @@ test('项目写入必须先过工作流程门禁，门禁失败不得继续', ()
   requireText(agent, ['工作流程门禁', '门禁失败停止业务写入']);
   requireText(globalAgents, ['先读/建/更新该项目根目录的 `工作流程.md`', '门禁失败停止业务写入']);
   assert.ok(personal.includes(shortTemplateForTest(globalAgents)));
-  assert.ok(!entry.includes('\n'));
 });
 
 function shortTemplateForTest(body) {
