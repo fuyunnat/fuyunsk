@@ -150,3 +150,23 @@ test('同批读取携带目录隔离与动态清单而不改变原稿接口', ()
   assert.equal(files.length, 1);
   requireText(files[0].text, ['PROJECT_ROOT/工作流程.md', '目标模式与动态追加', '新旧页面对照', '真实后端联调']);
 });
+
+
+test('项目写入必须先过工作流程门禁，门禁失败不得继续', () => {
+  const entry = text('skills/production-engineering/SKILL.md');
+  const workflow = rules();
+  const agent = text('skills/production-engineering/agents/openai.yaml');
+  const globalAgents = text('global-AGENTS.example.md');
+  const personal = text('docs/personal-custom-instructions.md');
+  requireText(entry, ['工作流程写入门禁', '第一项标为“进行中”', '停止业务写入并报告', '纯只读']);
+  requireText(workflow, ['先读/建/更新该清单', '门禁失败停止业务写入', '把首项标为“进行中”']);
+  requireText(agent, ['工作流程门禁', '门禁失败停止业务写入']);
+  requireText(globalAgents, ['先读/建/更新该项目根目录的 `工作流程.md`', '门禁失败停止业务写入']);
+  assert.ok(personal.includes(shortTemplateForTest(globalAgents)));
+});
+
+function shortTemplateForTest(body) {
+  const start = body.indexOf('<!-- production-engineering:auto:start -->');
+  const end = body.indexOf('<!-- production-engineering:auto:end -->') + '<!-- production-engineering:auto:end -->'.length;
+  return body.slice(start, end);
+}
