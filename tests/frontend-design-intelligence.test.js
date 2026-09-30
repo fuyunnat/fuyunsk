@@ -74,3 +74,21 @@ test('自然语言重新设计与精修会命中视觉设计专项', () => {
   assert.match(agent, /追加视觉设计专项/);
   assert.match(routing, /重新设计、精修、太丑、提升质感、UI\/UX 审查、建立设计系统/);
 });
+
+test('不会美工时自动接管设计判断并要求真实视觉复查', () => {
+  for (const phrase of ['不会美工', '你来设计', '自行选择一个有依据的主方向', '不要求用户提供配色、字体或间距参数']) {
+    assert.ok(design.includes(phrase), `缺少非设计师委托规则：${phrase}`);
+  }
+  assert.match(routing, /不会美工.*视觉设计.*UI视觉验证/);
+  assert.match(agent, /不会美工.*视觉设计.*UI视觉验证/);
+  const plan = planBatch('实现', ['视觉设计', 'UI视觉验证']);
+  assert.ok(plan.references.includes('frontend-design-intelligence.md'));
+  assert.ok(plan.references.includes('ui-visual-verification.md'));
+});
+
+test('视觉复查不因后端有迁移副作用而阻断纯前端任务', () => {
+  const visualCheck = fs.readFileSync(path.join(refs, 'ui-visual-verification.md'), 'utf8');
+  for (const phrase of ['隔离的前端 mock', '不启动连接现有业务库的服务', '实际截图', '未验证']) {
+    assert.ok(visualCheck.includes(phrase), `缺少隔离验收边界：${phrase}`);
+  }
+});
