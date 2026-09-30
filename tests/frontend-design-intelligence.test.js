@@ -74,3 +74,40 @@ test('自然语言重新设计与精修会命中视觉设计专项', () => {
   assert.match(agent, /追加视觉设计专项/);
   assert.match(routing, /重新设计、精修、太丑、提升质感、UI\/UX 审查、建立设计系统/);
 });
+
+test('不会美工时自动接管设计判断并要求真实视觉复查', () => {
+  for (const phrase of ['不会美工', '你来设计', '自行选择一个有依据的主方向', '不要求用户提供配色、字体或间距参数']) {
+    assert.ok(design.includes(phrase), `缺少非设计师委托规则：${phrase}`);
+  }
+  assert.match(routing, /不会美工.*视觉设计.*UI视觉验证/);
+  assert.match(agent, /不会美工.*视觉设计.*UI视觉验证/);
+  const plan = planBatch('实现', ['视觉设计', 'UI视觉验证']);
+  assert.ok(plan.references.includes('frontend-design-intelligence.md'));
+  assert.ok(plan.references.includes('ui-visual-verification.md'));
+});
+
+test('视觉复查不因后端有迁移副作用而阻断纯前端任务', () => {
+  const visualCheck = fs.readFileSync(path.join(refs, 'ui-visual-verification.md'), 'utf8');
+  for (const phrase of ['隔离的前端 mock', '不启动连接现有业务库的服务', '实际截图', '未验证']) {
+    assert.ok(visualCheck.includes(phrase), `缺少隔离验收边界：${phrase}`);
+  }
+});
+
+test('口语视觉反馈不要求固定提示词，纯问图也不擅自写入', () => {
+  for (const phrase of ['这页怪怪的', '看着不顺眼', '有点乱', '你看着弄', '不用用户写固定提示词']) {
+    assert.ok(design.includes(phrase), `缺少口语意图规则：${phrase}`);
+  }
+  assert.match(design, /只发截图.*没有改动意图.*不擅自改文件/);
+  assert.match(routing, /普通话视觉反馈.*视觉设计.*UI视觉验证/);
+  assert.match(agent, /这页怪怪的.*看着不顺眼.*视觉设计/);
+});
+
+test('产品页面过大占屏时检查密度而非全局缩小', () => {
+  const visualCheck = fs.readFileSync(path.join(refs, 'ui-visual-verification.md'), 'utf8');
+  for (const phrase of ['一屏只能看到', '首屏可见信息量', '按钮、卡片、弹窗', '不能用全局缩放']) {
+    assert.ok(design.includes(phrase) || visualCheck.includes(phrase), `缺少尺寸密度规则：${phrase}`);
+  }
+  assert.match(visualCheck, /宽屏.*手机.*触控/);
+  assert.match(routing, /太大.*占满屏.*UI视觉验证/);
+  assert.match(agent, /东西太大.*占屏/);
+});
