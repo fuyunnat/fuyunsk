@@ -101,3 +101,13 @@ test('口语视觉反馈不要求固定提示词，纯问图也不擅自写入',
   assert.match(routing, /普通话视觉反馈.*视觉设计.*UI视觉验证/);
   assert.match(agent, /这页怪怪的.*看着不顺眼.*视觉设计/);
 });
+
+test('产品页面过大占屏时检查密度而非全局缩小', () => {
+  const visualCheck = fs.readFileSync(path.join(refs, 'ui-visual-verification.md'), 'utf8');
+  for (const phrase of ['一屏只能看到', '首屏可见信息量', '按钮、卡片、弹窗', '不能用全局缩放']) {
+    assert.ok(design.includes(phrase) || visualCheck.includes(phrase), `缺少尺寸密度规则：${phrase}`);
+  }
+  assert.match(visualCheck, /宽屏.*手机.*触控/);
+  assert.match(routing, /太大.*占满屏.*UI视觉验证/);
+  assert.match(agent, /东西太大.*占屏/);
+});
