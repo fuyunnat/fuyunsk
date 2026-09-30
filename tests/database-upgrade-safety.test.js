@@ -37,3 +37,30 @@ test('普通前端任务不额外加载数据库升级规则', () => {
   const plan = planBatch('实现', ['前端']);
   assert.ok(!plan.references.includes('database-upgrade-safety.md'));
 });
+
+test('清库硬限制覆盖直接命令、隐式启动和错误推断', () => {
+  const entry = fs.readFileSync(path.join(skill, 'SKILL.md'), 'utf8');
+  const agent = fs.readFileSync(path.join(skill, 'agents/openai.yaml'), 'utf8');
+  const dispatcher = fs.readFileSync(path.join(root, 'global-AGENTS.example.md'), 'utf8');
+  for (const phrase of [
+    '本 Skill 不执行清库',
+    'DROP DATABASE', 'TRUNCATE', '无范围的 DELETE',
+    '删除 SQLite 文件', 'down -v', 'force sync',
+    '启动或测试前', '真实环境身份', '迁移日志不等于实际迁移',
+    'UI 小改', '临时预览库', '清库重试',
+    '备份不构成清库授权',
+  ]) assert.ok(policy.includes(phrase), `缺少压力场景或限制：${phrase}`);
+  assert.ok(entry.includes('不执行清库、全表清空或重建现有数据库'));
+  assert.ok(agent.includes('不清库、不重建现有数据库'));
+  assert.ok(dispatcher.includes('不清库、不重建现有数据库'));
+});
+
+test('只读和无关前端不被要求连接数据库，但启动的隐式副作用必须检查', () => {
+  assert.ok(policy.includes('纯只读排查不得写数据库'));
+  assert.ok(policy.includes('无关页面改动不触发 migration'));
+  assert.ok(policy.includes('启动命令可能隐式迁移'));
+  const front = planBatch('实现', ['前端']);
+  assert.ok(!front.references.includes('database-upgrade-safety.md'));
+  const deployment = planBatch('实现', ['配置部署']);
+  assert.ok(deployment.references.includes('database-upgrade-safety.md'));
+});
