@@ -56,7 +56,7 @@ test('清库硬限制覆盖直接命令、隐式启动和错误推断', () => {
 });
 
 test('只读和无关前端不被要求连接数据库，但启动的隐式副作用必须检查', () => {
-  assert.ok(policy.includes('纯只读排查不连接或修改数据库'));
+  assert.ok(policy.includes('纯只读排查不得写数据库'));
   assert.ok(policy.includes('无关页面改动不触发 migration'));
   assert.ok(policy.includes('启动命令可能隐式迁移'));
   const front = planBatch('实现', ['前端']);
