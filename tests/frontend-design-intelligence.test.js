@@ -92,3 +92,12 @@ test('视觉复查不因后端有迁移副作用而阻断纯前端任务', () =>
     assert.ok(visualCheck.includes(phrase), `缺少隔离验收边界：${phrase}`);
   }
 });
+
+test('口语视觉反馈不要求固定提示词，纯问图也不擅自写入', () => {
+  for (const phrase of ['这页怪怪的', '看着不顺眼', '有点乱', '你看着弄', '不用用户写固定提示词']) {
+    assert.ok(design.includes(phrase), `缺少口语意图规则：${phrase}`);
+  }
+  assert.match(design, /只发截图.*没有改动意图.*不擅自改文件/);
+  assert.match(routing, /普通话视觉反馈.*视觉设计.*UI视觉验证/);
+  assert.match(agent, /这页怪怪的.*看着不顺眼.*视觉设计/);
+});
