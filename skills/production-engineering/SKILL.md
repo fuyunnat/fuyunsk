@@ -1,67 +1,46 @@
 ---
 name: production-engineering
-description: "用于实现、修复、调试、UI、模板二开、SEO、Git、数据库、部署、迁移、规划清单、配置化和上游同步。“继续”“先列清单”“旧模板别动”“别写死”等口语也触发；用户无需技术术语。闲聊、翻译、计算和脱离项目解释不触发。"
+description: "实现、修复、调试、UI、SEO、Git、数据库、部署、迁移、规划清单、配置化、模板二开和上游同步。项目中的‘这个太丑了、这里不对、继续、跑起来、跟原站不像、按钮没反应、补上功能、保存一下、先列清单、旧模板别动、别写死’也触发；用户无需提供技术术语、文件名或实现方案。普通闲聊、翻译、计算和脱离项目的概念解释不触发。"
 ---
 
 # 生产级工程
 
-默认中文沟通和交付；命令、路径、协议字段、标识和分支名保留原样，项目另有语言要求时例外。
+默认中文。例外见 `references/source-policy.md`；用户要求优先，Skill 非权限沙箱。
 
-## 执行入口
+## 一个执行流程
 
-工程任务可自动调用或点名 `$production-engineering`，不扩权。已有项目上下文时把“这个、这里、继续”等结合项目理解。用户只需说结果：技术细节由 AI 自查；存在会导致明显不同结果的合理解释时，必须用人话反问，给 2–3 个结果选项和推荐。详见 `references/novice-clarification.md`。清单固定在 `PROJECT_ROOT/工作流程.md`；任何项目写入先过“工作流程门禁”：核对根目录、读/建/更新清单并标记进行中；门禁失败停止业务写入。续作先读、验后打勾，纯只读不写。
+1. **查明目标**：先读用户提供的源码，列目录不算已读；明确改变什么、保留什么、依据在哪。源码可查不反问；明确要求直接执行。结果歧义暂停受影响修改，用人话反问，给 2–3 个结果选项和推荐；见 `references/novice-clarification.md`。
+2. **确定边界**：所有写入遵守 `references/project-write-boundary.md`。核实当前聊天关联源文件夹 `PROJECT_ROOT`，非 Codex/技能目录；保护用户改动。原业务逻辑、API、数据、配置、权限、副作用和流程默认锁定；重构、优化、UI/框架/语言重写不授权改变结果。
+3. **开始工作**：工作流程写入门禁见 `references/workflow-checklist.md`。默认先读/建/更新 `PROJECT_ROOT/工作流程.md`，第一项标为“进行中”；门禁失败停止业务写入并报告。小改也记、续作先读；清单原文恢复或禁止写入按专项例外，不反向追加记录。
+4. **实施与验证**：同批读适用规则。普通 Bug 有证据即修复，两次最小修复失败再深入诊断。证据、范围与停止见 `references/bounded-completion.md`。回归只验相关影响，不为记录重跑全套。
+5. **收尾**：验收通过后交付并停止；阻塞列原因和恢复条件，独立已授权项继续。简报结果；提交/推送/PR/main/部署分别报告。
 
-1. 先读用户提供的相关源码、入口、样式、资源和行为实现；列目录不算已读。明确改变项、保留项和依据，不得忽略源码另造方案。
-2. 能查明的事实不反问；“原样迁移还是重做视觉”“只修问题还是扩大范围”“是否允许高风险副作用”等结果歧义不能擅猜；用户选过后不重复确认。
-3. 判断模式与风险，按阶段批量读原文和专项；最新明确要求优先，迁移不等于重新设计。写入前查项目规则、Git 差异、用户改动和恢复点；非 Git 先备份。
-4. 所有写入先按 `references/project-write-boundary.md` 核对根身份、真实目标和工作目录；越界停止。对照源码验证原貌与行为，构建成功不等于验收。
+## 按需读取
 
-## 工作流程写入门禁
-
-除纯只读、纯解释或明确禁止写文件外，只要本轮会改当前项目文件，必须先执行 `references/workflow-checklist.md`：核实 `PROJECT_ROOT` 并读/建/更新清单，首项标为“进行中”；门禁失败停止业务写入并报告。验后勾选；只改清单不递归建任务。执行与收尾同读 `references/bounded-completion.md`：固定验收，必要缺口才追加；复用未失效证据，完成即停，保留历史与唯一当前状态。
-
-| 当前步骤 | 必须读取的原文或专项说明 |
+| 场景 | 读取内容 |
 | --- | --- |
-| 所有工程任务开始 | `references/novice-clarification.md` + `references/rules/00-00.md`、`01-00.md`、`02-01.md` |
-| 明确局部、可恢复、无外部副作用的小改 | `references/rules/00-01.md`、`03-00.md`；验证按第二十章裁剪 |
-| Bug、报错、功能异常且用户要求修复 | `references/bugfix-fast-loop.md`；只有升级条件才读 `diagnosis-feedback-loop.md` |
-| 规划清单/模板二开/别写死/写代码 | `routing.md` → `planning-persistence.md`、`parallel-template-development.md`、`configuration-localization.md`、`code-craft.md` |
-| 不满足快速条件、存在高风险或任务变大 | `references/rules/00-02.md`、`references/task-lanes.md` |
-| 实现前、职责划分、注释与回归 | 原文第六、七章；按 `references/routing.md` 定位 |
-| 整项目重写、换语言或全量架构迁移 | `整项目迁移` + `references/project-migration.md`；功能对照、迁移台账、逐项验收 |
-| 前端页面或后台界面 | `references/frontend-stack.md` + 原文第九章 + `frontend-interface-quality.md` + `ui-design-workflow.md` |
-| UI视觉精修/跑版/参考图还原 | `ui-visual-verification.md` + 前端交付专项；按需才做多视口或像素核对 |
-| 后端、接口、性能、数据库、并发、配置、依赖、安全、日志 | `references/routing.md` 中对应领域 |
-| 提交、推送、评审、合并、回滚 | 原文第四章当前阶段；不是每次修改都读完整 Git 章节 |
-| 长任务、多文件、多阶段或恢复旧任务 | 原文第二章第六节 + `references/context-memory-continuity.md` |
-| 验证和最终交付 | 原文第二十至二十四章适用条款；快速任务输出最小证据 |
+| 开始/只读 | `references/rules/00-00.md`、`01-00.md`、`02-01.md` |
+| 明确局部小改 | 零章快速条件与三/六/七/二十适用部分；不加代理、迁移、全仓审计 |
+| Bug、报错、功能异常且用户要求修复 | `references/bugfix-fast-loop.md`；升级后才读 `diagnosis-feedback-loop.md` |
+| 规划清单/模板二开/别写死/写代码 | `planning-persistence.md`、`parallel-template-development.md`、`configuration-localization.md`、`code-craft.md`，按实际主题选择 |
+| 前端/后台 | 原文第九章、`frontend-stack.md`、`frontend-interface-quality.md`、`ui-design-workflow.md` |
+| UI视觉：委托、太大占屏、跑版、参考图 | `frontend-design-intelligence.md`、`ui-visual-verification.md`，按意图选择 |
+| 二开上游同步 | `upstream-sync.md`；只吸收目标，保护二开，不默认追平官方 |
+| SEO/收录 | `seo-engineering.md`；普通公开前台按需轻量检查，后台不默认全站审计 |
+| 整项目迁移 | `project-migration.md`；旧功能对照、迁移台账与逐项验收，局部修改不加载 |
+| 长任务或恢复旧任务 | `context-memory-continuity.md`；确需代理/独立复核再读 `agentic-execution.md`、`spec-review.md` |
+| Git交付/回滚 | 原文第四章当前阶段、`git-team-delivery.md`，按阶段读 |
+| 后端/接口/数据库等 | `references/routing.md` 对应领域与原文章节 |
 
-有 Node.js 时批量读取：`node <技能目录>/scripts/read-rules.js --stage 实现 --topic 前端,接口`。阶段：只读、小改、实现、验证、提交、推送、评审、回滚。阶段只决定读取内容，不扩大授权；新任务中途开始追加 `--topic 通用,适用方式`，输出截断必须续读。
+规则读取：`node <技能目录>/scripts/read-rules.js --stage 实现 --topic 前端,接口`。阶段不扩大授权，输出截断必须续读。无 Node.js 按表与路由读文件，不装依赖。旧主题/编号接口不变。
 
-无 Node.js 时按上表和 `references/routing.md` 批量读文件，不装依赖、不跑生成器；未知条款见 `references/rules-index.md`。
+## 核心保护
 
-## 不能被提速削弱的要求
+- 保留八荣八耻、第一性原理、最小改动和适用原文。原稿字节不改，明确例外按 source-policy 执行。
+- 高风险：不清库、不重建现有数据库；启动/测试先查隐式迁移。恢复代码不授权回滚数据，详见 `references/database-upgrade-safety.md`。
+- 默认可恢复；用户明确放弃指定代码改动并要求不备份时，按授权范围执行，不扩到数据、配置或未知文件。
+- 旧新接口、数据、配置和客户端先兼容共存，验证后再淘汰；不顺手重构、全仓格式化或切栈。代码组织按原文 300/400/600 行风险阈值、函数 80 行要求及 `code-craft.md` 执行。
+- 新设计默认 shadcn/ui + Tailwind CSS、Morphicons；用户指定框架/源码原貌优先。UI 是一级验收，保留交互，尺寸与首屏密度按视觉专项核对。
+- 不盲试、不叠加失败补丁、不删测试或伪造通过；生产后端关键失败留脱敏日志。不自动合并主线、强推、删远端分支或部署。
 
-- 原文优先级、八荣八耻、第一性原理和最小改动仍适用；通道不能把只读变成实现或扩大授权。
-- 不覆盖、回滚或混入用户已有改动，不顺手重构、全仓格式化或迁移栈。业务解耦按变化原因和职责边界拆分；行数阈值仅作风险信号。
-- 删除进入回收站或可恢复备份；保护密钥、隐私、日志和数据。
-- 不执行清库、全表清空或重建现有数据库；启动/测试前检查隐式迁移。迁移日志不等于实际变更；详见 `references/database-upgrade-safety.md`。
-- 前端交付按专项执行；UI 是一级验收：源码迁移保留原貌与交互；新设计默认 shadcn/ui + Tailwind CSS，指定 Vue 等框架时按 `frontend-stack.md` 适配；图标 Morphicons。
-- 业务逻辑、API、数据、配置、权限和副作用锁定；重构、优化、UI/框架/语言重写不授权改变结果。高风险写入先说明影响、证据和回滚并确认。
-- 用户明确要求“修复/解决/改掉”时，普通 Bug 是修复任务：短诊断后有局部可验证证据就做最小修复，修后立刻验证；连续两次有依据的最小修复失败再升级深入诊断。
-- 不默认授权主线、合并、强推、远端删除或设置变更。
-- 不能靠删测试、弱化断言、无限重试或伪造证据制造完成；报告区分通过、失败、未配置、无法执行和未验证。
-
-## UI视觉专项
-
-“页面别扭、换屏幕就乱、对照参考图还原、视觉回归”时加载 `ui-visual-verification.md`；它补充精修分类、多视口缺陷闭环、覆盖表和证据门禁。普通前端和严格迁移不自动加载。
-
-## 读取与速度边界
-
-原文按字节切片，不以摘要替代；`source-original.md` 为原稿基准，用户当前明确要求优先。历史规范与冲突规则见 `references/source-policy.md`，不暗改。
-
-只加载当前阶段需要的章节，不预读全目录，不因新对话自动恢复任务，不重复检查、不为同一任务反复建分支或写状态日记。长条款须读完；外部方法只按需补充。
-
-独立只读检查可合并或并行；共享写入和依赖步骤顺序执行。相关改动后按影响重验，不冒用旧结果。业务任务跑业务项目测试，不运行本技能生成器或自检；逐项更新工作清单并报告真实进度。
-
-中文报告改动、依据、验证、状态、未完成项、风险和最小回滚方式。
+不因新对话自动续旧任务。业务任务跑业务项目测试，不运行技能自检；复用有效证据，无法验证如实报告。只读可批量，共享写入顺序执行。

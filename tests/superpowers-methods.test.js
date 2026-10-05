@@ -1,4 +1,5 @@
 'use strict';
+const { assertAgentDelegates } = require('./entry-contract-helper');
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
@@ -84,18 +85,12 @@ test('代理执行只按需加载，普通 Bug 与小改不会常驻读取', () 
   assert.ok(!frontend.references.includes('agentic-execution.md'));
 });
 
-test('路由和默认 Agent 提示能进入复杂代理执行，但不强制普通任务', () => {
-  requireText(routing, [
-    '大型/多阶段、多个独立子任务、需要子代理/并行或独立复核',
-    '`agentic-execution.md` + `spec-review.md`',
-    '普通 Bug、小改、简单文档不因为支持子代理就加载这一层',
-  ]);
-  requireText(agent, [
-    '大型、多阶段、多个相对独立子任务或需要独立复核时按需加载代理执行专项',
-    '不反复问继续',
-    '需求符合→代码质量双阶段复核',
-    '最后一次修改后的新鲜证据',
-  ]);
+test('路由接到复杂代理专项，普通任务不强制加载', () => {
+  requireText(routing, ['大型多阶段/独立复核', '`agentic-execution.md`', '`spec-review.md`', '普通小改不增加这一层']);
+  assertAgentDelegates(agent);
+  const tiny = planBatch('小改', ['故障修复']);
+  assert.ok(!tiny.references.includes('agentic-execution.md'));
+  assert.ok(!tiny.references.includes('spec-review.md'));
 });
 
 test('Skill 自身维护吸收 writing-skills 的行为回归驱动而不是只改 Markdown', () => {

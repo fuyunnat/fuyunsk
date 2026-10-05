@@ -1,4 +1,5 @@
 'use strict';
+const { assertAgentDelegates } = require('./entry-contract-helper');
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
@@ -45,9 +46,9 @@ test('UI 重写与原样迁移不再因有源码而自动混淆', () => {
 });
 
 test('Skill 入口和隐式调用提示都要求人话反问', () => {
-  assert.match(entry, /必须用人话反问/);
+  assert.match(entry, /用人话反问/);
   assert.match(entry, /2–3 个结果选项和推荐/);
-  assert.match(openai, /必须先用人话给 2–3 个结果选项并说明推荐/);
+  assertAgentDelegates(openai);
   assert.match(openai, /allow_implicit_invocation: true/);
 });
 

@@ -1,4 +1,5 @@
 'use strict';
+const { assertAgentDelegates } = require('./entry-contract-helper');
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
@@ -28,13 +29,13 @@ test('用户可见专项能力必须同时接到入口、路由、批量加载�
     assert.ok(routing.includes(item.route), `routing.md 漏接：${item.domain}`);
     assert.ok(batch.includes(`'${item.domain}':`), `rule-batch.js 漏接 domain：${item.domain}`);
     assert.ok(batch.includes(item.ref), `rule-batch.js 漏接 reference：${item.ref}`);
-    assert.ok(agent.includes(item.agent), `openai.yaml 漏触发：${item.domain}`);
+    assertAgentDelegates(agent);
     assert.ok(globalAgents.includes(item.global), `global AGENTS 漏触发：${item.domain}`);
   }
 });
 
 test('Code Craft 不是独立自然语言领域，但必须从代码实现入口自动可达', () => {
-  for (const body of [skill, routing, batch, agent]) assert.ok(body.includes('code-craft.md') || body.includes('Code Craft'));
+  for (const body of [skill, routing, batch]) assert.ok(body.includes('code-craft.md') || body.includes('Code Craft'));
   assert.match(skill, /规划清单\/模板二开\/别写死\/写代码.*code-craft\.md/);
   assert.match(routing, /写代码默认应用专业代码工艺/);
   assert.match(batch, /codeCraftStages/);
@@ -42,11 +43,11 @@ test('Code Craft 不是独立自然语言领域，但必须从代码实现入口
 
 test('规划清单与禁止业务硬编码在主入口有直接语义，不只藏在专项文件', () => {
   for (const value of ['先列清单', '旧模板别动', '别写死']) assert.ok(skill.includes(value));
-  assert.match(agent, /字段清单/);
+  assertAgentDelegates(agent);
   assert.match(globalAgents, /字段清单/);
   assert.match(routing, /planning-persistence\.md/);
   assert.match(routing, /configuration-localization\.md/);
-  assert.match(agent, /后台可配置/);
+  assert.ok(batch.includes('configuration-localization.md'));
 });
 
 test('全局个性化模板保持同源且仍然轻量', () => {

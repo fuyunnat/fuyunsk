@@ -2,7 +2,7 @@
 'use strict';
 const fs=require('node:fs');const path=require('node:path');const assert=require('node:assert/strict');const {spawnSync}=require('node:child_process');const root=path.resolve(__dirname,'..');const skill='skills/production-engineering/';
 const read=p=>fs.readFileSync(path.join(root,p),'utf8');
-function run(args){const r=spawnSync(process.execPath,args,{cwd:root,encoding:'utf8',maxBuffer:4*1024*1024});process.stdout.write(r.stdout||'');if(r.status!==0)throw new Error(`检查失败：node ${args.join(' ')}\n${r.stderr||''}`);}
+function run(args){const r=spawnSync(process.execPath,args,{cwd:root,encoding:'utf8',maxBuffer:4*1024*1024});process.stdout.write(r.stdout||'');if(r.status!==0)throw new Error(`检查失败：node ${args.join(' ')}\n${r.error ? r.error.message : r.stderr||''}`);}
 function includes(file,items){for(const s of items)assert.ok(read(file).includes(s),`${file} 缺少必需要求：${s}`);}
 function budget(file,max){const n=Buffer.byteLength(read(file));assert.ok(n<=max,`${file} 超出体积预算 ${n}/${max}`);}
 function walk(dir){return fs.readdirSync(dir,{withFileTypes:true}).flatMap(e=>e.isDirectory()?walk(path.join(dir,e.name)):[path.join(dir,e.name)]);}
@@ -52,7 +52,7 @@ for(const p of docs){
  for(const match of s.matchAll(/`(references\/[a-zA-Z0-9_./-]+\.md)`/g))assert.ok(fs.existsSync(path.join(root,skill,match[1])),`入口引用缺失：${match[1]}`);
 }
 run(['scripts/build-rules.js','--check']);
-run(['--test','tests/rules.test.js','tests/task-state-behavior.test.js','tests/rule-batch.test.js','tests/migration.test.js','tests/frontend-stack.test.js','tests/intent-source.test.js','tests/workflow-checklist.test.js','tests/project-path-check.test.js','tests/git-team-delivery.test.js']);
+run(['--test', ...fs.readdirSync(path.join(root,'tests')).filter(f=>f.endsWith('.test.js')).sort().map(f=>'tests/'+f)]);
 run(['scripts/validate-routing-cases.js']);
 run(['scripts/validate-repository-hygiene.js']);
 run(['scripts/validate-task-state.js']);

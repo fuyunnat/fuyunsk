@@ -1,4 +1,5 @@
 'use strict';
+const { assertAgentDelegates } = require('./entry-contract-helper');
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
@@ -40,7 +41,7 @@ test('所有会写或交付的阶段自动加载行为保护，纯只读不强�
 test('Skill 和隐式调用入口明确禁止重构/UI 重写擅改业务结果', () => {
   assert.match(skill, /原业务逻辑、API、数据、配置、权限、副作用和流程默认锁定/);
   assert.match(skill, /UI\/框架\/语言重写不授权改变结果/);
-  assert.match(agent, /原业务逻辑、接口、权限、数据、副作用和流程默认锁定/);
+  assertAgentDelegates(agent);
   assert.match(globalAgents, /原业务逻辑、接口、权限、数据和流程默认锁定/);
   assert.match(globalAgents, /重构\/优化\/UI 重写不授权改结果/);
   assert.ok(Buffer.byteLength(skill) <= 6000, 'SKILL.md 应保持 6000 bytes 以内');

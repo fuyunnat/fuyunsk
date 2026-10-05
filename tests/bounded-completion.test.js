@@ -1,4 +1,5 @@
 'use strict';
+const { assertAgentDelegates } = require('./entry-contract-helper');
 
 // 只验证规则完整性及实际读取链路。cases 供代理前向测试，不冒充模型行为证明。
 const test = require('node:test');
@@ -15,6 +16,7 @@ const policy = () => read('references/bounded-completion.md');
 test('压力场景同时保留完整目标、必要遗漏与停止边界', () => {
   assert.equal(new Set(cases.map(c => c.id)).size, 7);
   assert.ok(cases.every(c => c.user && c.facts && c.expected.length >= 2));
+  assertAgentDelegates(read('agents/openai.yaml'));
   for (const s of ['固定验收范围', '必要缺口', '非阻塞建议', '不缩减', '恢复条件']) assert.ok(policy().includes(s), s);
 });
 
@@ -38,7 +40,8 @@ test('保留历史并只维护一个当前状态，缺历史版本不能编造�
 });
 
 test('入口、路由、Agent、执行及恢复规则和模板接通', () => {
-  for (const file of ['SKILL.md', 'references/routing.md', 'agents/openai.yaml', 'references/workflow-checklist.md', 'references/agentic-execution.md', 'references/upstream-sync.md', 'references/bugfix-fast-loop.md', 'references/context-memory-continuity.md', 'references/planning-persistence.md', 'references/spec-review.md']) assert.ok(read(file).includes('bounded-completion.md'), file);
+  for (const file of ['SKILL.md', 'references/routing.md', 'references/workflow-checklist.md', 'references/agentic-execution.md', 'references/upstream-sync.md', 'references/bugfix-fast-loop.md', 'references/context-memory-continuity.md', 'references/planning-persistence.md', 'references/spec-review.md']) assert.ok(read(file).includes('bounded-completion.md'), file);
+  assertAgentDelegates(read('agents/openai.yaml'));
   for (const s of ['固定验收范围', '停止条件', '待后续建议', '唯一当前状态']) assert.ok(read('templates/workflow.example.md').includes(s), s);
   assert.ok(Buffer.byteLength(read('references/workflow-checklist.md')) <= 8500);
 });

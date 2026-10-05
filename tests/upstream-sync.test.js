@@ -1,4 +1,5 @@
 'use strict';
+const { assertAgentDelegates } = require('./entry-contract-helper');
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
@@ -43,7 +44,8 @@ test('目标模式要求真实测试、启动交付后停止', () => {
     '上游目标真的生效',
     '派生项目自己的能力没有被破坏',
     '构建成功',
-    '启动项目 → 交付影响清单 → 停止等待用户测试',
+    '启动/预览先确认授权与数据库隔离',
+    '交付影响清单 → 停止等待用户测试',
     '立即停止',
     '不把开发分支合并到 `main/master`',
   ]) assert.ok(upstream.includes(value), `缺少目标模式交付门禁：${value}`);
@@ -68,15 +70,15 @@ test('上游同步专项按需加载，普通 Bug 不自动变重', () => {
 
 test('入口和路由能命中二开同步且保持短入口', () => {
   assert.match(routing, /二开\/派生项目同步上游、官方修复或新功能/);
-  assert.match(agent, /同步官方这个修复/);
-  assert.match(agent, /默认补丁式融合，不整文件覆盖、不默认整仓 merge\/rebase/);
+  assertAgentDelegates(agent);
+  assert.match(upstream, /补丁式/);
   assert.match(skill, /二开上游同步/);
   assert.ok(Buffer.byteLength(skill) <= 6000, 'SKILL.md 应保持 6000 bytes 以内');
 });
 
 test('全局个性化同步命中上游任务且模板保持一致', () => {
   assert.match(globalAgents, /同步上游/);
-  assert.match(globalAgents, /二开同步只补丁吸收目标上游改动/);
+  assert.match(routing, /上游同步只吸收已确认目标/);
   assert.ok(Buffer.byteLength(globalAgents) <= 1800, 'global AGENTS 模板超过 1800 bytes');
   const block = personal.match(/```markdown\n([\s\S]*?)\n```/);
   assert.ok(block, '个人模板缺少 markdown 调度块');

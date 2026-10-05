@@ -1,4 +1,5 @@
 'use strict';
+const { assertAgentDelegates } = require('./entry-contract-helper');
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
@@ -56,8 +57,7 @@ test('生产日志是交付门槛但不强制单独 buglog 文件', () => {
 });
 
 test('隐式调用入口同步强调不盲试和脱敏错误日志', () => {
-  assert.match(agent, /不叠加失败试错/);
-  assert.match(agent, /生产后端关键失败路径要留下可定位且脱敏的日志/);
+  assertAgentDelegates(agent);
   assert.match(globalAgents, /不盲试，生产后端关键失败留脱敏日志/);
   assert.ok(Buffer.byteLength(globalAgents) <= 1800, 'global AGENTS 模板超过 1800 bytes');
 

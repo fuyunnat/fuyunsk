@@ -1,4 +1,5 @@
 'use strict';
+const { assertAgentDelegates } = require('./entry-contract-helper');
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
@@ -22,7 +23,7 @@ test('后续实现依赖的规划不能只留聊天，必须先落工作流程',
     '聊天不是唯一记忆',
     '在第一处业务代码写入之前',
     'PROJECT_ROOT/工作流程.md',
-    '不能只写',
+    '禁止只写',
     '按聊天中的方案实现',
     '没有历史聊天的新会话',
   ]);
@@ -88,11 +89,14 @@ test('工作流程模板保留已确认方案和详细清单，不依赖聊天',
 });
 
 test('自然语言入口识别先列清单和字段清单并要求落盘', () => {
-  includesAll(agent, ['先列清单', '字段清单', '重新做个流程', 'PROJECT_ROOT/工作流程.md', '不能只留在聊天里']);
+  assertAgentDelegates(agent);
+  includesAll(globalAgents, ['先列清单', '字段清单']);
+  includesAll(planning, ['PROJECT_ROOT/工作流程.md', '聊天不是唯一记忆']);
 });
 
 test('全局个性化仍短小并和个人模板完全一致', () => {
-  includesAll(globalAgents, ['实现依赖的详细清单', 'PROJECT_ROOT/工作流程.md', '不能只留聊天', '纯只读不写']);
+  includesAll(globalAgents, ['当前对话项目根目录的 `工作流程.md`', '未授权只读不写']);
+  includesAll(planning, ['没有历史聊天的新会话', 'PROJECT_ROOT/工作流程.md']);
   assert.ok(Buffer.byteLength(globalAgents) <= 1800, `global AGENTS 超过 1800 bytes: ${Buffer.byteLength(globalAgents)}`);
   const block = personal.match(/```markdown\n([\s\S]*?)\n```/);
   assert.ok(block, '个人模板缺少 markdown 调度块');

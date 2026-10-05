@@ -1,4 +1,5 @@
 'use strict';
+const { assertAgentDelegates } = require('./entry-contract-helper');
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
@@ -23,7 +24,7 @@ test('隐式调用元数据明确让用户只说结果', () => {
   assert.match(agent, /allow_implicit_invocation: true/);
   assert.match(agent, /口语短句/);
   assert.match(agent, /用户只需说结果/);
-  assert.match(agent, /太丑\/跑起来\/不像\/没反应/);
+  assertAgentDelegates(agent);
 });
 
 test('全局自动调用把短指代绑定当前项目，不要求技术术语', () => {

@@ -18,7 +18,7 @@ function requireRules(body, expressions) {
 test('入口先读取提供源码，区分改变保留及真正需要反问的问题', () => {
   const entry = text('skills/production-engineering/SKILL.md');
   requireRules(entry, [/先读用户提供的源码/, /列目录不算已读/, /改变什么、保留什么、依据在哪/,
-    /源码查明的不反问/, /暂停受影响修改/, /已明确要求直接执行/, /当前明确要求优先于默认选型/]);
+    /源码可查不反问/, /暂停受影响修改/, /明确要求直接执行/, /用户指定框架\/源码原貌优先/]);
   assert.ok(Buffer.byteLength(entry) <= 6000);
   assert.doesNotMatch(entry, /新建所有页面统一/);
 });

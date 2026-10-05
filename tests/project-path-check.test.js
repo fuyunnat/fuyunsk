@@ -177,6 +177,7 @@ test('入口模板说明真实边界，不将预检包装成沙箱或清单授�
   const bridge = read('global-AGENTS.example.md');
   const personal = read('docs/personal-custom-instructions.md').match(/```markdown\n([\s\S]*?)\n```/)[1];
   assert.equal(bridge.trim(), personal.trim());
-  assert.ok(bridge.includes('所有写入')); assert.ok(bridge.includes('越界停止'));
+  assert.ok(bridge.includes('所有写入')); assert.ok(doc.includes('越界'));
+  assert.ok(read('skills/production-engineering/SKILL.md').includes('references/project-write-boundary.md'));
   assert.ok(read('docs/project-boundary-installation.md').includes('真实沙箱隔离未验证'));
 });

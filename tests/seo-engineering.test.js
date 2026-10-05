@@ -1,4 +1,5 @@
 'use strict';
+const { assertAgentDelegates } = require('./entry-contract-helper');
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
@@ -63,7 +64,7 @@ test('SEO 高影响改动继续受行为锁和确认保护', () => {
     '大面积新增 `noindex`',
     '批量修改 canonical',
     '批量改 hreflang',
-    '行为锁和高风险确认',
+    'SEO 不能绕过 `behavior-preservation.md`',
     '禁止黑帽/欺骗性做法',
   ]) assert.ok(seo.includes(value), `缺少 SEO 风险保护：${value}`);
 });
@@ -96,12 +97,11 @@ test('SEO 专项按需加载，普通 Bug 和普通前端不自动变重', () =>
 });
 
 test('入口和路由能自然命中 SEO 且保持短入口', () => {
-  assert.match(routing, /SEO、收录、Google\/Bing/);
-  assert.match(routing, /公开可索引前台新增\/重写只做轻量 SEO Guard/);
+  assert.match(routing, /SEO、收录/);
+  assert.match(routing, /公开可索引前台新建\/大改按需做轻量 SEO Guard/);
   assert.match(skill, /SEO/);
-  assert.match(agent, /SEO搞一下/);
-  assert.match(agent, /为什么不收录/);
-  assert.match(agent, /不让用户先学 SEO/);
+  assertAgentDelegates(agent);
+  assert.match(seo, /用户不会 SEO 不是阻塞项/);
   assert.ok(Buffer.byteLength(skill) <= 6000, 'SKILL.md 应保持 6000 bytes 以内');
 });
 

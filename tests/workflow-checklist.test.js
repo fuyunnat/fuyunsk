@@ -1,4 +1,5 @@
 'use strict';
+const { assertAgentDelegates } = require('./entry-contract-helper');
 
 // 验证规则可到达、模板格式与旧行为；不冒充模型实际更新过用户项目。
 const test = require('node:test');
@@ -158,10 +159,11 @@ test('项目写入必须先过工作流程门禁，门禁失败不得继续', ()
   const agent = text('skills/production-engineering/agents/openai.yaml');
   const globalAgents = text('global-AGENTS.example.md');
   const personal = text('docs/personal-custom-instructions.md');
-  requireText(entry, ['工作流程写入门禁', '第一项标为“进行中”', '停止业务写入并报告', '纯只读']);
+  requireText(entry, ['工作流程写入门禁', '第一项标为“进行中”', '停止业务写入并报告', 'source-policy.md']);
   requireText(workflow, ['先读/建/更新该清单', '门禁失败停止业务写入', '把首项标为“进行中”']);
-  requireText(agent, ['工作流程门禁', '门禁失败停止业务写入']);
-  requireText(globalAgents, ['先读/建/更新该项目根目录的 `工作流程.md`', '门禁失败停止业务写入']);
+  assertAgentDelegates(agent);
+  requireText(globalAgents, ['当前对话项目根目录的 `工作流程.md`', '详细流程只在 Skill']);
+  requireText(workflow, ['清单原文恢复、不追加记录', '不得先写新任务']);
   assert.ok(personal.includes(shortTemplateForTest(globalAgents)));
 });
 
