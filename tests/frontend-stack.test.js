@@ -62,7 +62,7 @@ test('当前入口、模板和专项都指向同一前端选型', () => {
     assert.match(s, /shadcn\/ui \+ Tailwind CSS/);
     assert.doesNotMatch(s, /新后台默认 Vue/);
   }
-  for (const file of ['README.md', 'global-AGENTS.example.md', 'docs/personal-custom-instructions.md']) {
+  for (const file of ['README.md']) {
     assert.match(fs.readFileSync(path.join(root, file), 'utf8'), /shadcn\/ui \+ Tailwind CSS/);
   }
   assert.match(raw('frontend-stack.md'), /tsx: false/);
@@ -101,11 +101,11 @@ test('图标文案区分数据和组件，遵守真实宿主与无障碍边界',
   assert.match(policy, /各自的许可证/);
 });
 
-test('入口、自述文件与个人模板同时包含图标方案，短模板保持一致', () => {
-  for (const file of ['README.md', 'global-AGENTS.example.md', 'docs/personal-custom-instructions.md',
-    'skills/production-engineering/SKILL.md']) {
+test('入口与自述保留图标方案，个人模板只负责调度且保持同源', () => {
+  for (const file of ['README.md', 'skills/production-engineering/SKILL.md']) {
     assert.match(fs.readFileSync(path.join(root, file), 'utf8'), /Morphicons/);
   }
+  assert.match(fs.readFileSync(path.join(root, 'global-AGENTS.example.md'), 'utf8'), /工程技能：`\$production-engineering`/);
   const global = fs.readFileSync(path.join(root, 'global-AGENTS.example.md'), 'utf8').trim();
   const personal = fs.readFileSync(path.join(root, 'docs/personal-custom-instructions.md'), 'utf8');
   assert.equal(personal.match(/```markdown\n([\s\S]*?)\n```/)[1].trim(), global);

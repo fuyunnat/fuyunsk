@@ -1,4 +1,5 @@
 'use strict';
+const { assertAgentDelegates } = require('./entry-contract-helper');
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
@@ -82,12 +83,11 @@ test('模板二开专项按需加载，普通前端和 Bug 不自动变重', () 
 });
 
 test('自然语言可以命中模板二开且全局模板保持一致', () => {
-  assert.match(routing, /前端模板并行二开、V1 保留\/V2 新建、旧模板不要动/);
-  assert.match(agent, /再做一套模板/);
-  assert.match(agent, /旧模板别动/);
-  assert.match(agent, /功能别漏/);
+  assert.match(routing, /前端模板并行二开/);
+  assertAgentDelegates(agent);
+  assert.match(fs.readFileSync(path.join(root, 'skills/production-engineering/SKILL.md'), 'utf8'), /旧模板别动/);
   assert.match(globalAgents, /二开模板/);
-  assert.match(globalAgents, /旧模板别动/);
+  assert.match(globalAgents, /二开模板/);
   assert.ok(Buffer.byteLength(globalAgents) <= 1800, 'global AGENTS 模板超过 1800 bytes');
   const block = personal.match(/```markdown\n([\s\S]*?)\n```/);
   assert.ok(block, '个人模板缺少 markdown 调度块');

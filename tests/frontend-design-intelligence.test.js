@@ -1,4 +1,5 @@
 'use strict';
+const { assertAgentDelegates } = require('./entry-contract-helper');
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
@@ -42,8 +43,8 @@ test('视觉设计是按需领域，普通前端和普通 Bug 不额外加载', 
 
 test('严格原样迁移不能被品味重设计覆盖', () => {
   need(['严格原样迁移不因为本规则自动创建新的视觉规范']);
-  assert.match(routing, /严格迁移仍以源码\/演示基线为准/);
-  assert.match(routing, /不允许“品味提升”覆盖原貌/);
+  assert.match(routing, /严格原样迁移不加载重设计/);
+  assert.match(design, /不替代源码遵循、功能保护/);
 });
 
 test('多页面视觉契约写 DESIGN.md，任务进度仍写工作流程.md', () => {
@@ -68,19 +69,21 @@ test('UI 设计不只看视觉，还要求交互、无障碍和边界状态', ()
 });
 
 test('自然语言重新设计与精修会命中视觉设计专项', () => {
-  for (const phrase of ['太丑', '重新设计', '高级点', '精修一下', 'UI审查', '做套设计系统']) {
-    assert.ok(agent.includes(phrase), `openai.yaml 未识别 ${phrase}`);
-  }
-  assert.match(agent, /追加视觉设计专项/);
-  assert.match(routing, /重新设计、精修、太丑、提升质感、UI\/UX 审查、建立设计系统/);
+  assertAgentDelegates(agent);
+  assert.match(routing, /视觉设计：重新设计、精修、太丑/);
+  assert.match(design, /UI\/UX 审查/);
+  const plan = planBatch('实现', ['视觉设计']);
+  assert.ok(plan.references.includes('frontend-design-intelligence.md'));
+
 });
 
 test('不会美工时自动接管设计判断并要求真实视觉复查', () => {
   for (const phrase of ['不会美工', '你来设计', '自行选择一个有依据的主方向', '不要求用户提供配色、字体或间距参数']) {
     assert.ok(design.includes(phrase), `缺少非设计师委托规则：${phrase}`);
   }
-  assert.match(routing, /不会美工.*视觉设计.*UI视觉验证/);
-  assert.match(agent, /不会美工.*视觉设计.*UI视觉验证/);
+  assert.match(routing, /视觉设计：.*不会美工/);
+  assert.match(routing, /追加 UI视觉验证/);
+  assertAgentDelegates(agent);
   const plan = planBatch('实现', ['视觉设计', 'UI视觉验证']);
   assert.ok(plan.references.includes('frontend-design-intelligence.md'));
   assert.ok(plan.references.includes('ui-visual-verification.md'));
@@ -98,8 +101,9 @@ test('口语视觉反馈不要求固定提示词，纯问图也不擅自写入',
     assert.ok(design.includes(phrase), `缺少口语意图规则：${phrase}`);
   }
   assert.match(design, /只发截图.*没有改动意图.*不擅自改文件/);
-  assert.match(routing, /普通话视觉反馈.*视觉设计.*UI视觉验证/);
-  assert.match(agent, /这页怪怪的.*看着不顺眼.*视觉设计/);
+  assert.match(routing, /视觉设计：.*你看着弄/);
+  assert.match(routing, /纯提问\/仅发图不写文件/);
+  assertAgentDelegates(agent);
 });
 
 test('产品页面过大占屏时检查密度而非全局缩小', () => {
@@ -108,6 +112,7 @@ test('产品页面过大占屏时检查密度而非全局缩小', () => {
     assert.ok(design.includes(phrase) || visualCheck.includes(phrase), `缺少尺寸密度规则：${phrase}`);
   }
   assert.match(visualCheck, /宽屏.*手机.*触控/);
-  assert.match(routing, /太大.*占满屏.*UI视觉验证/);
-  assert.match(agent, /东西太大.*占屏/);
+  assert.match(routing, /尺寸\/密度、跑版、溢出或参考图追加 UI视觉验证/);
+  assertAgentDelegates(agent);
+  assert.match(fs.readFileSync(path.join(skill, 'SKILL.md'), 'utf8'), /太大占屏/);
 });

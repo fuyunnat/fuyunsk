@@ -1,4 +1,5 @@
 'use strict';
+const { assertAgentDelegates } = require('./entry-contract-helper');
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
@@ -54,7 +55,8 @@ test('普通故障修复不因为本规则自动升级加载', () => {
 });
 
 test('Skill 默认提示同步后台配置和前台多语言偏好', () => {
-  assert.match(agent, /能由运营在运行时调整的配置优先后台管理/);
-  assert.match(agent, /MySQL\/Redis 等启动级连接用部署 Secret\/\.env/);
-  assert.match(agent, /前台新建、重写和新增功能默认多语言友好/);
+  assertAgentDelegates(agent);
+  assert.match(rule, /运行时配置的优先配置化/);
+  assert.match(rule, /启动级基础设施.*部署平台 Secret/);
+  assert.match(rule, /新建、重写或新增功能.*默认按多语言友好/);
 });

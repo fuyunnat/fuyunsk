@@ -1,4 +1,5 @@
 'use strict';
+const { assertAgentDelegates } = require('./entry-contract-helper');
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
@@ -50,8 +51,8 @@ test('清库硬限制覆盖直接命令、隐式启动和错误推断', () => {
     'UI 小改', '临时预览库', '清库重试',
     '备份不构成清库授权',
   ]) assert.ok(policy.includes(phrase), `缺少压力场景或限制：${phrase}`);
-  assert.ok(entry.includes('不执行清库、全表清空或重建现有数据库'));
-  assert.ok(agent.includes('不清库、不重建现有数据库'));
+  assert.ok(entry.includes('不清库、不重建现有数据库'));
+  assertAgentDelegates(agent);
   assert.ok(dispatcher.includes('不清库、不重建现有数据库'));
 });
 

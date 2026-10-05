@@ -1,4 +1,5 @@
 'use strict';
+const { assertAgentDelegates } = require('./entry-contract-helper');
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
@@ -61,8 +62,7 @@ test('所有会写代码的常见通道仍加载行为兼容保护', () => {
 });
 
 test('自动调用入口也明确兼容优先且短模板继续受限', () => {
-  assert.match(agent, /涉及旧接口、旧数据、旧配置或旧客户端时兼容优先/);
-  assert.match(agent, /先让旧新共存并验证，再单独处理旧路径下线/);
+  assertAgentDelegates(agent);
   assert.match(globalAgents, /旧业务\/接口\/权限\/数据\/配置\/客户端先兼容共存，验证后再淘汰/);
   assert.ok(Buffer.byteLength(globalAgents) <= 1800, 'global AGENTS 模板超过 1800 bytes');
 

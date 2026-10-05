@@ -1,4 +1,5 @@
 'use strict';
+const { assertAgentDelegates } = require('./entry-contract-helper');
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
@@ -80,17 +81,8 @@ test('纯内容、纯规划、只读和验证不会无谓加载 Code Craft', () 
   assert.ok(mixed.references.includes('code-craft.md'), '内容任务同时改前端代码时仍应加载 Code Craft');
 });
 
-test('路由和默认提示明确专业代码与注释要求', () => {
-  requireText(routing, [
-    '写代码默认应用专业代码工艺',
-    '`code-craft.md`',
-    '注释是代码交付的一部分',
-    '简单代码不写逐行翻译式废话注释',
-  ]);
-  requireText(agent, [
-    '自动应用 Code Craft',
-    '专业工程标准',
-    '必须留下解释‘为什么/约束/移除条件’的维护注释',
-    '简单代码不堆逐行翻译式废话注释',
-  ]);
+test('路由接到代码工艺，Agent 调用入口而不复制细则', () => {
+  requireText(routing, ['写代码默认应用专业代码工艺', '`code-craft.md`']);
+  requireText(craft, ['注释是维护契约', '移除条件', '逐行翻译代码的废话']);
+  assertAgentDelegates(agent);
 });

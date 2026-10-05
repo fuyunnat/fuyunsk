@@ -58,7 +58,7 @@ function planBatch(stage, topics = [], references = []) {
     stage,
     topics: new Set(chosen.topics),
     ids: new Set(),
-    references: new Set(['novice-clarification.md', ...chosen.references, ...(stage === '只读' ? [] : ['behavior-preservation.md', 'workflow-checklist.md', 'bounded-completion.md', 'project-write-boundary.md'])]),
+    references: new Set(['source-policy.md', 'novice-clarification.md', ...chosen.references, ...(stage === '只读' ? [] : ['behavior-preservation.md', 'workflow-checklist.md', 'bounded-completion.md', 'project-write-boundary.md'])]),
   };
   for (const topic of topics) {
     const domain = Object.hasOwn(domains, topic) ? domains[topic] : { topics: [topic] };

@@ -27,7 +27,7 @@ test('普通 Bug 不加载外部工程增强层', () => {
   const plan = planBatch('实现', ['故障修复']);
   assert.ok(plan.references.includes('bugfix-fast-loop.md'));
   assert.ok(!plan.references.includes('proven-engineering-methods.md'));
-  assert.match(routing, /普通 Bug 不加载外部工程增强层/);
+  assert.match(routing, /只有升级条件才读 `diagnosis-feedback-loop.md`/);
 });
 
 test('性能任务加载影响优先补充层', () => {
