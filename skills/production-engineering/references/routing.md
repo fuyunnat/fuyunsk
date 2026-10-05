@@ -1,6 +1,6 @@
 # 原文执行路由
 
-本文件只选读取范围，不重复解释执行规则。阶段/领域已知时同批读取：
+只选读取范围，不重复执行规则。阶段/领域已知时同批读取：
 
 ```bash
 node <技能目录>/scripts/read-rules.js --stage 实现 --topic 前端,接口
@@ -19,6 +19,7 @@ node <技能目录>/scripts/read-rules.js --id 04-04
 | 二开/派生项目同步上游、官方修复或新功能 | 六/七/二十；`upstream-sync.md` |
 | SEO、收录 | 前端/性能/配置/内容及二十；`seo-engineering.md` |
 | 前端模板并行二开 | 六/七/九/二十；`parallel-template-development.md` |
+| 进度面板/项目工作流程可视化 | `workflow-progress-panel.md`，按要求启动只读面板 |
 | 先列清单、字段盘点 | 二/六/二十；`planning-persistence.md` |
 | 后台可调业务参数/配置化 | 十五及实现/验证；`configuration-localization.md` |
 | 前端与后台 | 六/七/九/二十；`frontend-stack.md`、`frontend-interface-quality.md`、`ui-design-workflow.md`、配置化专项 |
