@@ -12,7 +12,7 @@ description: "实现、修复、调试、UI、SEO、Git、数据库、部署、�
 1. **查明目标**：先读用户提供的源码，列目录不算已读；明确改变什么、保留什么、依据在哪。源码可查不反问；明确要求直接执行。结果歧义暂停受影响修改，用人话反问，给 2–3 个结果选项和推荐；见 `references/novice-clarification.md`。
 2. **确定边界**：所有写入遵守 `references/project-write-boundary.md`。核实当前聊天关联源文件夹 `PROJECT_ROOT`，非 Codex/技能目录；保护用户改动。原业务逻辑、API、数据、配置、权限、副作用和流程默认锁定；重构、优化、UI/框架/语言重写不授权改变结果。
 3. **开始工作**：工作流程写入门禁见 `references/workflow-checklist.md`。默认先读/建/更新 `PROJECT_ROOT/工作流程.md`，第一项标为“进行中”；门禁失败停止业务写入并报告。小改也记、续作先读；清单原文恢复或禁止写入按专项例外，不反向追加记录。
-4. **实施与验证**：同批读规则。Bug 有证据即修复，两次最小修复失败再深入诊断。范围与停止见 `references/bounded-completion.md`。回归只验相关影响，不为记录重跑全套。
+4. **实施与验证**：同批读适用规则。Bug 有证据即修复，两次最小修复失败再深入诊断。范围与停止见 `references/bounded-completion.md`。回归只验相关影响，不为记录重跑全套。
 5. **收尾**：验收通过后交付并停止；阻塞列原因和恢复条件，独立已授权项继续。简报结果；提交/推送/PR/main/部署分别报告。
 
 ## 按需读取
@@ -20,18 +20,18 @@ description: "实现、修复、调试、UI、SEO、Git、数据库、部署、�
 | 场景 | 读取内容 |
 | --- | --- |
 | 开始/只读 | `references/rules/00-00.md`、`01-00.md`、`02-01.md` |
-| 局部小改 | 零章快速条件与三/六/七/二十适用；不加代理、迁移、全仓审计 |
+| 局部小改 | 零章条件与三/六/七/二十适用；不加代理、迁移、全仓审计 |
 | Bug、报错、功能异常且用户要求修复 | `references/bugfix-fast-loop.md`；升级后才读 `diagnosis-feedback-loop.md` |
-| 规划清单/模板二开/别写死/写代码 | `planning-persistence.md`、`parallel-template-development.md`、`configuration-localization.md`、`code-craft.md`，按实际主题选择 |
+| 规划清单/模板二开/别写死/写代码 | `planning-persistence.md`、`parallel-template-development.md`、`configuration-localization.md`、`code-craft.md`，按需选择 |
 | 前端/后台 | 第九章、`frontend-stack.md`、`frontend-interface-quality.md`、`ui-design-workflow.md` |
-| UI视觉：委托、太大占屏、跑版、参考图 | `frontend-design-intelligence.md`、`ui-visual-verification.md`，按意图选择 |
-| 进度面板 | `workflow-progress-panel.md`，按要求打开 |
+| UI视觉：委托、太大占屏、跑版、参考图 | `frontend-design-intelligence.md`、`ui-visual-verification.md`，按需 |
+| 工程开始/继续、进度面板 | `workflow-progress-panel.md`，自动检查面板 |
 | 二开上游同步 | `upstream-sync.md`；吸收目标，保护二开，不默认追平 |
 | SEO/收录 | `seo-engineering.md`；普通公开前台按需轻量检查，后台不全站审计 |
 | 整项目迁移 | `project-migration.md`；旧功能对照、迁移台账与逐项验收，局部修改不加载 |
-| 长任务或恢复旧任务 | `context-memory-continuity.md`；确需代理/独立复核再读 `agentic-execution.md`、`spec-review.md` |
+| 长任务或恢复旧任务 | `context-memory-continuity.md`；确需独立复核再读 `agentic-execution.md`、`spec-review.md` |
 | Git交付/回滚 | 原文第四章当前阶段、`git-team-delivery.md`，按阶段读 |
-| 后端/接口/数据库等 | `references/routing.md` 对应领域与原文章节 |
+| 后端/接口/数据库 | `references/routing.md` 对应领域与原文章节 |
 
 读取：`node <技能目录>/scripts/read-rules.js --stage 实现 --topic 前端,接口`。阶段不扩大授权，输出截断必须续读。无 Node.js 按表与路由读文件，不装依赖。旧主题/编号接口不变。
 
