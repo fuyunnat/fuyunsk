@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI 工作进度</title><link rel="stylesheet" href="/panel.css"><script defer src="/panel.js"></script>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar" aria-label="项目导航">
+      <div class="brand"><span class="brand-mark" aria-hidden="true">◎</span><div>工作进度<small>每个项目，清楚推进</small></div></div>
+      <div class="sidebar-label">我的项目 <span id="project-count">—</span></div>
+      <nav id="projects" aria-label="选择项目"></nav>
+      <div class="sidebar-note"><span class="dot"></span> 本机只读<br><small>读取现有清单，不改项目文件</small></div>
+    </aside>
+    <main>
+      <header class="topbar"><span>AI 工作进度</span><div class="sync"><span id="connection">正在连接</span><button id="refresh" type="button">刷新</button></div></header>
+      <div id="notice" class="notice" role="status" hidden></div>
+      <section class="workspace" aria-labelledby="project-title">
+        <div class="project-heading"><div><span class="eyebrow">当前项目</span><h1 id="project-title">读取进度中</h1><p id="project-path" class="muted"></p></div><span class="readonly-badge">只读面板</span></div>
+        <div class="task-picker"><label for="task-select">任务记录</label><select id="task-select"></select><span id="conversation" class="muted"></span></div>
+        <section class="focus" aria-labelledby="focus-title"><div class="focus-icon" aria-hidden="true">↗</div><div><span id="focus-label" class="eyebrow">当前一步</span><h2 id="focus-title">等待读取</h2><p id="next-step"></p></div><span id="focus-status" class="status"></span></section>
+        <div class="metrics" aria-label="清单状态"><div><span>已完成</span><strong id="completed">—</strong></div><div><span>进行中 / 待验证</span><strong id="active">—</strong></div><div><span>待做 / 阻塞</span><strong id="pending">—</strong></div></div>
+        <section class="steps-card" aria-labelledby="steps-title"><div class="section-heading"><h2 id="steps-title">执行步骤</h2><span id="progress-label" class="muted"></span></div><progress id="progress" value="0" max="1" aria-label="清单勾选进度"></progress>
+          <div class="filters" role="group" aria-label="步骤筛选"><button data-filter="all" aria-pressed="true">全部</button><button data-filter="open" aria-pressed="false">未完成</button><button data-filter="blocked" aria-pressed="false">阻塞</button></div>
+          <div id="warnings" class="warnings" hidden></div><ol id="steps"></ol><p id="empty" class="empty" hidden></p>
+        </section>
+        <footer><span id="updated">清单更新时间：—</span><span>已记录的进度 · 不等于 AI 内部实时状态</span></footer>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

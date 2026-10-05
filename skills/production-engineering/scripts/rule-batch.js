@@ -22,6 +22,7 @@ const domains = {
   '上游同步': { topics: ['代码组织', '验证'], references: ['upstream-sync.md'] },
   'SEO': { topics: ['前端', '性能', '配置部署', '验证'], references: ['seo-engineering.md'] },
   '模板二开': { topics: ['代码组织', '前端', '接口', '验证'], ids: ['06-00'], references: ['parallel-template-development.md', 'frontend-interface-quality.md', 'configuration-localization.md'] },
+  '进度面板': { topics: ['续航', '报告'], references: ['workflow-progress-panel.md'] },
   '规划清单': { topics: ['续航', '报告'], references: ['planning-persistence.md', 'workflow-checklist.md', 'context-memory-continuity.md'] },
   '代理执行': { topics: ['代码组织', '实现', '验证', 'Git评审', '续航'], references: ['agentic-execution.md', 'spec-review.md'] },
   '视觉设计': { topics: ['代码组织', '前端', '验证'], ids: ['06-00'], references: ['frontend-design-intelligence.md', 'frontend-interface-quality.md', 'ui-design-workflow.md', 'configuration-localization.md'] },
@@ -45,10 +46,10 @@ const referenceNames = new Set([
   'novice-clarification.md', 'behavior-preservation.md', 'database-upgrade-safety.md', 'bugfix-fast-loop.md', 'upstream-sync.md', 'seo-engineering.md', 'parallel-template-development.md', 'planning-persistence.md', 'agentic-execution.md', 'frontend-design-intelligence.md', 'code-craft.md', 'proven-engineering-methods.md', 'configuration-localization.md', 'task-lanes.md', 'context-memory-continuity.md', 'frontend-interface-quality.md', 'ui-design-workflow.md',
   'wrapped-workspace-ui.md', 'design-testing.md', 'diagnosis-feedback-loop.md',
   'code-risk-review.md', 'content-writing-quality.md', 'spec-review.md', 'git-team-delivery.md', 'frontend-delivery-loop.md', 'ui-visual-verification.md',
-  'project-understanding.md', 'source-policy.md', 'project-migration.md', 'workflow-checklist.md', 'bounded-completion.md', 'project-write-boundary.md',
+  'project-understanding.md', 'source-policy.md', 'project-migration.md', 'workflow-checklist.md', 'bounded-completion.md', 'project-write-boundary.md', 'workflow-progress-panel.md',
 ]);
 const codeCraftStages = new Set(['小改', '实现']);
-const nonCodeDomains = new Set(['内容', '规划清单']);
+const nonCodeDomains = new Set(['内容', '规划清单', '进度面板']);
 
 function planBatch(stage, topics = [], references = []) {
   if (!Object.hasOwn(stages, stage)) throw new Error(`未知读取阶段：${stage}`);
