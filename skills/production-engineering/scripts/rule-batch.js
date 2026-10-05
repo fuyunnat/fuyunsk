@@ -45,7 +45,7 @@ const referenceNames = new Set([
   'novice-clarification.md', 'behavior-preservation.md', 'database-upgrade-safety.md', 'bugfix-fast-loop.md', 'upstream-sync.md', 'seo-engineering.md', 'parallel-template-development.md', 'planning-persistence.md', 'agentic-execution.md', 'frontend-design-intelligence.md', 'code-craft.md', 'proven-engineering-methods.md', 'configuration-localization.md', 'task-lanes.md', 'context-memory-continuity.md', 'frontend-interface-quality.md', 'ui-design-workflow.md',
   'wrapped-workspace-ui.md', 'design-testing.md', 'diagnosis-feedback-loop.md',
   'code-risk-review.md', 'content-writing-quality.md', 'spec-review.md', 'git-team-delivery.md', 'frontend-delivery-loop.md', 'ui-visual-verification.md',
-  'project-understanding.md', 'source-policy.md', 'project-migration.md', 'workflow-checklist.md', 'project-write-boundary.md',
+  'project-understanding.md', 'source-policy.md', 'project-migration.md', 'workflow-checklist.md', 'bounded-completion.md', 'project-write-boundary.md',
 ]);
 const codeCraftStages = new Set(['小改', '实现']);
 const nonCodeDomains = new Set(['内容', '规划清单']);
@@ -58,7 +58,7 @@ function planBatch(stage, topics = [], references = []) {
     stage,
     topics: new Set(chosen.topics),
     ids: new Set(),
-    references: new Set(['novice-clarification.md', ...chosen.references, ...(stage === '只读' ? [] : ['behavior-preservation.md', 'workflow-checklist.md', 'project-write-boundary.md'])]),
+    references: new Set(['novice-clarification.md', ...chosen.references, ...(stage === '只读' ? [] : ['behavior-preservation.md', 'workflow-checklist.md', 'bounded-completion.md', 'project-write-boundary.md'])]),
   };
   for (const topic of topics) {
     const domain = Object.hasOwn(domains, topic) ? domains[topic] : { topics: [topic] };
