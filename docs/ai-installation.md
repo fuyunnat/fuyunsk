@@ -95,6 +95,6 @@ node "<技能目录>/scripts/read-rules.js" --id 00-00 --json
 
 行为验收须在获准的两个隔离测试项目分别创建清单：项目甲的任务不得出现在项目乙；临时从项目目录切到技能目录读取规则，再继续项目甲，仍应写回项目甲。只读会话不写；没有源目录信息或多目录归属不明时先问。不把静态文案测试说成已实测这些行为。目标模式还应试验执行中新增原目标内漏项、未验证不打勾，记录未完成项而非重置清单。
 
-## 可选进度面板
+## 自动进度面板
 
-完整复制技能时包含 `scripts/progress-panel.js`、`scripts/progress-parser.js`、`references/workflow-progress-panel.md` 和 `assets/progress-panel/`。升级不自动打开面板、不扫描项目、不建立业务清单。用户要求打开后再核实指定项目绝对路径，运行本机只读服务；安装验证可运行 `progress-panel.js --help`，文件和脚本检查不等于已在用户浏览器验收。
+完整复制技能时包含 `scripts/progress-panel.js`、`scripts/progress-parser.js`、`scripts/progress-panel-service.js`、`scripts/panel-runtime.js`、`references/workflow-progress-panel.md` 和 `assets/progress-panel/`。升级不自动打开面板、不扫描项目、不建立业务清单。工程对话开始/继续确认当前项目绝对根后默认执行 `progress-panel-service.js --ensure`，复用健康面板、离线启动守护；宿主清理后台进程时用 --foreground 保留执行会话。更新同一全局短块。安装验证仅运行 `progress-panel-service.js --help`，不启动守护，文件和脚本检查不等于已在用户浏览器验收。

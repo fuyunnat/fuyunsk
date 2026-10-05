@@ -49,7 +49,7 @@ function readProject(project) {
   return result;
 }
 
-function createPanelServer(projects) {
+function createPanelServer(projects, options = {}) {
   return http.createServer((request, response) => {
     const port = String(response.socket.localPort);
     const hosts = new Set([`127.0.0.1:${port}`, `localhost:${port}`]);
@@ -61,6 +61,7 @@ function createPanelServer(projects) {
     if (request.method !== 'GET') return send(405, '面板只读，不支持写入');
     const url = new URL(request.url, `http://${request.headers.host}`);
     if (url.search) return send(400, '不接受浏览器传入项目路径或参数');
+    if (url.pathname === '/api/health') return send(200, JSON.stringify({ application: 'production-engineering-progress-panel', protocol: 1, instanceId: options.instanceId || null, pid: process.pid, projectIds: projects.map(p => p.id) }), 'application/json');
     if (url.pathname === '/api/projects') return send(200, JSON.stringify({ observedAt: new Date().toISOString(), projects: projects.map(readProject) }), 'application/json');
     if (!Object.hasOwn(staticRoutes, url.pathname)) return send(404, '没有这个页面');
     const [file, type] = staticRoutes[url.pathname];
@@ -74,10 +75,13 @@ function parseArgs(argv) {
   for (let i = 0; i < argv.length; i++) {
     const key = argv[i];
     if (key === '--help') { options.help = true; continue; }
-    if (!['--project', '--port'].includes(key)) throw new Error(`未知参数：${key}`);
+    if (!['--project', '--port', '--label'].includes(key)) throw new Error(`未知参数：${key}`);
     const value = argv[++i];
     if (!value || value.startsWith('--')) throw new Error(`${key} 缺少值`);
-    if (key === '--project') {
+    if (key === '--label') {
+      if (!options.projects.length) throw new Error('--label 必须跟在 --project 后');
+      options.projects.at(-1).name = value;
+    } else if (key === '--project') {
       const equals = value.indexOf('=');
       options.projects.push(equals > 0 && !path.isAbsolute(value) ? { name: value.slice(0, equals), root: value.slice(equals + 1) } : { root: value });
     } else {
