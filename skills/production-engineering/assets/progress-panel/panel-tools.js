@@ -3,19 +3,21 @@ const PanelTools = (() => {
   const $=id=>document.getElementById(id);
   const node=(tag,className,text)=>{const el=document.createElement(tag);if(className)el.className=className;if(text!==undefined)el.textContent=text;return el;};
   const prompts=[
-    ['完成后停止','按当前已授权目标完成本轮任务，保留已有成果，不重开历史任务。只修验收必需的问题，新增需求或无关优化另列。写完自行运行相关测试；涉及界面时实际打开浏览器验证，环境不支持则如实标记未覆盖。更新同一份工作流程，汇报改动、验证和阻塞，完成后停止。不得清空数据库、删库、删表或批量删除业务数据；未经明确授权不得连接现有业务库启动服务或迁移。'],
+    ['完成后停止','按当前已授权目标完成本轮任务，固定本轮实施清单和适用审查边界，保留已有成果，不重开历史任务。不得自行缩减明确要求完成的全部范围，也不把所选补丁扩大成全历史扫描。审查先固定候选与总数、分类后再实施；续作报告剩余数量，不边审边补。只修验收必需的问题，新增需求或无关优化另列。写完自行运行相关测试；涉及界面时实际打开浏览器验证，环境不支持则如实标记未覆盖。更新同一份工作流程，汇报改动、验证和阻塞，完成后停止。不得清空数据库、删库、删表或批量删除业务数据；未经明确授权不得连接现有业务库启动服务或迁移。'],
+    ['本批收尾','我现在修改目标：只交付本轮已经实施的补丁。立即停止继续扫描上游候选和追加独立补丁，不再实施新项，保留已有成果。核对最终差异，复用有效证据，只做仍必要的相关测试；涉及界面则用隔离环境在真实浏览器验证，无法验证如实说明。本批引入的真实回归仍需修复或明确阻塞，无关旧问题不处理。原范围未覆盖项标为本轮不做/未覆盖，不冒充完整同步。原位更新工作流程的目标、当前项及结果，简短报告后停止。不得连接或修改现有业务数据库，不自动合并 main、发布或部署。'],
     ['只读检查','只读核查当前项目，说明问题、证据和建议，不修改文件，不启动业务服务、连接数据库、运行测试或迁移。保留已有工作流程和成果，查完停止。'],
     ['展示差异','只展示当前项目的 Git 差异、影响和验证状态；区分原有改动与当前任务，有记录基准就按基准核对，没有基准就明确说明不能归属本轮。不继续改文件、不启动业务服务或操作数据库，展示后停止。'],
     ['暂停收尾','暂停当前任务，保留已有代码、清单和测试证据，不回滚已完成成果。简短说明做到哪一步、测试结果、未覆盖项和阻塞，更新同一份工作流程后停止。收到新指令前不继续修改或自行追加下一轮任务。']
   ];
-  let project,task,key='',record='',tab='changes',promptIndex=0,epoch=0,diffEpoch=0,data=null,loading=false;
+  let project,task,key='',record='',promptRecord='',tab='changes',promptIndex=0,epoch=0,diffEpoch=0,data=null,loading=false;
   const endpoint=(kind,id)=>`/api/${kind}/${encodeURIComponent(project.id)}/${encodeURIComponent(task.id)}${id?`/${encodeURIComponent(id)}`:''}`;
   function renderPrompt() {
     $('prompt-choices').replaceChildren(...prompts.map(([label],index)=>{
       const button=node('button','prompt-choice',label);button.type='button';button.setAttribute('aria-pressed',String(index===promptIndex));
       button.addEventListener('click',()=>{promptIndex=index;renderPrompt();});return button;
     }));
-    $('prompt-text').value=`项目：${JSON.stringify(project?.name||'当前项目')}；任务：${JSON.stringify(task?.title||'当前任务')}\n\n${prompts[promptIndex][1]}`;
+    const context={项目:project?.name||'当前项目',任务:task?.title||'当前任务',清单目标:task?.goal||'未记录',保留:task?.constraints||'未记录',验收与停止:task?.acceptance||'未记录'};
+    $('prompt-text').value=`清单记载（仅供定位，以本次指令为准）：${JSON.stringify(context)}\n\n${prompts[promptIndex][1]}`;
     $('prompt-message').textContent='仅复制文字，请粘贴到对应对话；不会执行项目操作。';$('copy-prompt').disabled=!task;
   }
   async function copyPrompt() {
@@ -89,7 +91,9 @@ const PanelTools = (() => {
   function select(nextProject,nextTask) {
     const nextKey=`${nextProject?.id||''}:${nextTask?.id||''}:${nextTask?.base||''}`,nextRecord=JSON.stringify(nextTask||null),changed=nextKey!==key;
     project=nextProject;task=nextTask;
-    if(changed){key=nextKey;epoch++;diffEpoch++;data=null;loading=false;$('diff-view').hidden=true;$('diff-text').textContent='';$('change-categories').replaceChildren();renderChanges();renderPrompt();}
+    if(changed){key=nextKey;epoch++;diffEpoch++;data=null;loading=false;$('diff-view').hidden=true;$('diff-text').textContent='';$('change-categories').replaceChildren();renderChanges();}
+    const nextPromptRecord=JSON.stringify([project?.name,task?.title,task?.goal,task?.constraints,task?.acceptance]);
+    if(changed||nextPromptRecord!==promptRecord){promptRecord=nextPromptRecord;renderPrompt();}
     $('reload-insights').disabled=!task||loading;
     $('proof-count').textContent=(task?.items||[]).filter(item=>/证据[：:]/.test(item.description)).length;
     if(tab==='proof')renderProof();

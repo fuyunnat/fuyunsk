@@ -56,6 +56,12 @@ test('主线基线只在用户明确授权时更新', () => {
   assert.match(upstream, /该授权只用于建立这次同步前的基线/);
 });
 
+test('上游审查先固定候选再实施，续作可定位剩余分母', () => {
+  for (const value of ['有限审查与实施清单', '候选 ID 与总数', '已分类 K/N', '剩余候选索引', '不回溯全部历史', '未覆盖', '不边审边补', '完整审查']) assert.ok(upstream.includes(value), value);
+  const batch = planBatch('实现', ['上游同步']);
+  assert.ok(batch.references.includes('bounded-completion.md'));
+});
+
 test('上游同步专项按需加载，普通 Bug 不自动变重', () => {
   const sync = planBatch('实现', ['上游同步']);
   assert.ok(sync.references.includes('upstream-sync.md'));
