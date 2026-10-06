@@ -131,6 +131,8 @@ function render() {
   $('progress-label').textContent = task ? `${counts.completed} / ${counts.eligible} 项已记录完成${counts.cancelled ? ` · ${counts.cancelled} 项取消` : ''}` : '暂无清单';
   $('warnings').hidden = !task?.warnings.length; $('warnings').textContent = task?.warnings.join('；') || '';
   const current = renderFocus(task, project); renderFlow(task, current); renderSteps(task, current); renderContext(task);
+  if(typeof PanelTools!=='undefined')PanelTools.select(project,task);
+  else { const message=$('tools-message');if(message)message.textContent='工具模块未加载。技能更新后需重启本项目面板；原有任务进度仍可查看。'; }
 }
 async function refresh() {
   if (state.loading) return; state.loading = true; $('refresh').disabled = true;

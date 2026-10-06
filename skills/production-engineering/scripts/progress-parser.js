@@ -2,13 +2,13 @@
 const crypto = require('node:crypto');
 const statusKeys = { '待做': 'pending', '进行中': 'running', '待验证': 'verifying', '阻塞': 'blocked', '已完成': 'completed', '已取消': 'cancelled', '未知': 'unknown' };
 const clean = value => value.trim().replace(/\*\*([^*]+)\*\*/g, '$1').replace(/`([^`]+)`/g, '$1');
-const metadata = [['当前项', 'current'], ['下一步', 'next'], ['目标', 'goal'], ['保留', 'constraints'], ['验收与停止', 'acceptance'], ['验收', 'acceptance'], ['停止条件', 'acceptance'], ['对话', 'conversation'], ['阻塞', 'blocker']];
+const metadata = [['当前项', 'current'], ['下一步', 'next'], ['目标', 'goal'], ['保留', 'constraints'], ['验收与停止', 'acceptance'], ['验收', 'acceptance'], ['停止条件', 'acceptance'], ['对话', 'conversation'], ['阻塞', 'blocker'], ['基准', 'base']];
 const metadataNames = metadata.map(([prefix]) => prefix).join('|');
 
 function makeTask(title, index) {
   const match = title.match(/^(?:任务|本次任务)[：:]\s*([^—]+?)\s*[—–]\s*(.+)$/);
   const id = match ? match[1].trim() : `task-${crypto.createHash('sha256').update(title).digest('hex').slice(0, 10)}-${index}`;
-  return { id, title: match ? clean(match[2]) : clean(title), current: '', next: '', goal: '', constraints: '', acceptance: '', conversation: '', blocker: '', items: [], warnings: [] };
+  return { id, title: match ? clean(match[2]) : clean(title), current: '', next: '', goal: '', constraints: '', acceptance: '', conversation: '', blocker: '', base: '', items: [], warnings: [] };
 }
 
 function normalizeItem(item, task) {

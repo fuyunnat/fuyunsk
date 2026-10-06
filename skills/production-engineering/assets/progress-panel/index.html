@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
   <title>AI 工作进度 · 项目工作台</title>
-  <link rel="stylesheet" href="/panel.css"><script defer src="/panel.js"></script>
+  <link rel="stylesheet" href="/panel.css"><script defer src="/panel-tools.js"></script><script defer src="/panel.js"></script>
 </head>
 <body>
   <div class="app">
@@ -34,6 +34,16 @@
               <div class="metrics" aria-label="清单状态"><span>已完成 <strong id="completed">—</strong></span><span>进行中 / 待验证 <strong id="active">—</strong></span><span>待做 / 阻塞 / 未知 <strong id="pending">—</strong></span></div>
               <div class="steps-toolbar"><div class="filters" role="group" aria-label="步骤筛选"><button data-filter="all" aria-pressed="true">全部</button><button data-filter="open" aria-pressed="false">未完成</button><button data-filter="blocked" aria-pressed="false">阻塞</button></div><span id="filter-summary" class="muted"></span></div>
               <div id="warnings" class="warnings" hidden></div><ol id="steps"></ol><p id="empty" class="empty" hidden></p>
+            </section>
+            <section class="tools-card" aria-labelledby="tools-title">
+              <div class="section-heading"><h2 id="tools-title">改动与验收</h2><button id="reload-insights" class="subtle-button" type="button">重新读取</button></div>
+              <div class="tool-tabs" role="group" aria-label="选择工作台工具"><button type="button" data-tool-tab="changes" aria-pressed="true">改动地图 <span id="change-count">—</span></button><button type="button" data-tool-tab="proof" aria-pressed="false">验收证据 <span id="proof-count">—</span></button><button type="button" data-tool-tab="prompts" aria-pressed="false">快捷提示词</button></div>
+              <p id="tools-message" class="tools-message" role="status">选择任务后读取项目记录。</p>
+              <div id="tool-changes"><div class="change-source"><strong id="changes-source">等待 Git 记录</strong><span id="changes-time"></span></div><div id="change-categories" class="change-categories"></div><p id="changes-note" class="tools-note"></p><ul id="change-list" class="change-list"></ul>
+                <section id="diff-view" class="diff-view" hidden aria-labelledby="diff-title"><div class="diff-heading"><h3 id="diff-title"></h3><button id="close-diff" class="subtle-button" type="button">收起差异</button></div><p id="diff-note" class="tools-note"></p><pre id="diff-text" tabindex="0" aria-label="只读文本差异"></pre></section>
+              </div>
+              <div id="tool-proof" hidden><p class="tools-note">状态来自清单；图片和日志只打开明确登记的本项目附件。</p><div id="proof-list" class="proof-list"></div></div>
+              <div id="tool-prompts" hidden><div id="prompt-choices" class="prompt-choices" role="group" aria-label="选择快捷提示词"></div><label for="prompt-text" class="prompt-label">可直接复制到当前任务对话</label><textarea id="prompt-text" readonly rows="7"></textarea><div class="prompt-footer"><span id="prompt-message" role="status"></span><button id="copy-prompt" type="button">复制提示词</button></div></div>
             </section>
           </div>
           <aside class="context" aria-label="任务目标与验收">

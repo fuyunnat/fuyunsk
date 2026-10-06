@@ -5,9 +5,10 @@ const path = require('node:path');
 const http = require('node:http');
 const crypto = require('node:crypto');
 const { parseWorkflow } = require('./progress-parser');
+const { readChanges, readDiff, evidenceFiles, readEvidence } = require('./panel-insights');
 const assets = path.resolve(__dirname, '../assets/progress-panel');
 const maxBytes = 5 * 1024 * 1024;
-const staticRoutes = { '/': ['index.html', 'text/html'], '/panel.js': ['panel.js', 'text/javascript'], '/panel.css': ['panel.css', 'text/css'] };
+const staticRoutes = { '/': ['index.html', 'text/html'], '/panel.js': ['panel.js', 'text/javascript'], '/panel-tools.js': ['panel-tools.js', 'text/javascript'], '/panel.css': ['panel.css', 'text/css'] };
 
 function registerProjects(entries) {
   if (!entries.length) throw new Error('至少指定一个 --project 绝对路径；不自动扫描项目');
@@ -50,7 +51,7 @@ function readProject(project) {
 }
 
 function createPanelServer(projects, options = {}) {
-  return http.createServer((request, response) => {
+  return http.createServer(async (request, response) => {
     const port = String(response.socket.localPort);
     const hosts = new Set([`127.0.0.1:${port}`, `localhost:${port}`]);
     const headers = { 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff', 'Content-Security-Policy': "default-src 'self'; style-src 'self'; script-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'" };
@@ -61,8 +62,20 @@ function createPanelServer(projects, options = {}) {
     if (request.method !== 'GET') return send(405, '面板只读，不支持写入');
     const url = new URL(request.url, `http://${request.headers.host}`);
     if (url.search) return send(400, '不接受浏览器传入项目路径或参数');
-    if (url.pathname === '/api/health') return send(200, JSON.stringify({ application: 'production-engineering-progress-panel', protocol: 1, instanceId: options.instanceId || null, pid: process.pid, projectIds: projects.map(p => p.id) }), 'application/json');
+    if (url.pathname === '/api/health') return send(200, JSON.stringify({ application: 'production-engineering-progress-panel', protocol: 1, features: ['insights', 'evidence'], instanceId: options.instanceId || null, pid: process.pid, projectIds: projects.map(p => p.id) }), 'application/json');
     if (url.pathname === '/api/projects') return send(200, JSON.stringify({ observedAt: new Date().toISOString(), projects: projects.map(readProject) }), 'application/json');
+    const route=url.pathname.match(/^\/api\/(insights|diff|evidence)\/([a-f0-9]{16})\/([^/]+)(?:\/([a-f0-9]{24}))?$/);
+    if(route) {
+      const [,kind,projectId,taskId,id]=route;
+      const project=projects.find(project=>project.id===projectId);let task;
+      try{task=project&&readProject(project).tasks.find(task=>task.id===decodeURIComponent(taskId));}catch{return send(400,'任务编号无法读取');}
+      if(!task || (kind==='insights'?!!id:!id))return send(404,'没有登记的项目、任务或文件');
+      try {
+        if(kind==='insights')return send(200,JSON.stringify({changes:await readChanges(project,task),attachments:evidenceFiles(task)}),'application/json');
+        if(kind==='diff')return send(200,JSON.stringify(await readDiff(project,task,id)),'application/json');
+        const evidence=readEvidence(project,task,id);return send(200,evidence.body,evidence.type);
+      }catch{return send(404,'文件未登记、不可读或超出预览边界；未读取其他文件');}
+    }
     if (!Object.hasOwn(staticRoutes, url.pathname)) return send(404, '没有这个页面');
     const [file, type] = staticRoutes[url.pathname];
     try { send(200, fs.readFileSync(path.join(assets, file)), type); }
@@ -95,11 +108,11 @@ function parseArgs(argv) {
 if (require.main === module) {
   try {
     const options = parseArgs(process.argv.slice(2));
-    if (options.help) console.log('用法：node progress-panel.js --project "项目甲=/绝对路径/项目甲" [--project "/绝对路径/项目乙"] [--port 4318]\n本机只读面板；Ctrl+C 停止。不扫描项目，不启动业务服务，不写进度文件。');
+    if (options.help) console.log('用法：node progress-panel.js --project "项目甲=/绝对路径/项目甲" [--project "/绝对路径/项目乙"] [--port 4318]\n本机只读面板：指定项目清单、Git 与清单登记的证据；Ctrl+C 停止。不扫描其他项目，不启动业务服务，不写进度文件。');
     else {
       const projects = registerProjects(options.projects), server = createPanelServer(projects);
       server.on('error', error => { console.error(error.code === 'EADDRINUSE' ? '端口已占用，用 --port 指定其他端口' : `面板启动失败：${error.message}`); process.exitCode = 1; });
-      server.listen(options.port, '127.0.0.1', () => console.log(`AI 工作进度：http://127.0.0.1:${options.port}\n只读 ${projects.length} 个指定项目的工作流程.md；Ctrl+C 停止。`));
+      server.listen(options.port, '127.0.0.1', () => console.log(`AI 工作进度：http://127.0.0.1:${options.port}\n只读 ${projects.length} 个指定项目的清单、Git 与已登记证据；Ctrl+C 停止。`));
       for (const signal of ['SIGINT', 'SIGTERM']) process.on(signal, () => { server.closeAllConnections(); server.close(); });
     }
   } catch (error) { console.error(error.message); process.exitCode = 1; }
