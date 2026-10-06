@@ -2,29 +2,49 @@
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>AI 工作进度</title><link rel="stylesheet" href="/panel.css"><script defer src="/panel.js"></script>
+  <title>AI 工作进度 · 项目工作台</title>
+  <link rel="stylesheet" href="/panel.css"><script defer src="/panel.js"></script>
 </head>
 <body>
   <div class="app">
-    <aside class="sidebar" aria-label="项目导航">
-      <div class="brand"><span class="brand-mark" aria-hidden="true">◎</span><div>工作进度<small>每个项目，清楚推进</small></div></div>
-      <div class="sidebar-label">我的项目 <span id="project-count">—</span></div>
+    <aside class="sidebar" aria-label="项目与任务导航">
+      <div class="brand"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span><div>项目工作台<small>AI 工作进度</small></div></div>
+      <div class="sidebar-label">项目 <span id="project-count">—</span></div>
       <nav id="projects" aria-label="选择项目"></nav>
-      <div class="sidebar-note"><span class="dot"></span> 本机只读<br><small>读取现有清单，不改项目文件</small></div>
+      <details id="task-browser" class="task-browser" open>
+        <summary>任务记录 <span id="task-count">—</span></summary>
+        <label class="search-field" for="task-search"><span aria-hidden="true">⌕</span><input id="task-search" type="search" aria-label="搜索任务或对话" placeholder="搜索任务或对话" autocomplete="off"></label>
+        <div class="task-scope" role="group" aria-label="任务范围"><button id="scope-all" type="button" data-scope="all" aria-pressed="true">全部</button><button id="scope-open" type="button" data-scope="open" aria-pressed="false">未完成</button><span id="task-scope"></span></div>
+        <nav id="tasks" aria-label="选择任务记录"></nav><p id="task-empty" class="navigation-empty" hidden>没有匹配的任务</p>
+      </details>
+      <div class="sidebar-note"><span class="connection-dot"></span><div>本机只读<small>进度来自工作流程.md</small></div></div>
     </aside>
     <main>
-      <header class="topbar"><span>AI 工作进度</span><div class="sync"><span id="connection">正在连接</span><button id="refresh" type="button">刷新</button></div></header>
+      <header class="topbar"><div class="breadcrumb">工作台 <span>/</span><strong id="project-title">读取进度中</strong></div><div class="sync"><span id="connection" role="status">正在连接</span><button id="refresh" type="button">刷新</button></div></header>
       <div id="notice" class="notice" role="status" hidden></div>
-      <section class="workspace" aria-labelledby="project-title">
-        <div class="project-heading"><div><span class="eyebrow">当前项目</span><h1 id="project-title">读取进度中</h1><p id="project-path" class="muted"></p></div><span class="readonly-badge">只读面板</span></div>
-        <div class="task-picker"><label for="task-select">任务记录</label><select id="task-select"></select><span id="conversation" class="muted"></span></div>
-        <section class="focus" aria-labelledby="focus-title"><div class="focus-icon" aria-hidden="true">↗</div><div><span id="focus-label" class="eyebrow">当前一步</span><h2 id="focus-title">等待读取</h2><p id="next-step"></p></div><span id="focus-status" class="status"></span></section>
-        <div class="metrics" aria-label="清单状态"><div><span>已完成</span><strong id="completed">—</strong></div><div><span>进行中 / 待验证</span><strong id="active">—</strong></div><div><span>待做 / 阻塞</span><strong id="pending">—</strong></div></div>
-        <section class="steps-card" aria-labelledby="steps-title"><div class="section-heading"><h2 id="steps-title">执行步骤</h2><span id="progress-label" class="muted"></span></div><progress id="progress" value="0" max="1" aria-label="清单勾选进度"></progress>
-          <div class="filters" role="group" aria-label="步骤筛选"><button data-filter="all" aria-pressed="true">全部</button><button data-filter="open" aria-pressed="false">未完成</button><button data-filter="blocked" aria-pressed="false">阻塞</button></div>
-          <div id="warnings" class="warnings" hidden></div><ol id="steps"></ol><p id="empty" class="empty" hidden></p>
-        </section>
-        <footer><span id="updated">清单更新时间：—</span><span>已记录的进度 · 不等于 AI 内部实时状态</span></footer>
+      <section class="workspace" aria-labelledby="task-title">
+        <div class="project-heading"><div><p id="project-path" class="project-path"></p><div class="task-heading"><h1 id="task-title">等待读取任务</h1><span id="task-status" class="status"></span></div><p id="conversation" class="muted"></p></div><span class="readonly-badge">自动刷新 · 4 秒</span></div>
+        <div class="workbench">
+          <div class="execution">
+            <section class="focus" aria-labelledby="focus-title"><div class="focus-heading"><span id="focus-label" class="eyebrow">当前一步</span><span id="focus-status" class="status"></span></div><h2 id="focus-title">等待读取</h2><p id="next-step"></p></section>
+            <section class="flow-section" aria-label="清单流程概览"><div class="section-heading"><h2>流程概览</h2><span class="muted">按清单顺序</span></div><ol id="flow" class="flow"></ol></section>
+            <section class="steps-card" aria-labelledby="steps-title">
+              <div class="section-heading"><h2 id="steps-title">执行流程 <span id="step-count"></span></h2><span id="progress-label" class="muted"></span></div>
+              <progress id="progress" value="0" max="1" aria-label="清单勾选进度"></progress>
+              <div class="metrics" aria-label="清单状态"><span>已完成 <strong id="completed">—</strong></span><span>进行中 / 待验证 <strong id="active">—</strong></span><span>待做 / 阻塞 / 未知 <strong id="pending">—</strong></span></div>
+              <div class="steps-toolbar"><div class="filters" role="group" aria-label="步骤筛选"><button data-filter="all" aria-pressed="true">全部</button><button data-filter="open" aria-pressed="false">未完成</button><button data-filter="blocked" aria-pressed="false">阻塞</button></div><span id="filter-summary" class="muted"></span></div>
+              <div id="warnings" class="warnings" hidden></div><ol id="steps"></ol><p id="empty" class="empty" hidden></p>
+            </section>
+          </div>
+          <aside class="context" aria-label="任务目标与验收">
+            <section class="context-section"><div class="section-heading"><h2>本轮目标</h2><span class="section-index">01</span></div><p id="goal" class="context-body"></p><details id="constraint-details"><summary>保留与边界</summary><p id="constraints" class="context-body"></p></details></section>
+            <section class="context-section"><div class="section-heading"><h2>阻塞与待验证</h2><span id="attention-count" class="count-badge">0</span></div><div id="blockers"></div></section>
+            <section class="context-section"><div class="section-heading"><h2>验证证据</h2><span id="evidence-count" class="count-badge">0</span></div><div id="evidence"></div><p class="context-note">仅展示清单记录，不替代实际验收。</p></section>
+            <section class="context-section"><div class="section-heading"><h2>完成与停止条件</h2><span class="section-index">04</span></div><p id="acceptance" class="context-body"></p></section>
+            <section class="record-info"><span class="connection-dot"></span><div><strong>记录来源</strong><span>工作流程.md</span><span id="updated">最后更新：—</span></div></section>
+          </aside>
+        </div>
+        <footer><span>本机只读 · 保留项目原有记录</span><span>已记录进度，不等于 AI 内部实时状态</span></footer>
       </section>
     </main>
   </div>
