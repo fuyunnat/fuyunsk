@@ -46,3 +46,19 @@ test('切换项目/任务后迟到的响应与差异不会覆盖当前记录，�
   resolveOld({ok:true,json:async()=>p.response});await settled();assert.match(p.get('changes-source').textContent,/Git 改动未读取/);assert.match(p.get('change-list').textContent,/当前无 Git/);
   p.tabs[2].trigger('click');assert.match(p.get('prompt-text').value,/项目乙|任务乙/);assert.doesNotMatch(p.get('prompt-text').value,/任务甲/);
 });
+
+test('同一任务改目标后复制最新范围，收敛交付不会继续扫描或自动执行',async()=>{
+  const p=page();p.select(project,{...task,goal:'完整审查312候选',constraints:'不连业务库',acceptance:'全范围验证'});await settled();
+  const choice=p.get('prompt-choices').children.find(button=>button.textContent==='本批收尾');
+  assert.ok(choice,'缺少本批收尾指令');choice.trigger('click');
+  p.select({...project,name:'项目新名称'},{...task,title:'本批交付',goal:'交付已完成55项',constraints:'不连业务库',acceptance:'验完停止'});await settled();
+  await p.get('copy-prompt').trigger('click');
+  const copied=p.clipboard.at(-1);assert.match(copied,/项目新名称/);assert.match(copied,/交付已完成55项/);assert.match(copied,/验完停止/);
+  assert.doesNotMatch(copied,/完整审查312候选/);assert.match(copied,/停止.*扫描/);assert.match(copied,/未覆盖/);assert.match(copied,/不再实施新项/);
+  assert.ok(p.calls.every(call=>!call.args?.method||call.args.method==='GET'));
+});
+
+test('正常完成提示词保留完整已授权范围并限制扫描扩项',async()=>{
+  const p=page();p.select(project,task);await settled();await p.get('copy-prompt').trigger('click');
+  assert.match(p.clipboard[0],/不得自行缩减/);assert.match(p.clipboard[0],/固定.*清单/);assert.match(p.clipboard[0],/不.*全历史/);
+});
