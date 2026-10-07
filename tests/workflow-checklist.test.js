@@ -172,3 +172,11 @@ function shortTemplateForTest(body) {
   const end = body.indexOf('<!-- production-engineering:auto:end -->') + '<!-- production-engineering:auto:end -->'.length;
   return body.slice(start, end);
 }
+
+test('当前摘要核对事实和历史引用，源码提交与运行生效分别记录', () => {
+  requireText(rules(), ['当前摘要一致性核对', '任务基准保持不变', '当前 HEAD',
+    '历史快照', '被后续结果取代', '不重新执行', '源码已提交不等于运行实例已更新',
+    '只有文件摘要不能证明实际 Git 或运行状态', '只读或禁止记录时仅在报告指出矛盾']);
+  requireText(text('skills/production-engineering/templates/workflow.example.md'),
+    ['执行节奏：', '当前事实：', '历史索引：']);
+});

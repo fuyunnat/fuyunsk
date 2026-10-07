@@ -74,6 +74,14 @@ test('上游同步专项按需加载，普通 Bug 不自动变重', () => {
   assert.ok(!bug.references.includes('upstream-sync.md'));
 });
 
+test('功能盘点不把缺模块和安全改造藏进不适用，分母不能冒充全覆盖', () => {
+  for (const value of ['功能差异盘点', '尚未引入的新功能', '本地没有模块不等于不适用',
+    '等价实现', '缺失环节', '适用条件不成立', '安全缺口', '实施授权',
+    '功能组和候选提交分别统计', '不能代表全部官方功能']) {
+    assert.ok(upstream.includes(value), value);
+  }
+});
+
 test('入口和路由能命中二开同步且保持短入口', () => {
   assert.match(routing, /二开\/派生项目同步上游、官方修复或新功能/);
   assertAgentDelegates(agent);
