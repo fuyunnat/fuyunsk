@@ -80,3 +80,21 @@ test('自动刷新实际记录变化，断线保留上次数据并明确标识',
   p.timers[0](); await settled(); assert.equal(get('progress-label').textContent, '2 / 3 项已记录完成');
   p.offline(); p.timers[0](); await settled(); assert.equal(get('connection').textContent, '连接中断'); assert.equal(get('notice').hidden, false); assert.match(get('notice').textContent, /上次读取/); assert.equal(get('progress-label').textContent, '2 / 3 项已记录完成');
 });
+
+test('历史选择明示，退出本轮排除分母但保留阶段范围，不编造最新任务', async () => {
+  const p = page(); await settled(); const get = id => p.elements.get(id);
+  get('tasks').children.find(node => node.attributes?.['aria-label'] === '旧任务').trigger('click');
+  assert.match(get('conversation').textContent, /正在查看历史任务/);
+  p.projects[0].tasks[1] = parseWorkflow('## 任务：NOW — 当前任务\n- 当前目标（已收尾）：只验本批\n- [x] W001【已完成隔离验收】隔离测试\n- [ ] W002【本轮不实施】后续范围')[0];
+  get('tasks').children.find(node => node.attributes?.['aria-label'] === '当前任务').trigger('click');
+  p.timers[0](); await settled();
+  assert.equal(get('goal').textContent, '只验本批');
+  assert.match(get('progress-label').textContent, /1 \/ 1.*1 项本轮不做/);
+  assert.match(get('steps').textContent, /已完成隔离验收/);
+  p.filters[1].trigger('click'); assert.equal(get('steps').children.length, 0);
+  p.projects[0].tasks[1] = parseWorkflow('## 任务：NOW — 当前任务\n- [ ] W002【本轮不做】后续范围')[0];
+  p.timers[0](); await settled();
+  assert.equal(get('task-status').textContent, '本轮不做');
+  assert.equal(get('focus-title').textContent, '任务本轮不做');
+  assert.equal(get('task-count').textContent, '2');
+});

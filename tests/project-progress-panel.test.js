@@ -16,7 +16,7 @@ test('按任务解析六种状态，代码块示例不计进度，取消不是�
   assert.equal(tasks.length, 2);
   assert.equal(tasks[0].id, 'A');
   assert.equal(tasks[0].items.length, 6);
-  assert.deepEqual(tasks[0].counts, { total: 6, eligible: 5, completed: 1, pending: 1, running: 1, verifying: 1, blocked: 1, cancelled: 1, unknown: 0 });
+  assert.deepEqual(tasks[0].counts, { total: 6, eligible: 5, completed: 1, pending: 1, running: 1, verifying: 1, blocked: 1, cancelled: 1, deferred: 0, unknown: 0 });
   assert.equal(tasks[0].current, 'W002');
 });
 
@@ -27,6 +27,30 @@ test('同编号冲突和勾选矛盾不给假完成，规划表保留完整分�
   assert.equal(tasks[0].counts.blocked, 1);
   assert.equal(tasks[0].counts.verifying, 2);
   assert.ok(tasks[0].warnings.length >= 3);
+});
+
+test('截图同形的旧阶段状态和当前目标可读，退出本轮不等于取消或完成', () => {
+  const [task] = parseWorkflow('## 稳定版本官方回迁\n- 当前目标（四组已验收收尾）：四组已验；其余不做\n- 禁改/禁止：业务库不动\n- [ ] FIX-AUDIT【本轮不实施】剩余不在本轮\n- [x] FIX-IMPLEMENT【本批已实施，停止新增】实现结束\n- [x] FIX-VERIFY【本批证据已核对】隔离证据\n- [x] FIX-FINAL【本批已收尾，保留未提交成果】收尾结束\n- [x] INV-REMAINING【盘点已完成，非完整语义审查】仅盘点\n- [x] REVIEW-118【已完成／只读审查】只读结束');
+  assert.equal(task.goal, '四组已验；其余不做');
+  assert.equal(task.constraints, '业务库不动');
+  assert.equal(task.counts.completed, 5);
+  assert.equal(task.counts.deferred, 1);
+  assert.equal(task.counts.cancelled, 0);
+  assert.equal(task.counts.eligible, 5);
+  assert.deepEqual(task.warnings, []);
+  assert.equal(task.items[4].recordedStatus, '盘点已完成，非完整语义审查');
+});
+
+test('兼容明确验收范围，但未知标签和勾选矛盾仍不能冒充完成', () => {
+  const [task] = parseWorkflow('## 任务：A — 验证\n- [x] A01【已完成隔离验收】本地mock\n- [x] A02【已完成静态验证】只编译\n- [x] A03【已完成但未验证】不能完成\n- [ ] A04【已完成隔离验收】没勾选\n- [ ] A05【本轮不做】范围外\n- [x] A06【本轮不做】勾选矛盾');
+  assert.equal(task.counts.completed, 2);
+  assert.equal(task.counts.deferred, 2);
+  assert.equal(task.counts.verifying, 2);
+  assert.equal(task.counts.eligible, 4);
+  assert.ok(task.warnings.some(w => w.includes('A03')));
+  assert.ok(task.warnings.some(w => w.includes('A04')));
+  assert.ok(task.warnings.some(w => w.includes('A06')));
+  assert.equal(task.items[0].recordedStatus, '已完成隔离验收');
 });
 
 test('多项目固定绝对根且去重，缺清单不创建、不读取其他文件', () => {
@@ -72,8 +96,13 @@ test('真实 HTTP 只绑定本机、拒绝写入/外部来源/未知路径，文
   assert.equal((await fetch(base + '/api/projects?path=.env')).status, 400);
   assert.equal((await fetch(base + '/.env')).status, 404);
   assert.equal(fs.readFileSync(file, 'utf8'), original);
-  fs.writeFileSync(file, original.replace('[ ] W001【进行中】', '[x] W001【已完成】'));
-  data = await (await fetch(base + '/api/projects')).json();assert.equal(data.projects[0].tasks[0].counts.completed, 1);
+  const updated = original.replace('[ ] W001【进行中】', '[x] W001【已完成隔离验收】') + '\n当前目标（本轮）：只验隔离流程\n- [ ] W002【本轮不实施】以后再做';
+  fs.writeFileSync(file, updated);
+  data = await (await fetch(base + '/api/projects')).json();
+  const task = data.projects[0].tasks[0];
+  assert.equal(task.counts.completed, 1);assert.equal(task.counts.deferred, 1);assert.equal(task.counts.eligible, 1);
+  assert.equal(task.goal, '只验隔离流程');assert.equal(task.items[0].recordedStatus, '已完成隔离验收');assert.deepEqual(task.warnings, []);
+  assert.equal(fs.readFileSync(file, 'utf8'), updated);
   res = await fetch(base);assert.match(res.headers.get('content-security-policy'), /default-src 'self'/);
   assert.match(await res.text(), /AI 工作进度/);
 });
