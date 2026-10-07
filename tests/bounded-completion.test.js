@@ -14,7 +14,7 @@ const cases = require('./bounded-completion-cases.json');
 const policy = () => read('references/bounded-completion.md');
 
 test('压力场景同时保留完整目标、必要遗漏与停止边界', () => {
-  assert.equal(new Set(cases.map(c => c.id)).size, 12);
+  assert.equal(new Set(cases.map(c => c.id)).size, 15);
   assert.ok(cases.every(c => c.user && c.facts && c.expected.length >= 2));
   assertAgentDelegates(read('agents/openai.yaml'));
   for (const s of ['固定验收范围', '必要缺口', '非阻塞建议', '不缩减', '恢复条件']) assert.ok(policy().includes(s), s);
@@ -48,6 +48,16 @@ test('用户收窄目标终止旧审查，未覆盖不冒充完成', () => {
   for (const s of ['用户明确改为本批收尾', '停止旧审查', '本轮不做 / 未覆盖', '不伪造原审查完成', '不再实施新项']) assert.ok(policy().includes(s), s);
   for (const s of ['审查分母', '当前项和下一步', '用户改目标']) assert.ok(read('references/workflow-checklist.md').includes(s), s);
   assert.ok(cases.some(c => c.id === '用户改为本批收尾'));
+});
+
+test('内部批次不替代目标终点，也不覆盖用户逐批确认要求', () => {
+  for (const value of ['内部批次不是暂停点', '不等待用户回复“继续”',
+    '用户明确要求逐批确认', '进度汇报不等于暂停', '其他独立已授权项继续']) {
+    assert.ok(policy().includes(value), value);
+  }
+  for (const id of ['缺模块不是不适用', '旧状态被新事实取代', '内部批次持续执行']) {
+    assert.ok(cases.some(c => c.id === id), id);
+  }
 });
 
 test('入口、路由、Agent、执行及恢复规则和模板接通', () => {
