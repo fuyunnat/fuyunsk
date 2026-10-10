@@ -1,8 +1,8 @@
 'use strict';
 const $ = id => document.getElementById(id);
 const state = { projects: [], project: '', task: '', filter: 'all', taskScope: 'all', query: '', followLatest: true, loading: false, snapshot: '' };
-const keys = { '待做': 'pending', '进行中': 'running', '待验证': 'verifying', '阻塞': 'blocked', '已完成': 'completed', '已取消': 'cancelled', '未知': 'unknown' };
-const blankCounts = { total: 0, completed: 0, running: 0, verifying: 0, pending: 0, blocked: 0, eligible: 0, cancelled: 0, unknown: 0 };
+const keys = { '待做': 'pending', '进行中': 'running', '待验证': 'verifying', '阻塞': 'blocked', '已完成': 'completed', '已取消': 'cancelled', '本轮不做': 'deferred', '未知': 'unknown' };
+const blankCounts = { total: 0, completed: 0, running: 0, verifying: 0, pending: 0, blocked: 0, eligible: 0, cancelled: 0, deferred: 0, unknown: 0 };
 function element(tag, className, text) { const node = document.createElement(tag); if (className) node.className = className; if (text !== undefined) node.textContent = text; return node; }
 function badge(status) { return element('span', `status status-${keys[status] || 'unknown'}`, status); }
 function date(value) { return value ? new Date(value).toLocaleString('zh-CN', { hour12: false }) : '—'; }
@@ -11,7 +11,7 @@ function taskStatus(task) {
   const c = task.counts;
   if (c.blocked) return '阻塞'; if (c.running) return '进行中'; if (c.verifying) return '待验证';
   if (c.unknown) return '未知'; if (c.eligible && c.completed === c.eligible) return '已完成';
-  return c.eligible ? '待做' : '已取消';
+  return c.eligible ? '待做' : c.deferred ? '本轮不做' : '已取消';
 }
 function projectSummary(project) {
   if (project.status === 'missing') return '尚未建立清单';
@@ -66,7 +66,7 @@ function renderFocus(task, project) {
     $('next-step').textContent = task.next ? `下一步：${task.next}` : current.status === '阻塞' ? task.blocker || '清单记录为阻塞，需补齐条件后继续。' : '当前项来自清单；完整记录见下方执行流程。'; status = current.status;
   } else {
     $('focus-label').textContent = '记录状态';
-    $('focus-title').textContent = task ? counts.eligible && counts.completed === counts.eligible ? '清单事项已记录完成' : counts.eligible === 0 ? '任务已取消' : '状态需要核实' : '暂无可显示的任务';
+    $('focus-title').textContent = task ? counts.eligible && counts.completed === counts.eligible ? '清单事项已记录完成' : counts.eligible === 0 ? counts.deferred ? '任务本轮不做' : '任务已取消' : '状态需要核实' : '暂无可显示的任务';
     $('next-step').textContent = task ? '完成状态以清单为准，验证证据单独展示。' : project?.error || 'AI 更新项目清单后，这里会显示任务。'; status = task ? taskStatus(task) : '暂无记录';
   }
   $('focus-status').textContent = status; $('focus-status').className = `status status-${keys[status] || 'unknown'}`;
@@ -83,7 +83,7 @@ function renderFlow(task, current) {
   }));
 }
 function renderSteps(task, current) {
-  const items = (task?.items || []).filter(item => state.filter === 'all' || (state.filter === 'open' ? !['已完成', '已取消'].includes(item.status) : item.status === '阻塞'));
+  const items = (task?.items || []).filter(item => state.filter === 'all' || (state.filter === 'open' ? !['已完成', '已取消', '本轮不做'].includes(item.status) : item.status === '阻塞'));
   const nodes = items.map(item => {
     const index = task.items.indexOf(item), key = keys[item.status] || 'unknown', parts = recordParts(item);
     const li = element('li', `step ${current?.id === item.id ? 'current-step' : ''}`); li.id = `step-${index}`;
@@ -91,6 +91,7 @@ function renderSteps(task, current) {
     const body = element('div', 'step-body'), heading = element('div', 'step-heading'); heading.append(element('strong', 'step-id', item.id), badge(item.status));
     body.append(heading, element('p', 'step-title', parts.title));
     const detail = element('details', 'step-detail'); detail.append(element('summary', '', parts.evidence ? '完整记录与证据' : '查看完整记录'), element('p', '', parts.full));
+    if (item.recordedStatus && item.recordedStatus !== item.status) detail.append(element('p', 'context-note', `状态原文：${item.recordedStatus}；仅表示此事项的记录范围，不代表全部功能验收。`));
     body.append(detail); li.append(marker, body); return li;
   });
   $('steps').replaceChildren(...nodes); $('empty').hidden = !!items.length;
@@ -123,12 +124,12 @@ function render() {
   if (state.followLatest || !tasks.some(t => t.id === state.task)) state.task = tasks.at(-1)?.id || '';
   const task = tasks.find(t => t.id === state.task), counts = task?.counts || blankCounts;
   $('project-title').textContent = project?.name || '暂无项目'; $('project-path').textContent = project?.root || '';
-  $('task-title').textContent = task?.title || '暂无任务记录'; $('conversation').textContent = task?.conversation ? `对话：${task.conversation}` : '独立任务记录 · 历史保留';
+  $('task-title').textContent = task?.title || '暂无任务记录'; $('conversation').textContent = `${task?.conversation ? `对话：${task.conversation}` : '独立任务记录'} · ${task && task.id !== tasks.at(-1)?.id ? '正在查看历史任务' : '最近记录'}`;
   $('task-status').textContent = task ? taskStatus(task) : '暂无记录'; $('task-status').className = `status status-${keys[task ? taskStatus(task) : '未知']}`;
   $('updated').textContent = `最后更新：${date(project?.updatedAt)}`; renderTasks(project);
   $('completed').textContent = counts.completed; $('active').textContent = counts.running + counts.verifying; $('pending').textContent = counts.pending + counts.blocked + counts.unknown;
   $('step-count').textContent = counts.total; $('progress').max = Math.max(1, counts.eligible); $('progress').value = counts.completed;
-  $('progress-label').textContent = task ? `${counts.completed} / ${counts.eligible} 项已记录完成${counts.cancelled ? ` · ${counts.cancelled} 项取消` : ''}` : '暂无清单';
+  $('progress-label').textContent = task ? `${counts.completed} / ${counts.eligible} 项已记录完成${counts.cancelled ? ` · ${counts.cancelled} 项取消` : ''}${counts.deferred ? ` · ${counts.deferred} 项本轮不做` : ''}` : '暂无清单';
   $('warnings').hidden = !task?.warnings.length; $('warnings').textContent = task?.warnings.join('；') || '';
   const current = renderFocus(task, project); renderFlow(task, current); renderSteps(task, current); renderContext(task);
   if(typeof PanelTools!=='undefined')PanelTools.select(project,task);

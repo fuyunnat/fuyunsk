@@ -165,7 +165,7 @@ progress::-moz-progress-bar { background: var(--accent); }
 .status-verifying { color: var(--blue); background: #edf2fa; }
 .status-blocked { color: var(--danger); background: var(--danger-soft); }
 .status-unknown { color: var(--warning); background: var(--warning-soft); }
-.status-cancelled { color: #89939c; background: #f1f2f3; }
+.status-cancelled, .status-deferred { color: #89939c; background: #f1f2f3; }
 .context { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: 0 18px; min-width: 0; }
 .context-section { padding: 17px 0; border-bottom: 1px solid var(--line); }
 .context-section .section-heading { margin-bottom: 11px; }
