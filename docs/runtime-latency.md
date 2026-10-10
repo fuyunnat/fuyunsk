@@ -12,6 +12,8 @@
 node "<技能目录>/scripts/read-rules.js" --stage 小改 --topic 内容
 node "<技能目录>/scripts/read-rules.js" --stage 实现 --topic 前端,接口
 node "<技能目录>/scripts/read-rules.js" --stage 只读 --topic 审计
+node "<技能目录>/scripts/read-rules.js" --stage 小改 --topic 前端,故障修复
+node "<技能目录>/scripts/read-rules.js" --stage 实现 --topic 续航
 node "<技能目录>/scripts/read-rules.js" --stage 提交
 ```
 
