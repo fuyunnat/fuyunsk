@@ -169,6 +169,10 @@ node "<技能目录>/scripts/read-rules.js" --stage 只读 --topic 审计
 
 [只读条款助手](skills/production-engineering/scripts/read-rules.js)是可选工具，无第三方依赖；也可以直接用文件工具读取切片。文件体积和本地读取基准不等于模型端到端速度，实际改善需要在同一环境对照测量。
 
+## 本机环境诊断（只读）
+
+安装/升级后，在本仓库根目录使用 `node scripts/doctor.js` 或 `node scripts/doctor.js --json`；在已安装的单份技能中使用 `node <实际技能目录>/scripts/doctor.js --json`。它只检查已知候选安装路径、原稿校验、重复副本和个性化短调度，不联网、不改配置、不会创建业务任务清单。诊断结果**不代表真实 Codex 已自动调用技能或桌面 UI 已刷新**。详见 [安装文档](docs/ai-installation.md)。
+
 ## 安装和升级
 
 [安装教程](docs/ai-installation.md)是给 AI 执行的完整流程，覆盖固定版本下载、原位安装、备份去重、个性化接入、覆盖规则处理和新会话验收。[短全局模板](global-AGENTS.example.md)与[个性化模板](docs/personal-custom-instructions.md)内容相同，只合并一个标记块，不重复追加。
