@@ -1,0 +1,29 @@
+name: 中文工程技能自检
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Node.js ${{ matrix.node }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ['20', '22']
+    steps:
+      - name: 获取仓库源码
+        uses: actions/checkout@v4
+      - name: 安装 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - name: 检查技能与回归测试
+        run: node scripts/validate-skill.js
+      - name: 检查 Git 差异空白错误
+        run: git diff --check HEAD^ HEAD
