@@ -177,4 +177,4 @@ if (require.main === module) {
   try { main(process.argv.slice(2)); }
   catch (error) { process.stderr.write('诊断失败：' + error.message + '\n'); process.exitCode = 2; }
 }
-module.exports = { diagnose, parse };
+module.exports = { diagnose, parse, main };
