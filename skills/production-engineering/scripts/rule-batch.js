@@ -6,7 +6,7 @@ const stages = {
   '小改': { topics: ['通用', '适用方式', '小改', '实现', '验证', '完成', '报告'], references: [] },
   '实现': {
     topics: ['通用', '适用方式', '完整', '实现'],
-    references: ['task-lanes.md', 'context-memory-continuity.md'],
+    references: ['task-lanes.md'],
   },
   '验证': { topics: ['验证', '完成', '报告', '禁止行为'], references: [] },
   '提交': { topics: ['Git提交', '验证', '续航'], references: ['git-team-delivery.md'] },
@@ -24,7 +24,8 @@ const domains = {
   '模板二开': { topics: ['代码组织', '前端', '接口', '验证'], ids: ['06-00'], references: ['parallel-template-development.md', 'frontend-interface-quality.md', 'configuration-localization.md'] },
   '进度面板': { topics: ['续航', '报告'], references: ['workflow-progress-panel.md'] },
   '规划清单': { topics: ['续航', '报告'], references: ['planning-persistence.md', 'workflow-checklist.md', 'context-memory-continuity.md'] },
-  '代理执行': { topics: ['代码组织', '实现', '验证', 'Git评审', '续航'], references: ['agentic-execution.md', 'spec-review.md'] },
+  '代理执行': { topics: ['代码组织', '实现', '验证', 'Git评审', '续航'], references: ['agentic-execution.md', 'spec-review.md', 'context-memory-continuity.md'] },
+  '续航': { topics: ['续航'], references: ['context-memory-continuity.md'] },
   '视觉设计': { topics: ['代码组织', '前端', '验证'], ids: ['06-00'], references: ['frontend-design-intelligence.md', 'frontend-interface-quality.md', 'ui-design-workflow.md', 'configuration-localization.md'] },
   '工程增强': { topics: ['实现', '验证'], references: ['proven-engineering-methods.md'] },
   '配置化': { topics: ['配置部署', '验证'], references: ['configuration-localization.md'] },
@@ -50,6 +51,7 @@ const referenceNames = new Set([
 ]);
 const codeCraftStages = new Set(['小改', '实现']);
 const nonCodeDomains = new Set(['内容', '规划清单', '进度面板']);
+const standaloneFrontendFixTopics = new Set(['前端', '故障修复', '通用', '适用方式']);
 
 function planBatch(stage, topics = [], references = []) {
   if (!Object.hasOwn(stages, stage)) throw new Error(`未知读取阶段：${stage}`);
@@ -66,6 +68,11 @@ function planBatch(stage, topics = [], references = []) {
     for (const name of domain.topics) result.topics.add(name);
     for (const id of domain.ids || []) result.ids.add(id);
     for (const file of domain.references || []) result.references.add(file);
+  }
+  // 仅明确的前端故障修复不预读重设计/配置化专项。视觉、接口、配置、多领域任务仍走原路由；显式 --reference 继续生效。
+  if (topics.includes('前端') && topics.includes('故障修复') && topics.every(topic => standaloneFrontendFixTopics.has(topic))) {
+    result.references.delete('ui-design-workflow.md');
+    result.references.delete('configuration-localization.md');
   }
   // 小改/实现通常会写代码；纯内容/规划不加载 Code Craft，避免文档任务无谓变重。
   if (codeCraftStages.has(stage) && (!topics.length || topics.some(topic => !nonCodeDomains.has(topic)))) {
