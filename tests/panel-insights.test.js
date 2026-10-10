@@ -97,3 +97,31 @@ test('面板专项保持有限基准、升级和复制纪律，入口接通且�
   for(const file of ['SKILL.md','references/routing.md','scripts/rule-batch.js'])assert.ok(fs.readFileSync(path.join(skill,file),'utf8').includes('workflow-progress-panel.md'),file);
   for(const file of ['panel.js','panel-tools.js'])assert.doesNotMatch(fs.readFileSync(path.join(skill,'assets/progress-panel',file),'utf8'),/innerHTML|insertAdjacentHTML|eval\(/);
 });
+
+
+test('大量混合 Git 状态仍正确保留暂存、新增和截断统计', async t => {
+  const f = repo(t);
+  const staged = [];
+  for (let index = 0; index < 225; index++) {
+    const name = 'web/bulk-' + String(index).padStart(3, '0') + '.ts';
+    fs.writeFileSync(path.join(f.root, name), 'export const index = ' + index + ';\n');
+    if (index < 80) staged.push(name);
+  }
+  f.git('add', ...staged);
+  const changes = await readChanges(f.project, { id: 'A', base: '' });
+  assert.equal(changes.status, 'ready');
+  assert.equal(changes.total, 225);
+  assert.equal(changes.hidden, 0);
+  assert.equal(changes.truncated, true);
+  assert.equal(changes.files.length, 200);
+  const indexed = changes.files.find(file => file.path === 'web/bulk-000.ts');
+  const untracked = changes.files.find(file => file.path === 'web/bulk-080.ts');
+  assert.ok(indexed && untracked);
+  assert.equal(indexed.indexChanged, true);
+  assert.equal(indexed.worktreeChanged, false);
+  assert.equal(indexed.untracked, false);
+  assert.equal(untracked.indexChanged, false);
+  assert.equal(untracked.worktreeChanged, false);
+  assert.equal(untracked.untracked, true);
+  assert.equal(untracked.status, '新增');
+});

@@ -107,3 +107,46 @@ test('新增批量读取不修改技能文件或运行项目和网络命令', ()
     assert.doesNotMatch(code, /fs\.(?:write|append|rm|unlink|mkdir)/);
   }
 });
+
+
+test('普通实现不预读长任务续航，显式续航和规划仍完整可达', () => {
+  const regular = planBatch('实现', ['前端']);
+  assert.ok(!regular.references.includes('context-memory-continuity.md'));
+  assert.ok(regular.references.includes('task-lanes.md'));
+  assert.ok(regular.references.includes('behavior-preservation.md'));
+  assert.ok(regular.references.includes('bounded-completion.md'));
+  for (const topics of [['续航'], ['规划清单'], ['代理执行']]) {
+    assert.ok(planBatch('实现', topics).references.includes('context-memory-continuity.md'), topics.join(','));
+  }
+  assert.ok(planBatch('实现', ['前端'], ['context-memory-continuity.md']).references.includes('context-memory-continuity.md'));
+});
+
+test('单纯前端故障修复只读实现纪律，不误载设计与后台配置专项', () => {
+  for (const stage of ['小改', '实现']) {
+    const out = reader.readBatch(reader.parse(['--stage', stage, '--topic', '前端,故障修复']));
+    const names = new Set(out.references.map(e => e.file));
+    for (const required of [
+      'bugfix-fast-loop.md', 'frontend-interface-quality.md', 'behavior-preservation.md',
+      'bounded-completion.md', 'workflow-checklist.md', 'project-write-boundary.md',
+    ]) assert.ok(names.has(required), required);
+    assert.ok(!names.has('ui-design-workflow.md'));
+    assert.ok(!names.has('configuration-localization.md'));
+    assert.ok(out.rules.some(e => e.id === '20-00'));
+    const frontend = out.rules.find(e => e.id === '09-00');
+    assert.ok(frontend?.amendments?.some(e => e.file === 'frontend-stack.md'));
+  }
+});
+
+test('视觉/配置/交付混合修复及显式专项仍完整加载，不扩大或缩减授权', () => {
+  for (const domain of ['视觉设计', 'UI视觉验证', '前端交付', '配置化', '接口', '模板二开']) {
+    const normal = planBatch('实现', ['前端', '故障修复', domain]);
+    assert.ok(normal.references.includes('ui-design-workflow.md'), domain);
+    assert.ok(normal.references.includes('configuration-localization.md'), domain);
+  }
+  const forced = planBatch('小改', ['前端', '故障修复'],
+    ['ui-design-workflow.md', 'configuration-localization.md']);
+  assert.ok(forced.references.includes('ui-design-workflow.md'));
+  assert.ok(forced.references.includes('configuration-localization.md'));
+  assert.ok(planBatch('实现', ['前端']).references.includes('ui-design-workflow.md'));
+  assert.ok(planBatch('实现', ['前端']).references.includes('configuration-localization.md'));
+});
