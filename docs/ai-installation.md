@@ -38,6 +38,21 @@
 
 全局短块只负责语言、任务识别和稳定技能名调用。完整原文、全部切片、机器安装路径和任务日志不放进个性化；不要每轮联网更新、不启动额外 MCP 或后台服务、不为提速删验收标准。
 
+## 本机只读环境诊断
+
+安装或升级后可在完整仓库根目录执行：
+
+```bash
+node scripts/doctor.js
+node scripts/doctor.js --json
+```
+
+仅安装了单份技能时，执行 `node "<实际技能目录>/scripts/doctor.js" --json`。需要检查另一份本机用户目录时，可显式传 `--home` 与 `--codex-home` 的绝对路径（只读，不查整台电脑）。
+
+诊断只检查已知用户级候选目录、所需文件、原稿锁值、与当前运行脚本的主要版本差异，以及个人 `AGENTS.md` 与实际覆盖文件 `AGENTS.override.md` 的短调度标记。不同真实目录的同名 Skill 会提示重复，同一个目标的符号链接不误计；旧长版、重复标记、缺失文件会给出异常。**不会自动修改、迁移、删除或备份任何配置，也不触碰业务 `工作流程.md`。**
+
+诊断只能说明当前文件事实：**不能证明 Codex 已发现技能、真正自动调用、桌面 UI 刷新或远端版本为最新。** 有异常时先核对生效路径和个人修改，遵循前述备份/冲突处理流程；不要运行诊断命令后就宣称安装升级已完成。
+
 ## 四、分开验证文件与实际调用
 
 **文件验证**：确认有效技能目录包含 `SKILL.md`、`agents/openai.yaml`、`references/source-original.md`、`references/source-speed.md`、`references/source-lock.json`、`references/rules/`、`references/rules-speed/`、`references/rules-manifest.json`、`references/rules-index.md` 、`references/frontend-stack.md`、`scripts/rule-batch.js` 和 `scripts/read-rules.js`；与本次固定提交的对应文件校验一致。确认短块写入位置、稳定技能名、覆盖关系、无机器绝对路径和重复副本处理结果；技能真实路径另行核实但不写进短块。

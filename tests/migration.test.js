@@ -131,7 +131,7 @@ test('任务完成检查强制接入台账，普通命令成功不能绕过漏�
   assert.notEqual(f.state(['finalize', '--repo', f.repo]).status, 0);
   f.passAll(); r = f.state(['finalize', '--repo', f.repo]); assert.equal(r.status, 0, r.stderr);
   const resumed = JSON.parse(f.state(['resume', '--repo', f.repo, '--json']).stdout);
-  assert.equal(resumed.migrationManifest, f.file); assert.equal(resumed.migrationBaseline, f.ledger.baseline.sha256);
+  assert.equal(resumed.migrationManifest, fs.realpathSync(f.file)); assert.equal(resumed.migrationBaseline, f.ledger.baseline.sha256);
 });
 test('任务绑定后改盘点锁或用 update 清除绑定被拒绝', () => {
   const f = fixture(); f.initGit();
@@ -217,7 +217,7 @@ test('发现遗漏后仅可追加基线，保留历史绑定并使验证失效',
   const r = f.state(['extend-migration', '--repo', f.repo, '--migration', ledger2, '--reason', '发现旧任务入口，需要增加盘点']);
   assert.equal(r.status, 0, r.stderr);
   const resumed = JSON.parse(f.state(['resume', '--repo', f.repo, '--json']).stdout);
-  assert.equal(resumed.migrationManifest, ledger2); assert.equal(resumed.verificationStatus, 'pending');
+  assert.equal(resumed.migrationManifest, fs.realpathSync(ledger2)); assert.equal(resumed.verificationStatus, 'pending');
   const saved = fs.readFileSync(resumed.statePath, 'utf8'); assert.match(saved, /迁移基线历史/); assert.ok(saved.includes(f.ledger.baseline.sha256));
   const fields = { 'Migration manifest': f.file, 'Migration baseline': f.ledger.baseline.sha256 };
   inv2.features[0].requiredChecks = ['weakened']; write(nextInventory, inv2); next.baseline.sha256 = core.hash(fs.readFileSync(nextInventory)); write(ledger2, next);
