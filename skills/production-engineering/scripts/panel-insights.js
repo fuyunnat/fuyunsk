@@ -57,11 +57,12 @@ async function collect(project,task) {
     for(let i=0;i<parts.length-1;i+=2)if(parts[i+1])map.set(parts[i+1],{path:parts[i+1],code:parts[i]});
   }else for(const entry of statuses)map.set(entry.path,entry);
   for(const entry of statuses)if(entry.code==='??')map.set(entry.path,entry);
+  const statusByPath=new Map(statuses.map(entry=>[entry.path,entry]));
   let hidden=0;const files=[];
   for(const entry of map.values()) {
     if(!allowedPath(entry.path)){hidden++;continue;}
     try{safePath(project,entry.path);}catch{hidden++;continue;}
-    const live=statuses.find(status=>status.path===entry.path);
+    const live=statusByPath.get(entry.path);
     files.push({id:fileId(`${task.id}:${baseline}:${entry.path}`),path:entry.path,category:category(entry.path),status:/D/.test(entry.code)?'删除':/A|\?/.test(entry.code)?'新增':'修改',untracked:entry.code==='??',preview:canPreview(entry.path),indexChanged:!!live&&![' ','?'].includes(live.code[0]),worktreeChanged:!!live&&![' ','?'].includes(live.code[1])});
   }
   return {status:'ready',source:task.base?'任务基准至当前工作区':'项目未提交改动（未归属本轮）',baseline,total:files.length,hidden,truncated:files.length>200,files:files.slice(0,200),observedAt:new Date().toISOString()};
