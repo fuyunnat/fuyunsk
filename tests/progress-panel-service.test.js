@@ -78,7 +78,7 @@ test('不停止其他项目的守护；运行锁是私有运行记录，不包�
   await assert.rejects(stopPanel({projects:[{root:b.root}],port,explicitPort:true}), /其他项目/);
   assert.equal((await probe(port)).healthy,true);
   const lock=readLock(runtimeDirectory(),port);assert.ok(!JSON.stringify(lock).includes('A001'));
-  assert.deepEqual(lock.roots,[a.root]);
+  assert.deepEqual(lock.roots,[fs.realpathSync(a.root)]);
 });
 
 test('守护的有限重试、只读边界、默认入口和安装条件接通', () => {
