@@ -28,7 +28,7 @@ test('实施前评估保持通用并覆盖问题、方案、成本和验收', ()
   ]) assert.ok(preflight.includes(value), `缺少评估门禁：${value}`);
 
   assert.match(skill, /先评估再执行|实施前/);
-  assert.match(routing, /实施前评估/);
+  assert.match(routing, /preflight-decision\.md/);
 });
 
 test('实现和小改会加载评估专项 只读和评审不额外加载', () => {
