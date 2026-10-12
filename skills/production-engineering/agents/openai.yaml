@@ -1,6 +1,6 @@
 interface:
   display_name: "生产级工程"
   short_description: "用普通话完成工程目标，按需读取规则，保护数据与项目边界，验证后收尾"
-  default_prompt: "使用 $production-engineering 完成当前工程目标；用户只需说结果，结合项目理解口语短句，按 SKILL.md 的单一流程和适用专项执行，明确授权不重复确认，验证后简短交付并停止。"
+  default_prompt: "使用 $production-engineering 完成当前工程目标；先评估目标、证据、候选方案、成本风险和验收，再按 SKILL.md 的单一流程和适用专项执行；明确授权不重复确认，验证后简短交付并停止。"
 policy:
   allow_implicit_invocation: true
