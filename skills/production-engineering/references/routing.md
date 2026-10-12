@@ -13,6 +13,7 @@ node <技能目录>/scripts/read-rules.js --id 04-04
 
 | 主题 | 原文范围；专项 |
 | --- | --- |
+| 实施前评估/方案选择 | 一/二/三/七/十一/二十；`preflight-decision.md` |
 | 任何会写项目文件 | 工作流程门禁；`workflow-checklist.md`、`bounded-completion.md`、`project-write-boundary.md` |
 | 通用/明确局部小改 | 零/一/二/三及六/七/二十适用部分 |
 | Bug、报错、功能异常且用户要求修复 | 六/七/二十；先 `bugfix-fast-loop.md`；只有升级条件才读 `diagnosis-feedback-loop.md` |
