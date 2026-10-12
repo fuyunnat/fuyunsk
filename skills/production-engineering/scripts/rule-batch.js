@@ -3,10 +3,10 @@
 // 只把调用方已判定的阶段与领域组合成读取清单，不识别自然语言、不授权操作。
 const stages = {
   '只读': { topics: ['通用', '适用方式'], references: [] },
-  '小改': { topics: ['通用', '适用方式', '小改', '实现', '验证', '完成', '报告'], references: [] },
+  '小改': { topics: ['通用', '适用方式', '小改', '实现', '验证', '完成', '报告'], references: ['preflight-decision.md'] },
   '实现': {
     topics: ['通用', '适用方式', '完整', '实现'],
-    references: ['task-lanes.md'],
+    references: ['task-lanes.md', 'preflight-decision.md'],
   },
   '验证': { topics: ['验证', '完成', '报告', '禁止行为'], references: [] },
   '提交': { topics: ['Git提交', '验证', '续航'], references: ['git-team-delivery.md'] },
@@ -44,7 +44,7 @@ const domains = {
   '内容': { topics: ['内容'], references: ['content-writing-quality.md'] },
 };
 const referenceNames = new Set([
-  'novice-clarification.md', 'behavior-preservation.md', 'database-upgrade-safety.md', 'bugfix-fast-loop.md', 'upstream-sync.md', 'seo-engineering.md', 'parallel-template-development.md', 'planning-persistence.md', 'agentic-execution.md', 'frontend-design-intelligence.md', 'code-craft.md', 'proven-engineering-methods.md', 'configuration-localization.md', 'task-lanes.md', 'context-memory-continuity.md', 'frontend-interface-quality.md', 'ui-design-workflow.md',
+  'novice-clarification.md', 'preflight-decision.md', 'behavior-preservation.md', 'database-upgrade-safety.md', 'bugfix-fast-loop.md', 'upstream-sync.md', 'seo-engineering.md', 'parallel-template-development.md', 'planning-persistence.md', 'agentic-execution.md', 'frontend-design-intelligence.md', 'code-craft.md', 'proven-engineering-methods.md', 'configuration-localization.md', 'task-lanes.md', 'context-memory-continuity.md', 'frontend-interface-quality.md', 'ui-design-workflow.md',
   'wrapped-workspace-ui.md', 'design-testing.md', 'diagnosis-feedback-loop.md',
   'code-risk-review.md', 'content-writing-quality.md', 'spec-review.md', 'git-team-delivery.md', 'frontend-delivery-loop.md', 'ui-visual-verification.md',
   'project-understanding.md', 'source-policy.md', 'project-migration.md', 'workflow-checklist.md', 'bounded-completion.md', 'project-write-boundary.md', 'workflow-progress-panel.md',
