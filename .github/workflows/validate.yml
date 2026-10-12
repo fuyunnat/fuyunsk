@@ -1,9 +1,7 @@
 name: 中文工程技能自检
 
 on:
-  pull_request:
-  push:
-    branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: read
