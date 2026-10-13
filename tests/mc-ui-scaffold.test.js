@@ -33,6 +33,13 @@ test('脚手架裁剪演示业务、替换品牌并接真实数据，不把演�
   }
 });
 
+test('设计基线写明 mc-ui 的无边框分层、黑色主按钮与统一状态', () => {
+  const scaffold = read('references/mc-ui-scaffold.md');
+  for (const s of ['全站不用描边', '--layer-canvas', '--fill-subtle', '阴影只给浮层', '主按钮是近黑', '--focus-ring', '--fill-hatch', 'StatusBadge', '`Panel` + `PanelHeader`', '224px', '1200px', '已有前端只作参考']) {
+    assert.ok(scaffold.includes(s), s);
+  }
+});
+
 test('授权与许可边界有记录', () => {
   assert.match(read('references/source-policy.md'), /无前端用 mc-ui 脚手架的明确授权（2026-10-13）/);
   assert.match(read('references/mc-ui-scaffold.md'), /未附开源许可证/);

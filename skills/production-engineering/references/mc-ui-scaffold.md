@@ -25,17 +25,50 @@
 6. **按部署方式调整**：mc-ui 默认 Hash Router、相对 `base` 和全屏工作空间 `body` 滚动约束。需要 History 路由、SEO 或嵌入既有站点时按项目实际修改并验证。组件不是 SSR 安全的，需要 SSR 时先说明影响。
 7. **验证**：`npm ci`、`npm run typecheck`、`npm run build:demo`（或裁剪后对应脚本）通过，再在浏览器检查代表页的桌面/手机、浅色/深色和关键状态。构建通过不等于视觉验收。
 
-## 设计基线（新页面遵循，已有前端只作参考）
+## 设计基线（mc-ui 项目必须遵循，已有前端只作参考）
 
-- **层次**：画布 → 主面板 → 卡片 → 浮层，以底色明度分层（mc-ui 令牌 `--layer-canvas/sheet/card/float`）；不给每张卡片都加描边、阴影或渐变。
-- **颜色**：常规界面克制中性色；蓝色表示交互，绿成功、琥珀提示、红危险；状态同时配文字或图标，不只靠颜色。颜色只用语义变量，不散落单主题硬编码。
-- **排版与密度**：正文约 13px，页面标题约 28px（移动端约 24px），紧凑但舒适；代码与 ID 用等宽字体。
-- **形状**：圆角使用统一尺度（mc-ui 为 5/7/10/14/18px）；图标 16–20px。
-- **状态与交互**：hover、focus、disabled、loading、empty、error 完整；保留键盘、aria、弹窗焦点和 reduced-motion；工作台滚动用统一滚动容器，移动端抽屉导航，宽表格横向滚动。
-- **复用**：新增界面先复用已有组件与模式，基础控件、界面模式、外壳、业务组合分层存放；新增公开组件同步展厅预览与用法。
-- **每次界面修改**检查浅色与深色、桌面与移动端。
+依据 mc-ui `src/styles/tokens.css`、`src/components/` 与 `AGENTS.md`（参考提交 `1b59992`）。以项目内实际令牌为准，下列数值用于核对，不在业务代码里另抄一份。
 
-已有前端吸收这些做法时，只在授权范围内、用该项目自己的组件和令牌实现等价效果，不引入 mc-ui 依赖或复制其样式文件。
+**层次：无边框，靠底色分层**
+
+- 全站不用描边：`--border`、`--input` 为透明，残留 `border` 类也不显色。不给卡片、面板、输入框加边框来区分区域。
+- 四层底色由暗到亮：画布 `--layer-canvas` → 主面板 `--layer-sheet` → 卡片 `--layer-card` → 浮层 `--layer-float`（浅色约 `#e5e5ea / #f0f0f3 / #fff / #fff`，深色 `#000 / #0e0e10 / #18181b / #212125`）。
+- 卡片内的分区、控件底色、悬停与选中用半透明叠加：`--fill-subtle`（约 4.5%）、`--fill`（7.5%）、`--fill-strong`（12%）、选中 `--fill-selected`（蓝 12%）；叠在任何一层都比所在层深一档，不新写实色灰。
+- 分栏只用极淡的 `--divider`（约 7% 不透明度），不用实线边框。
+- 阴影只给浮层（菜单、弹窗，`--shadow-menu`）；卡片和面板 `--shadow-surface: none`，不加阴影和渐变（套餐等已有专用视觉除外）。
+
+**颜色**
+
+- 色板取自 Vercel Geist（`--ds-gray-*`、`--ds-blue/red/amber/green-*`），深浅主题成对定义。
+- **主按钮是近黑**（浅色）/**近白**（深色）：`--primary` 为 `--ds-gray-1000`，不是蓝色。蓝色只用于链接 `--link`、聚焦、选中。
+- 语义色：绿 `--success` 成功，琥珀 `--warning` 提示，红 `--destructive` 危险；状态同时配文字或图标。
+- 只用语义变量和 Tailwind 主题色（`bg-card`、`text-muted-foreground` 等），不写单主题的十六进制颜色。
+
+**字体、尺寸与形状**
+
+- 字体 Geist Variable，中文回退苹方 / 微软雅黑；代码与 ID 用 Geist Mono。正文约 13px，页面标题约 28px（移动端约 24px）。
+- 圆角尺度 5 / 7 / 10 / 14 / 18px（`--radius-xs/sm/md/lg/xl`），默认 10px；外壳圆角 16px、外壳间距 8px。
+- 侧栏宽 224px，内容区最大宽度 1200px。
+- 按钮高度：默认 36px（`h-9`），小号 32px，迷你 24px，大号 40px；图标按钮同尺寸正方形。图标 16–20px。
+
+**状态与交互**
+
+- 聚焦统一：1.5px 蓝色细环 + 外圈淡蓝光晕（`--focus-ring`），只在键盘聚焦时出现。
+- “规划中 / 未启用 / 占位”用斜纹底 `--fill-hatch`，不用虚线框。
+- 状态一律用 `StatusBadge`：圆点 + 中文文案（成功、运行中、待处理、已支付、待复核、已停用等），新增状态在其映射里补中文，不在页面里各写一套颜色。
+- 侧栏菜单悬停浅、选中深（`--nav-hover` / `--nav-active`），不靠蓝色高亮。
+- hover、focus、disabled、loading、empty、error 完整；保留键盘、aria、弹窗焦点和 reduced-motion；工作台滚动用 `ScrollArea`，移动端抽屉导航，宽表格横向滚动。
+
+**组件复用**
+
+- 先用现成的：基础控件在 `components/ui`（按钮、输入、下拉、弹窗、抽屉、标签页、开关、表格、提示等），界面模式在 `components/patterns`（`Panel` / `PanelHeader`、`MetricCard`、`StatusBadge`、`ConfirmDialog`、`EmptyState`、`Dropzone`、`Timeline`、`Steps`、`CopyField`、`SegmentedControl`、`FormField` 等），外壳在 `components/layout`，表格用 `DataTable`。
+- 页面里的卡片统一用 `Panel` + `PanelHeader`（标题、说明、右侧操作），不另写 `xxx-card` 样式。
+- 类名合并用 `cn`；简单变体用 CVA，复杂布局用语义类与对应 CSS；共享样式登记在 `styles/components.css`。
+- 新增公开组件同步 `library.ts`，并在组件展厅补预览与用法。
+
+**每次界面修改**检查浅色与深色、桌面与移动端，并对照组件展厅确认没有新长出一套风格。
+
+已有前端吸收这些做法时（如去掉多余描边、改用底色分层、统一状态徽标），只在授权范围内、用该项目自己的组件和令牌实现等价效果，不引入 mc-ui 依赖、不复制其样式文件，也不因此整站换风格。
 
 ## 授权与许可
 
