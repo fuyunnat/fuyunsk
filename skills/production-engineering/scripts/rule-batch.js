@@ -18,7 +18,8 @@ const stages = {
 // 对齐 routing.md 的领域并集。旧 --topic 仍为原有精确主题，不改变其含义。
 const domains = {
   '整项目迁移': { topics: ['代码组织', '接口', '灰度回滚', '日志', '验证'], ids: ['06-00'], references: ['project-migration.md', 'design-testing.md', 'database-upgrade-safety.md', 'configuration-localization.md'] },
-  '故障修复': { topics: ['实现', '验证'], references: ['bugfix-fast-loop.md'] },
+  '故障修复': { topics: ['实现', '验证'], references: ['bugfix-fast-loop.md', 'observability-debugging.md'] },
+  '日志': { topics: ['日志', '验证'], references: ['observability-debugging.md'] },
   '上游同步': { topics: ['代码组织', '验证'], references: ['upstream-sync.md'] },
   'SEO': { topics: ['前端', '性能', '配置部署', '验证'], references: ['seo-engineering.md'] },
   '模板二开': { topics: ['代码组织', '前端', '接口', '验证'], ids: ['06-00'], references: ['parallel-template-development.md', 'frontend-interface-quality.md', 'configuration-localization.md'] },
@@ -45,7 +46,7 @@ const domains = {
 };
 const referenceNames = new Set([
   'novice-clarification.md', 'preflight-decision.md', 'behavior-preservation.md', 'database-upgrade-safety.md', 'bugfix-fast-loop.md', 'upstream-sync.md', 'seo-engineering.md', 'parallel-template-development.md', 'planning-persistence.md', 'agentic-execution.md', 'frontend-design-intelligence.md', 'code-craft.md', 'proven-engineering-methods.md', 'configuration-localization.md', 'task-lanes.md', 'context-memory-continuity.md', 'frontend-interface-quality.md', 'ui-design-workflow.md',
-  'wrapped-workspace-ui.md', 'mc-ui-scaffold.md', 'design-testing.md', 'diagnosis-feedback-loop.md',
+  'wrapped-workspace-ui.md', 'mc-ui-scaffold.md', 'observability-debugging.md', 'design-testing.md', 'diagnosis-feedback-loop.md',
   'code-risk-review.md', 'content-writing-quality.md', 'spec-review.md', 'git-team-delivery.md', 'frontend-delivery-loop.md', 'ui-visual-verification.md',
   'project-understanding.md', 'source-policy.md', 'project-migration.md', 'workflow-checklist.md', 'bounded-completion.md', 'project-write-boundary.md', 'workflow-progress-panel.md',
 ]);
@@ -78,6 +79,7 @@ function planBatch(stage, topics = [], references = []) {
   // 小改/实现通常会写代码；纯内容/规划不加载 Code Craft，避免文档任务无谓变重。
   if (codeCraftStages.has(stage) && (!topics.length || topics.some(topic => !nonCodeDomains.has(topic)))) {
     result.references.add('code-craft.md');
+    result.references.add('observability-debugging.md');
   }
   for (const file of references) result.references.add(file);
   for (const file of result.references) {

@@ -32,7 +32,7 @@ node <技能目录>/scripts/read-rules.js --id 04-04
 | 性能 | 十一及受影响领域；`diagnosis-feedback-loop.md`、`proven-engineering-methods.md` |
 | 数据库/迁移/部署启动 | 十/十二/十三/十五/十六/二十；`database-upgrade-safety.md`、配置化专项 |
 | 安全/审计/依赖 | 五/十六至十九/二十三；`code-risk-review.md`，默认只读 |
-| 日志 | 十八；沿用项目日志，不改造全仓 |
+| 日志/线上报错/CDN | 十八；`observability-debugging.md`，缺就补 |
 | 删除/恢复 | 一/五及实际影响；`source-policy.md` 的明确授权例外 |
 | 内容/文档 | 二/六/二十一/二十三；`content-writing-quality.md` |
 | 任务续航/整项目迁移 | 二章六节；`context-memory-continuity.md`；整项目重写另读 `project-migration.md` |
@@ -43,7 +43,7 @@ node <技能目录>/scripts/read-rules.js --id 04-04
 
 ## 专项选择
 
-视觉设计：重新设计、精修、太丑、质感、不会美工、你看着弄。AI 定方向，不要求用户提供美工参数；纯提问/仅发图不写文件。尺寸/密度、跑版、溢出或参考图追加 UI视觉验证。普通按钮修复和严格原样迁移不加载重设计。
+视觉设计：重新设计、精修、太丑、质感、不会美工、你看着弄。AI 定方向；纯提问/仅发图不写文件。尺寸/密度、跑版、溢出或参考图追加 UI视觉验证。普通按钮修复和严格原样迁移不加载重设计。
 
 公开可索引前台新建/大改按需做轻量 SEO Guard；明确 SEO 才完整加载；后台不做全站审计。配置化区分启动连接与后台运营参数，前台文案沿用 i18n。上游同步只吸收已确认目标；完成条件见 bounded-completion，源文件不覆盖派生功能。
 
@@ -53,6 +53,6 @@ node <技能目录>/scripts/read-rules.js --id 04-04
 
 原文第四章拆为 `04-00.md` 至 `04-10.md`：00 边界，01 提交，02 测试，03 分支/推送，04 中文提交格式，05 检查，06 远端风险，07 PR，08 回滚，09 CI，10 证据。按当前阶段读取，主线/合并/部署以明确授权为准，详见 `git-team-delivery.md`。
 
-生产日志是交付能力，不是额外装饰；关键失败路径完全无日志不能交付。“buglog”不强制一定是单独文件，可用 stdout/stderr；不得记录密码、Token、Cookie、密钥和隐私原文。完整门槛按原文第十八章，不在普通小改中重做日志体系。
+生产日志是交付能力，不是额外装饰；关键失败路径完全无日志不能交付。“buglog”不强制一定是单独文件，可用 stdout/stderr；不得记录密码、Token、Cookie、密钥和隐私原文。门槛按第十八章；缺日志就补相关路径，不重做全项目。
 
 原稿、速度稿差异和补充方法优先级见 source-policy；`rules-speed/01-01.md`、`01-02.md` 保留组织/回归补充。外部方法按需选 `design-testing.md`、`proven-engineering-methods.md`；来源维护才读 `upstream-notes.md`。

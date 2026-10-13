@@ -18,7 +18,7 @@ test('先分轻重：只问不改直接答，快速小改只读一页要点', ()
 test('快速小改要点短小，并写明何时回到完整流程', () => {
   const core = read('references/quick-core.md');
   assert.ok(Buffer.byteLength(core) <= 3500, 'quick-core.md 应保持一页');
-  for (const s of ['最小改动', '不清库', '不盲试', '最小验证', '汇报用人话', '立刻改用完整流程', '数据库', '权限', '多个模块']) assert.ok(core.includes(s), s);
+  for (const s of ['最小改动', '不清库', '不盲试', '自己确认改好了', '汇报用人话', '立刻改用完整流程', '数据库', '权限', '多个模块']) assert.ok(core.includes(s), s);
 });
 
 test('快速小改不建清单，但续作已有清单和升级后照常记录', () => {

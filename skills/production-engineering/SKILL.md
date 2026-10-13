@@ -23,14 +23,14 @@ description: "实现、修复、调试、UI、SEO、Git、数据库、部署、�
 | 场景 | 读取内容 |
 | --- | --- |
 | 开始/只读 | `rules/00-00.md`、`01-00.md`、`02-01.md` |
-| Bug、报错、功能异常且用户要求修复 | `references/bugfix-fast-loop.md`；升级后才读 `diagnosis-feedback-loop.md` |
+| Bug、报错、功能异常且用户要求修复 | `references/bugfix-fast-loop.md`、`observability-debugging.md`：先复现、看懂再改、亲自验证；升级后才读 `diagnosis-feedback-loop.md` |
 | 规划清单/模板二开/别写死/写代码 | `planning-persistence.md`、`parallel-template-development.md`、`configuration-localization.md`、`code-craft.md` |
 | 前端/后台 | 第九章、`frontend-stack.md`、`frontend-interface-quality.md`、`ui-design-workflow.md`；无前端用 `mc-ui-scaffold.md` |
-| UI视觉：委托、太大占屏、跑版、参考图 | `frontend-design-intelligence.md`、`ui-visual-verification.md` |
+| UI视觉：太大占屏、跑版、参考图 | `frontend-design-intelligence.md`、`ui-visual-verification.md` |
 | 进度面板 | `workflow-progress-panel.md`，用户说打开才启动 |
-| 二开上游同步 | `upstream-sync.md`；保护二开，不默认追平 |
-| SEO/收录 | `seo-engineering.md`；后台不全站审计 |
-| 整项目迁移 | `project-migration.md`；迁移台账逐项验收，局部修改不加载 |
+| 二开上游同步 | `upstream-sync.md` |
+| SEO/收录 | `seo-engineering.md` |
+| 整项目迁移 | `project-migration.md`；迁移台账逐项验收 |
 | 长任务/恢复旧任务 | `context-memory-continuity.md`、`agentic-execution.md`、`spec-review.md` |
 | Git交付/回滚 | 原文第四章当前阶段、`git-team-delivery.md` |
 | 后端/接口/数据库 | `references/routing.md` 对应领域 |
@@ -44,6 +44,6 @@ description: "实现、修复、调试、UI、SEO、Git、数据库、部署、�
 - 默认可恢复；用户明确放弃改动且不要备份时，只按授权范围执行。
 - 旧新接口、数据、配置和客户端先兼容共存，验证后再淘汰；不顺手重构/格式化/切栈。代码组织按原文 300/400/600 行风险阈值、函数 80 行要求及 `code-craft.md` 执行。
 - 新设计默认 shadcn/ui + Tailwind CSS、Morphicons（mc-ui 用 Lucide）；用户指定框架/源码原貌优先。UI 是一级验收，尺寸密度按视觉专项。
-- 不盲试、不叠加失败补丁、不删测试或伪造通过；生产后端关键失败留脱敏日志。不自动合并主线、强推、删远端分支或部署。
+- 不盲试、不叠加失败补丁、不删测试或伪造通过；生产后端关键失败留脱敏日志，缺日志就补。不自动合并主线、强推、删远端分支或部署。
 
 不因新对话自动续旧任务。业务任务跑业务项目测试，不跑技能自检；复用有效证据，无法验证如实报告；只读可批量，写入顺序执行。
