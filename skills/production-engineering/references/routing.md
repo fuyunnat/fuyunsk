@@ -13,16 +13,17 @@ node <技能目录>/scripts/read-rules.js --id 04-04
 
 | 主题 | 原文范围；专项 |
 | --- | --- |
-| 任何会写项目文件 | 工作流程门禁；`preflight-decision.md`、`workflow-checklist.md`、`bounded-completion.md`、`project-write-boundary.md` |
+| 快速小改以外会写项目文件 | 工作流程门禁；`preflight-decision.md`、`workflow-checklist.md`、`bounded-completion.md`、`project-write-boundary.md` |
 | 通用/明确局部小改 | 零/一/二/三及六/七/二十适用部分 |
 | Bug、报错、功能异常且用户要求修复 | 六/七/二十；先 `bugfix-fast-loop.md`；只有升级条件才读 `diagnosis-feedback-loop.md` |
 | 二开/派生项目同步上游、官方修复或新功能 | 六/七/二十；`upstream-sync.md` |
 | SEO、收录 | 前端/性能/配置/内容及二十；`seo-engineering.md` |
 | 前端模板并行二开 | 六/七/九/二十；`parallel-template-development.md` |
-| 工程开始/继续、进度面板 | `workflow-progress-panel.md`，自动检查只读面板 |
+| 进度面板 | `workflow-progress-panel.md`，用户说打开才启动 |
+| 快速小改 | 只读 `quick-core.md` |
 | 先列清单、字段盘点 | 二/六/二十；`planning-persistence.md` |
 | 后台可调业务参数/配置化 | 十五及实现/验证；`configuration-localization.md` |
-| 前端与后台 | 六/七/九/二十；`frontend-stack.md`、`frontend-interface-quality.md`、`ui-design-workflow.md`、配置化专项 |
+| 前端与后台 | 六/七/九/二十；`frontend-stack.md`、无前端用 `mc-ui-scaffold.md`、`frontend-interface-quality.md`、`ui-design-workflow.md`、配置化专项 |
 | 前端交付 | 前端/接口/验证/Git；`frontend-delivery-loop.md` |
 | 视觉设计 | 前端/验证；`frontend-design-intelligence.md` |
 | UI视觉验证 | 前端/验证；`ui-visual-verification.md` |
@@ -42,7 +43,7 @@ node <技能目录>/scripts/read-rules.js --id 04-04
 
 ## 专项选择
 
-视觉设计：重新设计、精修、太丑、质感、不会美工、你看着弄。AI 定方向，不要求用户提供美工参数；纯提问/仅发图不写文件。尺寸/密度、跑版、溢出或参考图追加 UI视觉验证。普通按钮修复和严格原样迁移不加载重设计。详细触发及设计/多视口验收分别在两份视觉专项。
+视觉设计：重新设计、精修、太丑、质感、不会美工、你看着弄。AI 定方向，不要求用户提供美工参数；纯提问/仅发图不写文件。尺寸/密度、跑版、溢出或参考图追加 UI视觉验证。普通按钮修复和严格原样迁移不加载重设计。
 
 公开可索引前台新建/大改按需做轻量 SEO Guard；明确 SEO 才完整加载；后台不做全站审计。配置化区分启动连接与后台运营参数，前台文案沿用 i18n。上游同步只吸收已确认目标；完成条件见 bounded-completion，源文件不覆盖派生功能。
 

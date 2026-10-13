@@ -29,7 +29,7 @@ const domains = {
   '视觉设计': { topics: ['代码组织', '前端', '验证'], ids: ['06-00'], references: ['frontend-design-intelligence.md', 'frontend-interface-quality.md', 'ui-design-workflow.md', 'configuration-localization.md'] },
   '工程增强': { topics: ['实现', '验证'], references: ['proven-engineering-methods.md'] },
   '配置化': { topics: ['配置部署', '验证'], references: ['configuration-localization.md'] },
-  '前端': { topics: ['代码组织', '前端', '验证'], ids: ['06-00'], references: ['frontend-interface-quality.md', 'ui-design-workflow.md', 'configuration-localization.md'] },
+  '前端': { topics: ['代码组织', '前端', '验证'], ids: ['06-00'], references: ['frontend-interface-quality.md', 'ui-design-workflow.md', 'mc-ui-scaffold.md', 'configuration-localization.md'] },
   '前端交付': { topics: ['代码组织', '前端', '接口', '验证', 'Git评审'], ids: ['06-00'], references: ['frontend-delivery-loop.md', 'frontend-interface-quality.md', 'ui-design-workflow.md', 'git-team-delivery.md'] },
   'UI视觉验证': { topics: ['代码组织', '前端', '验证'], ids: ['06-00'], references: ['ui-visual-verification.md', 'frontend-interface-quality.md', 'frontend-delivery-loop.md'] },
   '后端': { topics: ['代码组织', '后端', '接口', '日志', '验证'], references: ['design-testing.md', 'configuration-localization.md'] },
@@ -45,7 +45,7 @@ const domains = {
 };
 const referenceNames = new Set([
   'novice-clarification.md', 'preflight-decision.md', 'behavior-preservation.md', 'database-upgrade-safety.md', 'bugfix-fast-loop.md', 'upstream-sync.md', 'seo-engineering.md', 'parallel-template-development.md', 'planning-persistence.md', 'agentic-execution.md', 'frontend-design-intelligence.md', 'code-craft.md', 'proven-engineering-methods.md', 'configuration-localization.md', 'task-lanes.md', 'context-memory-continuity.md', 'frontend-interface-quality.md', 'ui-design-workflow.md',
-  'wrapped-workspace-ui.md', 'design-testing.md', 'diagnosis-feedback-loop.md',
+  'wrapped-workspace-ui.md', 'mc-ui-scaffold.md', 'design-testing.md', 'diagnosis-feedback-loop.md',
   'code-risk-review.md', 'content-writing-quality.md', 'spec-review.md', 'git-team-delivery.md', 'frontend-delivery-loop.md', 'ui-visual-verification.md',
   'project-understanding.md', 'source-policy.md', 'project-migration.md', 'workflow-checklist.md', 'bounded-completion.md', 'project-write-boundary.md', 'workflow-progress-panel.md',
 ]);
@@ -72,6 +72,7 @@ function planBatch(stage, topics = [], references = []) {
   // 仅明确的前端故障修复不预读重设计/配置化专项。视觉、接口、配置、多领域任务仍走原路由；显式 --reference 继续生效。
   if (topics.includes('前端') && topics.includes('故障修复') && topics.every(topic => standaloneFrontendFixTopics.has(topic))) {
     result.references.delete('ui-design-workflow.md');
+    result.references.delete('mc-ui-scaffold.md');
     result.references.delete('configuration-localization.md');
   }
   // 小改/实现通常会写代码；纯内容/规划不加载 Code Craft，避免文档任务无谓变重。

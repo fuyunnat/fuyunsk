@@ -87,7 +87,7 @@ test('入口与个性化同一短模板接入清单，小改不升级迁移程�
   assert.equal(personal, bridge);
   assert.ok(Buffer.byteLength(bridge) <= 1800);
   assert.ok(Buffer.byteLength(entry) <= 6000);
-  requireText(entry, ['工作流程.md', '小改也记', '续作先读']);
+  requireText(entry, ['工作流程.md', '快速小改以外先读/建/更新', '续作先读', 'quick-core.md']);
   requireText(bridge, ['工作流程.md', '保留历史', '未授权只读不写']);
   const out = reader.readBatch(reader.parse(['--stage', '小改', '--topic', '内容']));
   assert.ok(!out.references.some(e => ['project-migration.md', 'context-memory-continuity.md'].includes(e.file)));
@@ -97,7 +97,7 @@ test('入口与个性化同一短模板接入清单，小改不升级迁移程�
 test('安装只提供空模板，不把本仓库历史冒充业务项目进度', () => {
   requireText(text('docs/ai-installation.md'), ['templates/workflow.example.md', '不要把本技能仓库根目录', '只读测试不得创建清单',
     '根目录清单实际维护与恢复未验证']);
-  requireText(text('README.md'), ['## 项目根目录工作流程', '工作流程.md', '换会话', '小改也记']);
+  requireText(text('README.md'), ['## 项目根目录工作流程', '工作流程.md', '换会话', '快速小改', '不建清单']);
 });
 
 

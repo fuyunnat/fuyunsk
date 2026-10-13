@@ -100,7 +100,7 @@ node "<技能目录>/scripts/read-rules.js" --id 00-00 --json
 
 完整安装还须包含 `references/workflow-checklist.md` 和 `templates/workflow.example.md`；升级同一份个性化短块中的根目录清单要求。**安装/升级本技能时不创建任何业务 `工作流程.md`，安装验收也不以生成该文件为条件。** 不要把本技能仓库根目录的 `工作流程.md` 维护历史复制进用户业务项目，不在安装时扫描所有项目创建文档。
 
-业务实现开始时，AI 先确认当前目标项目根目录（不是 `CODEX_HOME`、`~/.codex/` 或技能目录），再在那里创建或合并清单；多项目仓库不得错写上级工作区，参考源码与目标工程分开时只写目标工程，小改也记录；先列待做，开始标进行中，完成且验证后打勾；继续或换会话先读取，保留已有内容。只读测试不得创建清单。可在获准写入的独立测试项目验证一次“新增事项→进行中→完成”，刻意留一项未验证和一项阻塞，检查不被勾成完成；重开会话确认旧项保留。未实际执行应报告“根目录清单实际维护与恢复未验证”，不能以模板存在代替通过。
+业务实现开始时，AI 先确认当前目标项目根目录（不是 `CODEX_HOME`、`~/.codex/` 或技能目录），再在那里创建或合并清单；多项目仓库不得错写上级工作区，参考源码与目标工程分开时只写目标工程，快速小改不建清单；先列待做，开始标进行中，完成且验证后打勾；继续或换会话先读取，保留已有内容。只读测试不得创建清单。可在获准写入的独立测试项目验证一次“新增事项→进行中→完成”，刻意留一项未验证和一项阻塞，检查不被勾成完成；重开会话确认旧项保留。未实际执行应报告“根目录清单实际维护与恢复未验证”，不能以模板存在代替通过。
 
 ### 防止把技能目录当成聊天项目
 
@@ -112,4 +112,4 @@ node "<技能目录>/scripts/read-rules.js" --id 00-00 --json
 
 ## 自动进度面板
 
-完整复制技能时包含 `scripts/progress-panel.js`、`scripts/progress-parser.js`、`scripts/progress-panel-service.js`、`scripts/panel-runtime.js`、`references/workflow-progress-panel.md` 和 `assets/progress-panel/`。升级不自动打开面板、不扫描项目、不建立业务清单。工程对话开始/继续确认当前项目绝对根后默认执行 `progress-panel-service.js --ensure`，复用健康面板、离线启动守护；宿主清理后台进程时用 --foreground 保留执行会话。更新同一全局短块。安装验证仅运行 `progress-panel-service.js --help`，不启动守护，文件和脚本检查不等于已在用户浏览器验收。
+完整复制技能时包含 `scripts/progress-panel.js`、`scripts/progress-parser.js`、`scripts/progress-panel-service.js`、`scripts/panel-runtime.js`、`references/workflow-progress-panel.md` 和 `assets/progress-panel/`。升级不自动打开面板、不扫描项目、不建立业务清单。用户说要看进度时，确认当前项目绝对根后执行 `progress-panel-service.js --ensure`，复用健康面板、离线启动守护，平时不自动启动；宿主清理后台进程时用 --foreground 保留执行会话。更新同一全局短块。安装验证仅运行 `progress-panel-service.js --help`，不启动守护，文件和脚本检查不等于已在用户浏览器验收。

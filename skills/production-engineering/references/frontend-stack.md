@@ -22,9 +22,11 @@
 
 用户在 2026-09-05 明确要求“页面都是用 shadcn/ui + tailwindcss 来写”。这是对原文第九章默认技术栈的定向修改，不是性能优化的附带删减。
 
-新建前端页面、后台管理、配置页、用户端、独立工具和营销页面，且属于新设计、没有相反明确要求时，统一使用 **shadcn/ui + Tailwind CSS**。不再默认选择 Vue、Ant Design Vue、Pinia 或 Vue Router，也不另起第二套组件库。没有宿主项目时采用 React + Vite；已有兼容的 React 项目沿用其框架、构建、路由和目录，不因本规则强行换成 Vite。
+新建前端页面、后台管理、配置页、用户端、独立工具和营销页面，且属于新设计、没有相反明确要求时，统一使用 **shadcn/ui + Tailwind CSS**。不再默认选择 Vue、Ant Design Vue、Pinia 或 Vue Router，也不另起第二套组件库。已有兼容的 React 项目沿用其框架、构建、路由和目录，不因本规则强行换成 Vite。
 
-原稿的 Vue 3 + Vite + Ant Design Vue 与普通 .vue/.js 选型、Pinia/Vue Router 默认值、仅后台适用的默认栈，以及 Ant Design Vue 的默认安装例外，不再作为无明确指定的新设计选型依据。代码语言仍沿用现有项目；无明确要求的新项目使用 JavaScript / JSX，shadcn 的 `components.json` 可设置 `tsx: false`，不因官方示例使用 TypeScript 就擅自转换项目。
+**没有前端的项目用 mc-ui 当脚手架**（2026-10-13 用户要求）：项目里还没有任何前端时，按 `mc-ui-scaffold.md` 从 [MoeAgent/mc-ui](https://github.com/MoeAgent/mc-ui) 起前端，保持其 React + Vite + TypeScript + Lucide 原样，不转 JavaScript、不换 Morphicons。**已有前端且不是 mc-ui 时继续沿用该项目自己的框架、组件和视觉**，mc-ui 只作为设计基线参考，不引入、不并存。
+
+原稿的 Vue 3 + Vite + Ant Design Vue 与普通 .vue/.js 选型、Pinia/Vue Router 默认值、仅后台适用的默认栈，以及 Ant Design Vue 的默认安装例外，不再作为无明确指定的新设计选型依据。代码语言仍沿用现有项目；用户明确不要 mc-ui、另行从零新建 shadcn 项目时，无明确要求使用 JavaScript / JSX，shadcn 的 `components.json` 可设置 `tsx: false`，不因官方示例使用 TypeScript 就擅自转换项目。
 
 ## 框架选择与 Design System 分离
 
@@ -60,7 +62,7 @@
 
 ## 图标统一使用 Morphicons
 
-所有新设计页面及明确要求新增、替换的界面图标，统一通过 [Morphicons 官网](https://www.morphicons.com/) 对应方案接入，包括导航、按钮、表格操作、表单、状态提示及组件内的箭头、勾选、关闭图标。不是仅在 README 写个链接，也不能保留新组件的另一套默认图标渲染就声称已经接入。
+例外：基于 mc-ui 脚手架或已在使用 mc-ui 的项目沿用其 `lucide-react` 图标，不改成 Morphicons。除此之外，所有新设计页面及明确要求新增、替换的界面图标，统一通过 [Morphicons 官网](https://www.morphicons.com/) 对应方案接入，包括导航、按钮、表格操作、表单、状态提示及组件内的箭头、勾选、关闭图标。不是仅在 README 写个链接，也不能保留新组件的另一套默认图标渲染就声称已经接入。
 
 **先区分图标数据与渲染库。** 官网将 Morphicons 定义为描边 SVG 的渲染与变形方案，不是独立的全量图标素材库。官方包名是 `morphicons`；图形可来自官网示例采用的 Lucide、Tabler、Heroicons 等兼容数据，或项目已有且获得许可的描边路径。允许使用这些图形数据，不等于允许绕过 Morphicons 另起一套渲染方案。不得虚构 Morphicons 专属图标名称、包、CDN 或接口。
 
