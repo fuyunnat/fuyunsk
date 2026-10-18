@@ -21,7 +21,7 @@ for (const stage of stages) test(`${stage}阶段：一次读取结果与原条�
   assert.equal(result.status, 0, result.stderr);
   const out = JSON.parse(result.stdout);
   assert.equal(out.stage, stage);
-  const legacy = run(['--topic', out.topics.join(','), '--id', '06-00', '--json']);
+  const legacy = run(['--topic', out.topics.join(','), '--id', planBatch(stage, ['前端', '接口']).ids.join(','), '--json']);
   assert.equal(legacy.status, 0, legacy.stderr);
   assert.deepEqual(out.rules, JSON.parse(legacy.stdout));
   assert.equal(new Set(out.rules.map(e => e.id)).size, out.rules.length);

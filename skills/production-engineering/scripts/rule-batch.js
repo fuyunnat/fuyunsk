@@ -35,10 +35,11 @@ const domains = {
   'UI视觉验证': { topics: ['代码组织', '前端', '验证'], ids: ['06-00'], references: ['ui-visual-verification.md', 'frontend-interface-quality.md', 'frontend-delivery-loop.md'] },
   '后端': { topics: ['代码组织', '后端', '接口', '日志', '验证'], references: ['design-testing.md', 'configuration-localization.md'] },
   '接口': { topics: ['后端', '接口', '并发', '安全', '日志', '验证'], references: ['configuration-localization.md'] },
-  '性能': { topics: ['性能'], references: ['diagnosis-feedback-loop.md', 'proven-engineering-methods.md'] },
+  '性能': { topics: ['性能'], references: ['performance-baseline.md', 'diagnosis-feedback-loop.md', 'proven-engineering-methods.md'] },
   '数据库': { topics: ['接口', '灰度回滚', '数据库', '并发', '验证'], references: ['database-upgrade-safety.md'] },
   '并发': { topics: ['并发', '安全', '日志', '验证'], references: [] },
-  '配置部署': { topics: ['灰度回滚', '配置部署', '依赖', '日志', '验证'], references: ['database-upgrade-safety.md', 'configuration-localization.md'] },
+  '配置部署': { topics: ['灰度回滚', '配置部署', '依赖', '日志', '验证'], references: ['database-upgrade-safety.md', 'configuration-localization.md', 'release-packaging.md'] },
+  '打包': { topics: ['配置部署', '验证'], references: ['release-packaging.md'] },
   '依赖': { topics: ['依赖', '审计'], references: [] },
   '安全': { topics: ['安全', '日志', '审计', '验证'], ids: ['05-00'], references: ['code-risk-review.md'] },
   '审计': { topics: ['依赖', '安全', '日志', '审计', '报告'], references: ['code-risk-review.md'] },
@@ -46,7 +47,7 @@ const domains = {
 };
 const referenceNames = new Set([
   'novice-clarification.md', 'preflight-decision.md', 'behavior-preservation.md', 'database-upgrade-safety.md', 'bugfix-fast-loop.md', 'upstream-sync.md', 'seo-engineering.md', 'parallel-template-development.md', 'planning-persistence.md', 'agentic-execution.md', 'frontend-design-intelligence.md', 'code-craft.md', 'proven-engineering-methods.md', 'configuration-localization.md', 'task-lanes.md', 'context-memory-continuity.md', 'frontend-interface-quality.md', 'ui-design-workflow.md',
-  'wrapped-workspace-ui.md', 'mc-ui-scaffold.md', 'observability-debugging.md', 'design-testing.md', 'diagnosis-feedback-loop.md',
+  'wrapped-workspace-ui.md', 'mc-ui-scaffold.md', 'observability-debugging.md', 'performance-baseline.md', 'release-packaging.md', 'design-testing.md', 'diagnosis-feedback-loop.md',
   'code-risk-review.md', 'content-writing-quality.md', 'spec-review.md', 'git-team-delivery.md', 'frontend-delivery-loop.md', 'ui-visual-verification.md',
   'project-understanding.md', 'source-policy.md', 'project-migration.md', 'workflow-checklist.md', 'bounded-completion.md', 'project-write-boundary.md', 'workflow-progress-panel.md',
 ]);
@@ -80,6 +81,8 @@ function planBatch(stage, topics = [], references = []) {
   if (codeCraftStages.has(stage) && (!topics.length || topics.some(topic => !nonCodeDomains.has(topic)))) {
     result.references.add('code-craft.md');
     result.references.add('observability-debugging.md');
+    result.references.add('performance-baseline.md');
+    result.ids.add('11-00');
   }
   for (const file of references) result.references.add(file);
   for (const file of result.references) {

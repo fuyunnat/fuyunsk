@@ -18,8 +18,15 @@ test('修 Bug 先复现、看懂根因再改、亲自验证，旧的读取次数
 
 test('日志要能定位问题，缺日志就补，前端也记录', () => {
   const obs = read('references/observability-debugging.md');
-  for (const s of ['入口', '关键分支', '外部调用', '堆栈', 'request_id', '项目缺日志就补上', '不需要用户另外要求', '固定、好找的位置', '前端也要记', '保留下来', '日志在哪']) assert.ok(obs.includes(s), s);
+  for (const s of ['入口', '关键分支', '外部调用', '堆栈', 'request_id', '项目缺日志就补上', '不需要用户另外要求', '前端也要记', '保留下来', '本次启动的日志文件完整路径']) assert.ok(obs.includes(s), s);
   assert.match(read('references/quick-core.md'), /项目没有日志就顺手补一个统一入口/);
+});
+
+test('日志默认写到 log 目录，每次启动新建带时间戳的文件', () => {
+  const obs = read('references/observability-debugging.md');
+  for (const s of ['项目根目录下的 `log/`', '每次进程启动新建一份带时间戳的日志文件', '不要追加到上一次启动的文件里', 'app-20261017-143052.log', '.gitignore', '本次启动的日志文件完整路径']) assert.ok(obs.includes(s), s);
+  assert.match(read('references/quick-core.md'), /每次启动新建带时间戳的文件/);
+  assert.match(read('references/source-policy.md'), /日志写到 log 文件、启动新建带时间戳（2026-10-17）/);
 });
 
 test('线上报错先分清 CDN、代理还是源站，不擅自改 CDN 配置', () => {

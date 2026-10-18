@@ -23,19 +23,20 @@ node <技能目录>/scripts/read-rules.js --id 04-04
 | 快速小改 | 只读 `quick-core.md` |
 | 先列清单、字段盘点 | 二/六/二十；`planning-persistence.md` |
 | 后台可调业务参数/配置化 | 十五及实现/验证；`configuration-localization.md` |
+| 打包/发布产物 | `release-packaging.md`；可连提交推送 |
 | 前端与后台 | 六/七/九/二十；`frontend-stack.md`、无前端用 `mc-ui-scaffold.md`、`frontend-interface-quality.md`、`ui-design-workflow.md`、配置化专项 |
 | 前端交付 | 前端/接口/验证/Git；`frontend-delivery-loop.md` |
 | 视觉设计 | 前端/验证；`frontend-design-intelligence.md` |
 | UI视觉验证 | 前端/验证；`ui-visual-verification.md` |
 | 包裹式工作台 | 前端；`wrapped-workspace-ui.md` |
 | 后端/接口/并发 | 七/八/十/十四/十七/十八/二十；`design-testing.md`、配置化专项 |
-| 性能 | 十一及受影响领域；`diagnosis-feedback-loop.md`、`proven-engineering-methods.md` |
+| 性能 | 写代码默认带十一与 `performance-baseline.md`；专项再加诊断闭环 |
 | 数据库/迁移/部署启动 | 十/十二/十三/十五/十六/二十；`database-upgrade-safety.md`、配置化专项 |
 | 安全/审计/依赖 | 五/十六至十九/二十三；`code-risk-review.md`，默认只读 |
 | 日志/线上报错/CDN | 十八；`observability-debugging.md`，缺就补 |
-| 删除/恢复 | 一/五及实际影响；`source-policy.md` 的明确授权例外 |
+| 删除/恢复 | 一/五及实际影响；`source-policy.md` 授权例外 |
 | 内容/文档 | 二/六/二十一/二十三；`content-writing-quality.md` |
-| 任务续航/整项目迁移 | 二章六节；`context-memory-continuity.md`；整项目重写另读 `project-migration.md` |
+| 任务续航/整项目迁移 | 二章六节；`context-memory-continuity.md`；整项目重写另读迁移专项 |
 | 大型多阶段/独立复核 | 六/七/二十/二十二/二十三；`agentic-execution.md`、`spec-review.md` |
 | 项目理解/完成报告 | 零/一/二与适用领域、二十至二十四；`project-understanding.md` |
 
@@ -53,6 +54,6 @@ node <技能目录>/scripts/read-rules.js --id 04-04
 
 原文第四章拆为 `04-00.md` 至 `04-10.md`：00 边界，01 提交，02 测试，03 分支/推送，04 中文提交格式，05 检查，06 远端风险，07 PR，08 回滚，09 CI，10 证据。按当前阶段读取，主线/合并/部署以明确授权为准，详见 `git-team-delivery.md`。
 
-生产日志是交付能力，不是额外装饰；关键失败路径完全无日志不能交付。“buglog”不强制一定是单独文件，可用 stdout/stderr；不得记录密码、Token、Cookie、密钥和隐私原文。门槛按第十八章；缺日志就补相关路径，不重做全项目。
+生产日志是交付能力：失败路径无日志不能交付。默认写项目 `log/`（或已有目录），每次启动新建带时间戳文件，可另打 stdout/stderr；禁密码/Token/Cookie/密钥/隐私。门槛见十八章与 `observability-debugging.md`；缺则补相关路径，不重做全项目。
 
-原稿、速度稿差异和补充方法优先级见 source-policy；`rules-speed/01-01.md`、`01-02.md` 保留组织/回归补充。外部方法按需选 `design-testing.md`、`proven-engineering-methods.md`；来源维护才读 `upstream-notes.md`。
+原稿与授权见 source-policy；`rules-speed/01-01.md`、`01-02.md` 保留组织/回归补充。外部方法按需选 `design-testing.md`、`proven-engineering-methods.md`；来源维护才读 `upstream-notes.md`。
