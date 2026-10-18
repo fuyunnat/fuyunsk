@@ -23,11 +23,11 @@ description: "实现、修复、调试、UI、SEO、Git、数据库、部署、�
 | 场景 | 读取内容 |
 | --- | --- |
 | 开始/只读 | `rules/00-00.md`、`01-00.md`、`02-01.md` |
-| Bug、报错、功能异常且用户要求修复 | `bugfix-fast-loop.md`、`observability-debugging.md`：先复现、看懂再改、亲自验证；升级后才读 `diagnosis-feedback-loop.md` |
+| Bug、报错、功能异常且用户要求修复 | `bugfix-fast-loop.md`、`observability-debugging.md`、`delivery-feedback.md`：先复现、看懂再改、亲自验证；升级后才读 `diagnosis-feedback-loop.md` |
 | 规划清单/模板二开/别写死/写代码 | `planning-persistence.md`、`parallel-template-development.md`、`configuration-localization.md`、`code-craft.md` |
 | 前端/后台 | 第九章、`frontend-stack.md`、`frontend-interface-quality.md`、`ui-design-workflow.md`；无前端用 `mc-ui-scaffold.md` |
 | UI视觉、太大占屏、跑版 | `frontend-design-intelligence.md`、`ui-visual-verification.md` |
-| 进度面板 | `workflow-progress-panel.md`，用户说打开才启动 |
+| 进度面板 | `workflow-progress-panel.md`，工程任务自动打开 |
 | 二开上游同步 | `upstream-sync.md` |
 | SEO/收录 | `seo-engineering.md` |
 | 整项目迁移 | `project-migration.md`；迁移台账逐项验收 |
@@ -42,7 +42,7 @@ description: "实现、修复、调试、UI、SEO、Git、数据库、部署、�
 - 保留八荣八耻、第一性原理、最小改动和适用原文。原稿字节不改，例外按 source-policy。
 - 高风险：不清库、不重建现有数据库；启动/测试先查隐式迁移。恢复代码不授权回滚数据，见 `database-upgrade-safety.md`。
 - 默认可恢复；用户明确放弃改动且不要备份时，只按授权范围执行。
-- 旧新接口、数据、配置和客户端先兼容共存，验证后再淘汰；不顺手重构/格式化/切栈。代码组织按原文 300/400/600 行风险阈值、函数 80 行要求及 `code-craft.md`，性能底线 `performance-baseline.md`
+- 旧新接口、数据、配置和客户端先兼容共存，验证后再淘汰；不顺手重构/格式化/切栈。代码组织按原文 300/400/600 行、函数 80 行及 `code-craft.md`，性能底线 `performance-baseline.md`
 - 新设计默认 shadcn/ui + Tailwind CSS、Morphicons（mc-ui 用 Lucide）；用户指定框架/源码原貌优先。UI 是一级验收，尺寸密度按视觉专项。
 - 不盲试、不叠加失败补丁、不删测试或伪造通过；生产后端关键失败留脱敏日志，缺日志就补。不自动合并主线、强推、删远端分支或部署。
 

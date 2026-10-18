@@ -1,6 +1,6 @@
 # 根目录工作流程清单
 
-`工作流程.md` 是用户可见的唯一当前任务清单；位置/状态只在本文件定义，验收与停止见 `bounded-completion.md`，授权例外见 `source-policy.md`。快速小改不建清单，不因记录升级通道或自动运行状态助手。进度面板按 `workflow-progress-panel.md` 只在用户说要看时才启动，不自动拉起。
+`工作流程.md` 是用户可见的唯一当前任务清单；位置/状态只在本文件定义，验收与停止见 `bounded-completion.md`，授权例外见 `source-policy.md`。快速小改不建清单，不因记录升级通道或自动运行状态助手。进度面板按 `workflow-progress-panel.md`：工程任务在项目根已知时自动确保运行并打开一次。
 
 ## 写入门禁与例外
 

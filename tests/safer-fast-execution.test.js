@@ -48,13 +48,15 @@ test('行为锁要求证据驱动且失败改动不能叠加', () => {
   ]) assert.ok(behavior.includes(value), `缺少安全变更约束：${value}`);
 });
 
-test('生产日志是交付门槛，默认写到 log 目录并启动新建带时间戳文件', () => {
+test('生产日志是交付门槛，细则只留在日志专项', () => {
   assert.match(routing, /生产日志是交付能力/);
   assert.match(routing, /失败路径无日志不能交付/);
-  assert.match(routing, /默认写项目 `log\/`/);
-  assert.match(routing, /每次启动新建带时间戳文件/);
-  assert.match(routing, /stdout\/stderr/);
-  assert.match(routing, /禁密码\/Token\/Cookie\/密钥\/隐私/);
+  assert.match(routing, /observability-debugging\.md/);
+  const obs = read(path.join(refs, 'observability-debugging.md'));
+  assert.match(obs, /项目根目录下的 `log\/`/);
+  assert.match(obs, /每次进程启动新建一份带时间戳的日志文件/);
+  assert.match(obs, /stdout/);
+  assert.match(obs, /密码/);
 });
 
 test('隐式调用入口同步强调不盲试和脱敏错误日志', () => {

@@ -32,7 +32,7 @@ test('入口与路由能命中打包，现场排查与优化误伤有对应通�
   assert.match(read('SKILL.md'), /release-packaging\.md/);
   assert.match(read('references/routing.md'), /打包\/发布产物/);
   assert.match(read('references/observability-debugging.md'), /环境要对上问题现场/);
-  assert.match(read('references/performance-baseline.md'), /优化不要误伤同链路行为/);
+  assert.match(read('references/performance-baseline.md'), /优化不要把原来的结果改掉/);
   assert.match(read('references/parallel-template-development.md'), /功能明显不全/);
   assert.match(read('references/source-policy.md'), /交付与排查的通用原则补充（2026-10-18）/);
 });

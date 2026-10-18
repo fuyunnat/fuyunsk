@@ -7,7 +7,7 @@ node <技能目录>/scripts/read-rules.js --stage 实现 --topic 前端,接口
 node <技能目录>/scripts/read-rules.js --id 04-04
 ```
 
-无 Node.js 直接读文件，不安装依赖。旧主题/编号接口和原文内容不变；第九章携带 `frontend-stack.md` 当前选型。只有内容缺失、截断或版本变化才重读。原文与授权例外见 `source-policy.md`；读取器不扫描项目、不执行写入、不恢复任务。
+无 Node.js 直接读文件，不装依赖。旧主题/编号接口不变；第九章带 `frontend-stack.md`。仅内容缺失、截断或版本变化才重读。授权例外见 `source-policy.md`；读取器不扫项目、不写、不恢复任务。
 
 ## 领域路由
 
@@ -19,12 +19,13 @@ node <技能目录>/scripts/read-rules.js --id 04-04
 | 二开/派生项目同步上游、官方修复或新功能 | 六/七/二十；`upstream-sync.md` |
 | SEO、收录 | 前端/性能/配置/内容及二十；`seo-engineering.md` |
 | 前端模板并行二开 | 六/七/九/二十；`parallel-template-development.md` |
-| 进度面板 | `workflow-progress-panel.md`，用户说打开才启动 |
+| 进度面板 | `workflow-progress-panel.md`，工程任务自动确保运行并打开一次 |
 | 快速小改 | 只读 `quick-core.md` |
 | 先列清单、字段盘点 | 二/六/二十；`planning-persistence.md` |
 | 后台可调业务参数/配置化 | 十五及实现/验证；`configuration-localization.md` |
-| 打包/发布产物 | `release-packaging.md`；可连提交推送 |
-| 前端与后台 | 六/七/九/二十；`frontend-stack.md`、无前端用 `mc-ui-scaffold.md`、`frontend-interface-quality.md`、`ui-design-workflow.md`、配置化专项 |
+| 打包/发布产物 | `release-packaging.md` |
+| 对接/长任务反馈 | `delivery-feedback.md` |
+| 前端与后台 | 六/七/九/二十；`frontend-stack.md`、无前端用 `mc-ui-scaffold.md`、`frontend-interface-quality.md`、`ui-design-workflow.md`、配置化 |
 | 前端交付 | 前端/接口/验证/Git；`frontend-delivery-loop.md` |
 | 视觉设计 | 前端/验证；`frontend-design-intelligence.md` |
 | UI视觉验证 | 前端/验证；`ui-visual-verification.md` |
@@ -54,6 +55,6 @@ node <技能目录>/scripts/read-rules.js --id 04-04
 
 原文第四章拆为 `04-00.md` 至 `04-10.md`：00 边界，01 提交，02 测试，03 分支/推送，04 中文提交格式，05 检查，06 远端风险，07 PR，08 回滚，09 CI，10 证据。按当前阶段读取，主线/合并/部署以明确授权为准，详见 `git-team-delivery.md`。
 
-生产日志是交付能力：失败路径无日志不能交付。默认写项目 `log/`（或已有目录），每次启动新建带时间戳文件，可另打 stdout/stderr；禁密码/Token/Cookie/密钥/隐私。门槛见十八章与 `observability-debugging.md`；缺则补相关路径，不重做全项目。
+生产日志是交付能力：失败路径无日志不能交付。每次启动新建带时间戳文件。写法只见 `observability-debugging.md`，不在这里再写一遍。
 
 原稿与授权见 source-policy；`rules-speed/01-01.md`、`01-02.md` 保留组织/回归补充。外部方法按需选 `design-testing.md`、`proven-engineering-methods.md`；来源维护才读 `upstream-notes.md`。

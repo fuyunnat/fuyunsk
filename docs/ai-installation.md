@@ -112,4 +112,4 @@ node "<技能目录>/scripts/read-rules.js" --id 00-00 --json
 
 ## 自动进度面板
 
-完整复制技能时包含 `scripts/progress-panel.js`、`scripts/progress-parser.js`、`scripts/progress-panel-service.js`、`scripts/panel-runtime.js`、`references/workflow-progress-panel.md` 和 `assets/progress-panel/`。升级不自动打开面板、不扫描项目、不建立业务清单。用户说要看进度时，确认当前项目绝对根后执行 `progress-panel-service.js --ensure`，复用健康面板、离线启动守护，平时不自动启动；宿主清理后台进程时用 --foreground 保留执行会话。更新同一全局短块。安装验证仅运行 `progress-panel-service.js --help`，不启动守护，文件和脚本检查不等于已在用户浏览器验收。
+完整复制技能时包含 `scripts/progress-panel.js`、`scripts/progress-parser.js`、`scripts/progress-panel-service.js`、`scripts/panel-runtime.js`、`references/workflow-progress-panel.md` 和 `assets/progress-panel/`。工程任务在项目根确认后执行 `progress-panel-service.js --ensure` 并打开返回地址一次，复用健康面板；闲聊、只问不改、安装阶段和用户停用不启动。宿主清理后台进程时用 --foreground 保留执行会话。更新同一全局短块。安装验证仅运行 `progress-panel-service.js --help`，不启动守护，文件和脚本检查不等于已在用户浏览器验收。
