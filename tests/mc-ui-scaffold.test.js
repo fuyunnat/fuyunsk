@@ -40,6 +40,14 @@ test('设计基线写明 mc-ui 的无边框分层、黑色主按钮与统一状�
   }
 });
 
+test('已有非 mc-ui 前端借鉴结构但继承原项目配色', () => {
+  const scaffold = read('references/mc-ui-scaffold.md');
+  for (const s of ['借鉴它的页面层次', '不直接搬它的颜色', 'Geist/Vercel 色板', '先从现有项目提取一份简短映射', '没有对应 token 时', '参考 mc-ui”不等于换成 mc-ui 的黑白主按钮']) {
+    assert.ok(scaffold.includes(s), s);
+  }
+  assert.match(read('references/frontend-stack.md'), /先做原项目 token 映射/);
+});
+
 test('授权与许可边界有记录', () => {
   assert.match(read('references/source-policy.md'), /无前端用 mc-ui 脚手架的明确授权（2026-10-13）/);
   assert.match(read('references/mc-ui-scaffold.md'), /未附开源许可证/);
