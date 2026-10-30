@@ -87,8 +87,8 @@ test('入口与个性化同一短模板接入清单，小改不升级迁移程�
   assert.equal(personal, bridge);
   assert.ok(Buffer.byteLength(bridge) <= 1800);
   assert.ok(Buffer.byteLength(entry) <= 6000);
-  requireText(entry, ['工作流程.md', '快速小改以外先读/建/更新', '续作先读', 'quick-core.md']);
-  requireText(bridge, ['工作流程.md', '保留历史', '未授权只读不写']);
+  requireText(entry, ['工作流程.md', '复杂、跨阶段或需要续作时先读/建/更新', '任务卡', '续作先读', 'quick-core.md']);
+  requireText(bridge, ['工作流程.md', '按任务规模选择任务卡', '复杂或需要续作', '保留历史', '未授权只读不写']);
   const out = reader.readBatch(reader.parse(['--stage', '小改', '--topic', '内容']));
   assert.ok(!out.references.some(e => ['project-migration.md', 'context-memory-continuity.md'].includes(e.file)));
   assert.ok(!out.rules.some(e => e.id === '02-06' || e.id.startsWith('04-')));

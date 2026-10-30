@@ -39,6 +39,22 @@ test('实现和小改会加载评估专项 只读和评审不额外加载', () =
 
   assert.ok(implementation.references.includes('preflight-decision.md'));
   assert.ok(smallChange.references.includes('preflight-decision.md'));
+  assert.ok(implementation.references.includes('task-card.md'));
+  assert.ok(smallChange.references.includes('task-card.md'));
   assert.ok(!readOnly.references.includes('preflight-decision.md'));
   assert.ok(!review.references.includes('preflight-decision.md'));
+});
+
+test('任务卡区分对话内小改与需要落盘的复杂任务', () => {
+  const card = read(path.join(refs, 'task-card.md'));
+  for (const field of ['任务级别', '目标', '证据/基线', '必须保持', '允许范围', '方案', '风险与回退', '验收', '当前动作']) {
+    assert.match(card, new RegExp(field));
+  }
+  assert.match(card, /快速小改/);
+  assert.match(card, /复杂、跨阶段、跨模块、需要续作/);
+  assert.match(card, /不替代用户授权/);
+  assert.match(card, /用户只需说想要的结果/);
+  assert.match(card, /简单大白话说清/);
+  assert.match(card, /2–3 个结果选项和推荐/);
+  assert.ok(fs.existsSync(path.join(skillDir, 'templates/task-card.example.md')));
 });

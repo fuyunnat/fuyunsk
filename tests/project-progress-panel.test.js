@@ -109,9 +109,11 @@ test('真实 HTTP 只绑定本机、拒绝写入/外部来源/未知路径，文
 
 test('工程面板默认检查，规则读取本身不启动服务、不加第二套任务状态', () => {
   const view = planBatch('只读', ['进度面板']);assert.ok(view.references.includes('workflow-progress-panel.md'));
-  const ordinary = planBatch('小改', ['内容']);assert.ok(ordinary.references.includes('workflow-progress-panel.md'));
+  const ordinary = planBatch('小改', ['内容']);assert.ok(!ordinary.references.includes('workflow-progress-panel.md'));
+  assert.ok(ordinary.references.includes('task-card.md'));
+  const complex = planBatch('实现', ['内容']);assert.ok(complex.references.includes('workflow-progress-panel.md'));
   const rules = fs.readFileSync(path.join(skill, 'references/workflow-progress-panel.md'), 'utf8');
-  for (const phrase of ['工作流程.md', '用系统浏览器打开一次', '不是 AI 内部实时状态', '同一实际项目', '不创建第二套']) assert.ok(rules.includes(phrase), phrase);
+  for (const phrase of ['工作流程.md', '用系统浏览器打开一次', '复杂或需要续作', '不是 AI 内部实时状态', '同一实际项目', '不创建第二套']) assert.ok(rules.includes(phrase), phrase);
   assert.deepEqual(parseArgs(['--project', '甲=/tmp/a', '--project', '/tmp/b', '--port', '4510']).projects, [{ name: '甲', root: '/tmp/a' }, { root: '/tmp/b' }]);
   assert.throws(() => parseArgs(['--host', '0.0.0.0']), /未知/);
 });

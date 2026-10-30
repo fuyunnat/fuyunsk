@@ -42,8 +42,8 @@ test('Skill 和隐式调用入口明确禁止重构/UI 重写擅改业务结果'
   assert.match(skill, /原业务逻辑、API、数据、配置、权限、副作用和流程默认锁定/);
   assert.match(skill, /UI\/框架\/语言重写不授权改变结果/);
   assertAgentDelegates(agent);
-  assert.match(globalAgents, /原业务逻辑、接口、权限、数据和流程默认锁定/);
-  assert.match(globalAgents, /重构\/优化\/UI 重写不授权改结果/);
+  assert.match(globalAgents, /仅换实现不改结果/);
+  assert.match(globalAgents, /旧业务、接口、权限、数据、配置和客户端先兼容，验证后再淘汰/);
   assert.ok(Buffer.byteLength(skill) <= 6000, 'SKILL.md 应保持 6000 bytes 以内');
   assert.ok(Buffer.byteLength(globalAgents) <= 1800, '全局短调度模板应保持 1800 bytes 以内');
 });

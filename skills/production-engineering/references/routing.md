@@ -19,7 +19,7 @@ node <技能目录>/scripts/read-rules.js --id 04-04
 | 二开/派生项目同步上游、官方修复或新功能 | 六/七/二十；`upstream-sync.md` |
 | SEO、收录 | 前端/性能/配置/内容及二十；`seo-engineering.md` |
 | 前端模板并行二开 | 六/七/九/二十；`parallel-template-development.md` |
-| 进度面板 | `workflow-progress-panel.md`，工程任务自动确保运行并打开一次 |
+| 进度面板 | `workflow-progress-panel.md`，复杂或需要续作的工程任务才自动确保运行并打开一次 |
 | 快速小改 | 只读 `quick-core.md` |
 | 先列清单、字段盘点 | 二/六/二十；`planning-persistence.md` |
 | 后台可调业务参数/配置化 | 十五及实现/验证；`configuration-localization.md` |

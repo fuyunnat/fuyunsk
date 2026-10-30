@@ -83,7 +83,7 @@ test('不停止其他项目的守护；运行锁是私有运行记录，不包�
 
 test('守护的有限重试、只读边界、默认入口和安装条件接通', () => {
   for(const file of ['SKILL.md','references/workflow-checklist.md','references/routing.md']) {
-    const s=fs.readFileSync(path.join(skill,file),'utf8');assert.match(s,/工程任务自动打开|工程任务自动确保运行并打开一次|工程任务在项目根已知时自动确保运行并打开一次/,file);
+    const s=fs.readFileSync(path.join(skill,file),'utf8');assert.match(s,/复杂或需要续作|复杂或需续作|工程任务自动打开|工程任务自动确保运行并打开一次|工程任务在项目根已知时自动确保运行并打开一次/,file);
   }
   const r=fs.readFileSync(path.join(skill,'references/workflow-progress-panel.md'),'utf8');
   for(const phrase of ['progress-panel-service.js','--ensure','--stop','有限','闲聊','安装','不启动业务服务','第二套'])assert.ok(r.includes(phrase),phrase);

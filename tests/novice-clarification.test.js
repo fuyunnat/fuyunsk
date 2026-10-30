@@ -57,7 +57,7 @@ test('全局与个性化模板保持一致且适合短调度', () => {
   assert.ok(block, '个人模板缺少 markdown 调度块');
   assert.equal(block[1].trim(), globalAgents);
   assert.match(globalAgents, /用户只需说想要的结果/);
-  assert.match(globalAgents, /随便\/你看着办/);
+  assert.match(globalAgents, /“随便”不是无限授权/);
   assert.ok(Buffer.byteLength(globalAgents) <= 1800, 'global AGENTS 模板超过 1800 bytes');
   assert.ok(Buffer.byteLength(entry) <= 6000, 'SKILL.md 超过 6000 bytes');
 });

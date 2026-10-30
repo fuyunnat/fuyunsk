@@ -50,7 +50,7 @@ const referenceNames = new Set([
   'novice-clarification.md', 'preflight-decision.md', 'behavior-preservation.md', 'database-upgrade-safety.md', 'bugfix-fast-loop.md', 'upstream-sync.md', 'seo-engineering.md', 'parallel-template-development.md', 'planning-persistence.md', 'agentic-execution.md', 'frontend-design-intelligence.md', 'code-craft.md', 'proven-engineering-methods.md', 'configuration-localization.md', 'task-lanes.md', 'context-memory-continuity.md', 'frontend-interface-quality.md', 'ui-design-workflow.md',
   'wrapped-workspace-ui.md', 'mc-ui-scaffold.md', 'observability-debugging.md', 'performance-baseline.md', 'release-packaging.md', 'delivery-feedback.md', 'design-testing.md', 'diagnosis-feedback-loop.md',
   'code-risk-review.md', 'content-writing-quality.md', 'spec-review.md', 'git-team-delivery.md', 'frontend-delivery-loop.md', 'ui-visual-verification.md',
-  'project-understanding.md', 'source-policy.md', 'project-migration.md', 'workflow-checklist.md', 'bounded-completion.md', 'project-write-boundary.md', 'workflow-progress-panel.md',
+  'project-understanding.md', 'source-policy.md', 'project-migration.md', 'workflow-checklist.md', 'bounded-completion.md', 'project-write-boundary.md', 'workflow-progress-panel.md', 'task-card.md',
 ]);
 const codeCraftStages = new Set(['小改', '实现']);
 const nonCodeDomains = new Set(['内容', '规划清单', '进度面板']);
@@ -64,7 +64,7 @@ function planBatch(stage, topics = [], references = []) {
     stage,
     topics: new Set(chosen.topics),
     ids: new Set(),
-    references: new Set(['source-policy.md', 'novice-clarification.md', ...chosen.references, ...(stage === '只读' ? [] : ['behavior-preservation.md', 'workflow-checklist.md', 'bounded-completion.md', 'project-write-boundary.md', 'workflow-progress-panel.md'])]),
+    references: new Set(['source-policy.md', 'novice-clarification.md', ...chosen.references, ...(stage === '只读' ? [] : ['task-card.md', 'behavior-preservation.md', 'workflow-checklist.md', 'bounded-completion.md', 'project-write-boundary.md', ...(stage === '小改' ? [] : ['workflow-progress-panel.md'])])]),
   };
   for (const topic of topics) {
     const domain = Object.hasOwn(domains, topic) ? domains[topic] : { topics: [topic] };

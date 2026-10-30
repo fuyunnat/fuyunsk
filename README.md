@@ -85,7 +85,7 @@ https://github.com/fuyunnat/fuyunsk
 
 ## 想看 AI 做到哪一步
 
-说一句也行，但不用等你说。做工程任务时，AI 会在你电脑上打开本地进度页，并让它一直运行。页面按 mc-ui 的分层样子显示当前任务和每一步。闲聊、只问不改、或你说停，则不打开。
+说一句也行，但不用等你说。复杂、跨阶段或需要续作的工程任务，AI 会在你电脑上打开本地进度页并复用它；快速小改和普通只读任务默认不启动。页面按 mc-ui 的分层样子显示当前任务和每一步。你明确说“打开进度面板”时，小任务也会打开；闲聊、只问不改、或你说停，则不打开。
 
 ---
 
@@ -93,14 +93,14 @@ https://github.com/fuyunnat/fuyunsk
 
 ## 项目根目录工作流程
 
-做稍大的任务时，AI 会在**目标项目根目录**放一份 `工作流程.md`，把要做的事列出来，做完一项勾一项。快速小改不建清单，只在对话里说一句。
+开始实施前，AI 会先形成一张任务卡：快速小改只在对话里保留短卡；复杂、跨阶段或需要续作的任务会把任务卡和清单放进**目标项目根目录**的 `工作流程.md`，做完一项勾一项。快速小改不建清单，也不启动进度面板。
 
 - 位置是当前对话正在开发的目标项目根目录，不是 `CODEX_HOME`、`~/.codex/`、`~/.cursor/` 或技能安装目录。参考源码和目标工程分开时，只写在目标工程里。
 - 换会话、上下文被压缩或你问进度时，AI 先读这份清单再继续，不靠聊天记忆。
 - 直接给目标就行，AI 会自己拆分和补全清单，不必先逐项审批；你明确要求先确认时除外。
 - 没验证过的事项不会打勾；新需求追加在后面，旧记录保留。
 
-本仓库根目录的 `工作流程.md` 只记录 fuyunsk 自身维护，不会被复制到你的项目里。清单规则见 [工作清单规则](skills/production-engineering/references/workflow-checklist.md)，空白格式见 [模板](skills/production-engineering/templates/workflow.example.md)。
+本仓库根目录的 `工作流程.md` 只记录 fuyunsk 自身维护，不会被复制到你的项目里。任务卡规则见 [任务卡](skills/production-engineering/references/task-card.md)，清单规则见 [工作清单规则](skills/production-engineering/references/workflow-checklist.md)，空白格式见 [模板](skills/production-engineering/templates/workflow.example.md)。
 
 ## 已提供源码：先读、按要求改
 

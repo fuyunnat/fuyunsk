@@ -63,7 +63,7 @@ test('所有会写代码的常见通道仍加载行为兼容保护', () => {
 
 test('自动调用入口也明确兼容优先且短模板继续受限', () => {
   assertAgentDelegates(agent);
-  assert.match(globalAgents, /旧业务\/接口\/权限\/数据\/配置\/客户端先兼容共存，验证后再淘汰/);
+  assert.match(globalAgents, /旧业务、接口、权限、数据、配置和客户端先兼容，验证后再淘汰/);
   assert.ok(Buffer.byteLength(globalAgents) <= 1800, 'global AGENTS 模板超过 1800 bytes');
 
   const block = personal.match(/```markdown\n([\s\S]*?)\n```/);

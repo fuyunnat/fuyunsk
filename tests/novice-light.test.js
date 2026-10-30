@@ -26,13 +26,14 @@ test('快速小改不建清单，但续作已有清单和升级后照常记录',
   for (const s of ['快速小改例外', '不创建、不更新', '照常更新对应项', '先补建清单再继续', '门禁失败停止业务写入']) assert.ok(rules.includes(s), s);
 });
 
-test('进度面板在工程任务里自动打开，闲聊不拉起', () => {
+test('进度面板只在复杂任务自动打开，闲聊和快速小改不拉起', () => {
   const panel = read('references/workflow-progress-panel.md');
   assert.match(panel, /运行一次 `--ensure`/);
   assert.match(panel, /用系统浏览器打开一次/);
-  assert.match(panel, /闲聊、只问不改、安装\/升级、项目归属未知时不运行 `--ensure`/);
-  assert.match(globalAgents, /进度面板自动打开/);
-  assert.doesNotMatch(globalAgents, /进度面板用户要看才开/);
+  assert.match(panel, /复杂或需要续作/);
+  assert.match(panel, /快速小改、安装或升级技能/);
+  assert.match(globalAgents, /复杂或需要续作的工程任务才自动启动进度面板/);
+  assert.doesNotMatch(globalAgents, /进度面板自动打开；/);
 });
 
 test('汇报用人话，授权变更有记录且安全规则不变', () => {

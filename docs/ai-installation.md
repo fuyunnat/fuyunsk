@@ -55,7 +55,7 @@ node scripts/doctor.js --json
 
 ## 四、分开验证文件与实际调用
 
-**文件验证**：确认有效技能目录包含 `SKILL.md`、`agents/openai.yaml`、`references/source-original.md`、`references/source-speed.md`、`references/source-lock.json`、`references/rules/`、`references/rules-speed/`、`references/rules-manifest.json`、`references/rules-index.md` 、`references/frontend-stack.md`、`scripts/rule-batch.js` 和 `scripts/read-rules.js`；与本次固定提交的对应文件校验一致。确认短块写入位置、稳定技能名、覆盖关系、无机器绝对路径和重复副本处理结果；技能真实路径另行核实但不写进短块。
+**文件验证**：确认有效技能目录包含 `SKILL.md`、`agents/openai.yaml`、`references/task-card.md`、`templates/task-card.example.md`、`references/source-original.md`、`references/source-speed.md`、`references/source-lock.json`、`references/rules/`、`references/rules-speed/`、`references/rules-manifest.json`、`references/rules-index.md` 、`references/frontend-stack.md`、`scripts/rule-batch.js` 和 `scripts/read-rules.js`；与本次固定提交的对应文件校验一致。确认短块写入位置、稳定技能名、覆盖关系、无机器绝对路径和重复副本处理结果；技能真实路径另行核实但不写进短块。
 
 有 Node.js 时，先检查脚本再执行只读验证：
 
