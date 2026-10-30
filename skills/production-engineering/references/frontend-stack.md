@@ -24,7 +24,7 @@
 
 新建前端页面、后台管理、配置页、用户端、独立工具和营销页面，且属于新设计、没有相反明确要求时，统一使用 **shadcn/ui + Tailwind CSS**。不再默认选择 Vue、Ant Design Vue、Pinia 或 Vue Router，也不另起第二套组件库。已有兼容的 React 项目沿用其框架、构建、路由和目录，不因本规则强行换成 Vite。
 
-**没有前端的项目用 mc-ui 当脚手架**（2026-10-13 用户要求）：项目里还没有任何前端时，按 `mc-ui-scaffold.md` 从 [MoeAgent/mc-ui](https://github.com/MoeAgent/mc-ui) 起前端，保持其 React + Vite + TypeScript + Lucide 原样，不转 JavaScript、不换 Morphicons。**已有前端且不是 mc-ui 时继续沿用该项目自己的框架、组件和视觉**，mc-ui 只作为设计基线参考，不引入、不并存；参考布局和交互时先做原项目 token 映射，不能把 mc-ui 配色直接套过去。
+**没有前端的项目用 mc-ui 当脚手架**（2026-10-13 用户要求）：项目里还没有任何前端时，按 `mc-ui-scaffold.md` 从 [MoeAgent/mc-ui](https://github.com/MoeAgent/mc-ui) 起前端，保持其 React + Vite + TypeScript + Lucide 原样，不转 JavaScript、不换 Morphicons。来源提交要锁定并记录，后续不自动追踪 `main`。**已有前端且不是 mc-ui 时继续沿用该项目自己的框架、组件和视觉**，mc-ui 只作为设计基线参考，不引入、不并存；参考布局和交互时先做原项目 token 映射，不能把 mc-ui 配色直接套过去。
 
 原稿的 Vue 3 + Vite + Ant Design Vue 与普通 .vue/.js 选型、Pinia/Vue Router 默认值、仅后台适用的默认栈，以及 Ant Design Vue 的默认安装例外，不再作为无明确指定的新设计选型依据。代码语言仍沿用现有项目；用户明确不要 mc-ui、另行从零新建 shadcn 项目时，无明确要求使用 JavaScript / JSX，shadcn 的 `components.json` 可设置 `tsx: false`，不因官方示例使用 TypeScript 就擅自转换项目。
 

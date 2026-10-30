@@ -33,6 +33,14 @@ test('脚手架裁剪演示业务、替换品牌并接真实数据，不把演�
   }
 });
 
+test('mc-ui 上游版本锁定，不在普通任务中自动追踪 main', () => {
+  const scaffold = read('references/mc-ui-scaffold.md');
+  for (const s of ['记录提交 SHA', 'main` 会继续变化', '不在每次任务中自动拉取更新', '只在明确要求时同步', '选择性合并', '禁止把上游目录整份覆盖']) {
+    assert.ok(scaffold.includes(s), s);
+  }
+  assert.match(read('references/frontend-stack.md'), /来源提交要锁定并记录，后续不自动追踪 `main`/);
+});
+
 test('设计基线写明 mc-ui 的无边框分层、黑色主按钮与统一状态', () => {
   const scaffold = read('references/mc-ui-scaffold.md');
   for (const s of ['全站不用描边', '--layer-canvas', '--fill-subtle', '阴影只给浮层', '主按钮是近黑', '--focus-ring', '--fill-hatch', 'StatusBadge', '`Panel` + `PanelHeader`', '224px', '1200px', '已有前端只作参考']) {
