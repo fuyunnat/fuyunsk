@@ -23,7 +23,7 @@ test('mc-ui 脚手架保持 TypeScript 与 Lucide，其余新设计仍用 Morphi
   for (const s of ['TypeScript', '`lucide-react`', '不转 JavaScript', '不把图标换成 Morphicons']) assert.ok(scaffold.includes(s), s);
   const stack = read('references/frontend-stack.md');
   assert.match(stack, /mc-ui 的项目沿用其 `lucide-react` 图标/);
-  assert.match(stack, /统一通过 \[Morphicons 官网\]/);
+  assert.match(stack, /Morphicons 官网/);
 });
 
 test('脚手架裁剪演示业务、替换品牌并接真实数据，不把演示逻辑当生产', () => {

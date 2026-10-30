@@ -26,6 +26,13 @@ test('快速小改不建清单，但续作已有清单和升级后照常记录',
   for (const s of ['快速小改例外', '不创建、不更新', '照常更新对应项', '先补建清单再继续', '门禁失败停止业务写入']) assert.ok(rules.includes(s), s);
 });
 
+test('当前政策把旧的每次小改建清单说法收口到任务卡', () => {
+  const policy = read('references/source-policy.md');
+  assert.match(policy, /2026-10-30 的任务卡优化收敛/);
+  assert.match(policy, /快速小改只保留对话内任务卡，不建清单/);
+  assert.match(policy, /历史授权用于追溯，不覆盖当前入口/);
+});
+
 test('进度面板只在复杂任务自动打开，闲聊和快速小改不拉起', () => {
   const panel = read('references/workflow-progress-panel.md');
   assert.match(panel, /运行一次 `--ensure`/);

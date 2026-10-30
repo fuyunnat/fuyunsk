@@ -121,3 +121,9 @@ test('图标规则不注入非前端读取，不增加技能运行依赖', () =>
   assert.match(policy, /不增加 MCP、后台服务或每轮联网取图/);
   assert.match(policy, /规则随现有前端批量读取一起返回/);
 });
+
+test('已有非 mc-ui 项目优先沿用自己的图标系统', () => {
+  const policy = raw('frontend-stack.md');
+  assert.match(policy, /已有非 mc-ui 前端如果已经有成套且协调的图标系统，优先沿用项目自己的图标/);
+  assert.match(policy, /只有项目没有统一图标系统，或用户明确要求替换时/);
+});

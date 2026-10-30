@@ -62,7 +62,7 @@
 
 ## 图标统一使用 Morphicons
 
-例外：基于 mc-ui 脚手架或已在使用 mc-ui 的项目沿用其 `lucide-react` 图标，不改成 Morphicons。除此之外，所有新设计页面及明确要求新增、替换的界面图标，统一通过 [Morphicons 官网](https://www.morphicons.com/) 对应方案接入，包括导航、按钮、表格操作、表单、状态提示及组件内的箭头、勾选、关闭图标。不是仅在 README 写个链接，也不能保留新组件的另一套默认图标渲染就声称已经接入。
+例外：基于 mc-ui 脚手架或已在使用 mc-ui 的项目沿用其 `lucide-react` 图标，不改成 Morphicons。已有非 mc-ui 前端如果已经有成套且协调的图标系统，优先沿用项目自己的图标；只有项目没有统一图标系统，或用户明确要求替换时，才通过 [Morphicons 官网](https://www.morphicons.com/) 对应方案接入，包括导航、按钮、表格操作、表单、状态提示及组件内的箭头、勾选、关闭图标。不是仅在 README 写个链接，也不能保留新组件的另一套默认图标渲染就声称已经接入。
 
 **先区分图标数据与渲染库。** 官网将 Morphicons 定义为描边 SVG 的渲染与变形方案，不是独立的全量图标素材库。官方包名是 `morphicons`；图形可来自官网示例采用的 Lucide、Tabler、Heroicons 等兼容数据，或项目已有且获得许可的描边路径。允许使用这些图形数据，不等于允许绕过 Morphicons 另起一套渲染方案。不得虚构 Morphicons 专属图标名称、包、CDN 或接口。
 
