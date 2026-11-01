@@ -22,7 +22,7 @@ test('全部做完才停，不中途问要不要继续', () => {
   const bounded = read('references/bounded-completion.md');
   for (const s of ['全部做完才停', '不得结束、不得停下来问', '只问那一个问题']) assert.ok(bounded.includes(s), s);
   const entry = read('SKILL.md');
-  assert.match(entry, /用户中途补充若导致升级立即记入、算必做/);
+  assert.match(entry, /中途补充若升级立即记入、算必做/);
   assert.match(entry, /全部做完或写明阻塞才停/);
   assert.match(globalAgents, /补充若触发升级就记入清单/);
   assert.doesNotMatch(globalAgents, /完成即停/);

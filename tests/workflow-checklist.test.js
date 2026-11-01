@@ -70,6 +70,16 @@ test('根路径、同名文件、用户内容和读写权限必须查证', () =>
     '无写权限时报告实际阻塞', '不能静默退回隐藏目录', '不为了隐藏它改 `.gitignore`']);
 });
 
+test('工作流程清单有固定落盘条件，并能交给另一个编辑器继续', () => {
+  const body = rules();
+  requireText(body, ['可以只用对话内任务卡', '必须创建或更新 `工作流程.md`', '跨两个及以上文件/模块',
+    '真实测试条件还没准备好', '交给另一个编辑器', '建了以后持续更新', '交接必须可独立继续',
+    '测试命令与结果', '缺少条件']);
+  requireText(text('skills/production-engineering/templates/workflow.example.md'),
+    ['交接摘要：', '已完成', '未完成', '当前动作', '下一步', '测试结果', '未测试项']);
+  requireText(text('README.md'), ['多步骤、跨文件、真实测试条件或交给别的编辑器继续时，必须创建或更新']);
+});
+
 test('续作先读根目录且与旧快照及迁移检查共存', () => {
   requireText(rules(), ['每次继续、换会话、上下文压缩', '先读根目录当前任务区块', '不能只凭聊天回忆',
     '不维护三份互相独立的待办', '清单打勾不替代', '修改清单后旧指纹失效', '不手填成功或排除文件绕过',
@@ -87,7 +97,7 @@ test('入口与个性化同一短模板接入清单，小改不升级迁移程�
   assert.equal(personal, bridge);
   assert.ok(Buffer.byteLength(bridge) <= 1800);
   assert.ok(Buffer.byteLength(entry) <= 6000);
-  requireText(entry, ['工作流程.md', '复杂、跨阶段或需要续作时先读/建/更新', '任务卡', '续作先读', 'quick-core.md']);
+  requireText(entry, ['工作流程.md', '复杂/需续作先读/建/更新', '任务卡', '续作先读', 'quick-core.md']);
   requireText(bridge, ['工作流程.md', '按任务规模选择任务卡', '复杂或需要续作', '保留历史', '未授权只读不写']);
   const out = reader.readBatch(reader.parse(['--stage', '小改', '--topic', '内容']));
   assert.ok(!out.references.some(e => ['project-migration.md', 'context-memory-continuity.md'].includes(e.file)));
@@ -126,7 +136,7 @@ test('读取技能改变 cwd 不能改变业务清单根，不在全局模板锁
   requireText(rules(), ['SKILL_DIR', '__dirname', 'PROJECT_ROOT` 不随 `cd` 改变', '不能把任一业务项目根目录写死']);
   const entry = text('skills/production-engineering/SKILL.md');
   const bridge = text('global-AGENTS.example.md');
-  requireText(entry, ['当前聊天关联源文件夹', 'PROJECT_ROOT/工作流程.md']);
+  requireText(entry, ['当前聊天关联 `PROJECT_ROOT`', 'PROJECT_ROOT/工作流程.md']);
   requireText(bridge, ['当前聊天关联源目录', '不跨项目共用']);
 });
 test('多源目录和多聊天的清单隔离必须核对实际归属', () => {
@@ -159,7 +169,7 @@ test('项目写入必须先过工作流程门禁，门禁失败不得继续', ()
   const agent = text('skills/production-engineering/agents/openai.yaml');
   const globalAgents = text('global-AGENTS.example.md');
   const personal = text('docs/personal-custom-instructions.md');
-  requireText(entry, ['工作流程写入门禁', '第一项标为“进行中”', '停止业务写入并报告', 'source-policy.md']);
+  requireText(entry, ['清单门禁', '首项标“进行中”', 'source-policy.md']);
   requireText(workflow, ['先读/建/更新该清单', '门禁失败停止业务写入', '把首项标为“进行中”']);
   assertAgentDelegates(agent);
   requireText(globalAgents, ['当前对话项目根目录的 `工作流程.md`', '详细流程只在 Skill']);

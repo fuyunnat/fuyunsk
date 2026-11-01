@@ -27,7 +27,7 @@ test('实施前评估保持通用并覆盖问题、方案、成本和验收', ()
     '不能用想象补齐',
   ]) assert.ok(preflight.includes(value), `缺少评估门禁：${value}`);
 
-  assert.match(skill, /先评估再执行|实施前/);
+  assert.match(skill, /先评估|task-card\.md/);
   assert.match(routing, /preflight-decision\.md/);
 });
 

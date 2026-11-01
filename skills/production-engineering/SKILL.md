@@ -11,19 +11,20 @@ description: "实现、修复、调试、UI、SEO、Git、数据库、部署、�
 
 ## 一个执行流程
 
-0. **先评估再执行**：写文件前先用 `task-card.md` 形成任务卡，再按 `preflight-decision.md` 确认目标、方案、风险和验收；复杂/需续作或只说“优化”时记入 `工作流程.md`。
-1. **查明目标**：先读用户提供的源码，列目录不算已读；明确改变什么、保留什么、依据在哪。源码可查不反问；明确要求直接执行。结果歧义暂停受影响修改，用人话反问，给 2–3 个结果选项和推荐；见 `novice-clarification.md`。
-2. **确定边界**：所有写入遵守 `references/project-write-boundary.md`。核实当前聊天关联源文件夹 `PROJECT_ROOT`，非 Codex/技能目录；保护用户改动。原业务逻辑、API、数据、配置、权限、副作用和流程默认锁定；重构、优化、UI/框架/语言重写不授权改变结果。
-3. **开始工作**：工作流程写入门禁见 `workflow-checklist.md`。复杂、跨阶段或需要续作时先读/建/更新 `PROJECT_ROOT/工作流程.md`，第一项标为“进行中”；快速小改使用对话内任务卡，发现升级条件再落盘；门禁失败停止业务写入并报告。续作先读；用户中途补充若导致升级立即记入、算必做
-4. **实施与验证**：同批读适用规则；Bug 有证据即修复，两次最小修复失败再深入诊断。范围与停止见 `bounded-completion.md`，回归只验相关影响。
-5. **收尾**：事项全部做完或写明阻塞才停，不中途问是否继续。用人话说改好了什么、用户现在能做什么；提交/推送/PR/main/部署分别报告。
+0. **先评估**：写文件前读 `task-card.md`、`preflight-decision.md`，确认目标、方案、风险和验收；复杂/需续作或“优化”时记入 `工作流程.md`。
+1. **查明目标**：先读用户源码，列目录不算已读；明确改变、保留和依据。源码可查不反问；结果歧义暂停，用人话给 2–3 个选项和推荐；见 `novice-clarification.md`。
+2. **确定边界**：所有写入遵守 `references/project-write-boundary.md`。核实当前聊天关联 `PROJECT_ROOT`，非 Codex/技能目录；保护用户改动和原业务逻辑、API、数据、配置、权限、副作用、流程；重构/优化/UI/换栈不擅改结果。
+3. **开始工作**：清单门禁见 `workflow-checklist.md`。复杂/需续作先读/建/更新 `PROJECT_ROOT/工作流程.md`，首项标“进行中”；小改用对话内任务卡，升级再落盘。续作先读；中途补充若升级立即记入、算必做。
+4. **实施与验证**：同批读适用规则；Bug 先复现、看懂再改、亲自验证，两次最小修复失败再深入诊断。范围见 `bounded-completion.md`，回归只验相关影响；写入后真实验收，缺条件先列，不把静态检查当真实测试。
+5. **收尾**：全部做完或写明阻塞才停。用人话说改好了什么、用户现在能做什么；按 `verification-report.md` 报做了什么、没做/卡在哪里、怎么测的、还没测什么、缺什么；无证据不说通过。
 
 ## 按需读取
 
 | 场景 | 读取内容 |
 | --- | --- |
 | 开始/只读 | `rules/00-00.md`、`01-00.md`、`02-01.md` |
-| Bug、报错、功能异常且用户要求修复 | `bugfix-fast-loop.md`、`observability-debugging.md`、`delivery-feedback.md`：先复现、看懂再改、亲自验证；升级后才读 `diagnosis-feedback-loop.md` |
+| Bug、报错、修复 | `bugfix-fast-loop.md`、`observability-debugging.md`、`delivery-feedback.md`；升级后读 `diagnosis-feedback-loop.md` |
+| 写入后测试与收尾 | `verification-report.md`；真实验收、缺条件和五项交付报告 |
 | 规划清单/模板二开/别写死/写代码 | `planning-persistence.md`、`parallel-template-development.md`、`configuration-localization.md`、`code-craft.md` |
 | 前端/后台 | 第九章、`frontend-stack.md`、`frontend-interface-quality.md`、`ui-design-workflow.md`；无前端用 `mc-ui-scaffold.md` |
 | UI视觉、太大占屏、跑版 | `frontend-design-intelligence.md`、`ui-visual-verification.md` |

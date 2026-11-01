@@ -39,8 +39,8 @@ test('所有会写或交付的阶段自动加载行为保护，纯只读不强�
 });
 
 test('Skill 和隐式调用入口明确禁止重构/UI 重写擅改业务结果', () => {
-  assert.match(skill, /原业务逻辑、API、数据、配置、权限、副作用和流程默认锁定/);
-  assert.match(skill, /UI\/框架\/语言重写不授权改变结果/);
+  assert.match(skill, /原业务逻辑、API、数据、配置、权限、副作用、流程/);
+  assert.match(skill, /重构\/优化\/UI\/换栈不擅改结果/);
   assertAgentDelegates(agent);
   assert.match(globalAgents, /仅换实现不改结果/);
   assert.match(globalAgents, /旧业务、接口、权限、数据、配置和客户端先兼容，验证后再淘汰/);

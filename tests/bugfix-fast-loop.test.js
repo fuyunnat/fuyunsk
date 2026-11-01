@@ -49,7 +49,7 @@ test('故障修复领域只先加载快速闭环，不预加载深入诊断', ()
 });
 
 test('入口和路由明确区分普通修复与深入诊断', () => {
-  assert.match(skill, /Bug、报错、功能异常且用户要求修复/);
+  assert.match(skill, /Bug 先复现、看懂再改、亲自验证/);
   assert.match(skill, /两次最小修复失败再深入诊断/);
   assert.match(routing, /先 `bugfix-fast-loop\.md`；只有升级条件才读 `diagnosis-feedback-loop\.md`/);
   assert.ok(Buffer.byteLength(skill) <= 6000, 'SKILL.md 应保持 6000 bytes 以内');
