@@ -97,11 +97,23 @@ test('入口与个性化同一短模板接入清单，小改不升级迁移程�
   assert.equal(personal, bridge);
   assert.ok(Buffer.byteLength(bridge) <= 1800);
   assert.ok(Buffer.byteLength(entry) <= 6000);
-  requireText(entry, ['工作流程.md', '复杂/需续作先读/建/更新', '任务卡', '续作先读', 'quick-core.md']);
-  requireText(bridge, ['工作流程.md', '按任务规模选择任务卡', '复杂或需要续作', '保留历史', '未授权只读不写']);
+  requireText(entry, ['工作流程.md', '跨文件/多步/缺真实测试条件/需交接/已有清单/要进度', '任务卡', '续作先读', 'quick-core.md']);
+  requireText(bridge, ['工作流程.md', '先选任务卡', '跨文件、多步、缺真实测试条件、需交接、已有清单或要进度', '保留历史', '未授权只读不写']);
   const out = reader.readBatch(reader.parse(['--stage', '小改', '--topic', '内容']));
   assert.ok(!out.references.some(e => ['project-migration.md', 'context-memory-continuity.md'].includes(e.file)));
   assert.ok(!out.rules.some(e => e.id === '02-06' || e.id.startsWith('04-')));
+});
+
+test('入口、全局短块、任务卡和快速小改使用同一套清单触发条件', () => {
+  const entry = text('skills/production-engineering/SKILL.md');
+  const bridge = text('global-AGENTS.example.md');
+  const card = text('skills/production-engineering/references/task-card.md');
+  const quick = text('skills/production-engineering/references/quick-core.md');
+  for (const body of [entry, bridge, card, quick]) {
+    for (const phrase of ['跨', '真实测试条件', '交接', '已有清单', '进度', '工作流程.md']) assert.ok(body.includes(phrase), phrase);
+  }
+  requireText(card, ['跨两个以上文件/模块、两步以上实现或测试', '要交给其他编辑器']);
+  requireText(quick, ['跨两文件、两步实现/测试、缺真实测试条件', '需交接']);
 });
 
 test('安装只提供空模板，不把本仓库历史冒充业务项目进度', () => {

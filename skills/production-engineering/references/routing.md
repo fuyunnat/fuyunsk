@@ -26,7 +26,7 @@ node <技能目录>/scripts/read-rules.js --id 04-04
 | 后台可调业务参数/配置化 | 十五及实现/验证；`configuration-localization.md` |
 | 打包/发布产物 | `release-packaging.md` |
 | 对接/长任务反馈 | `delivery-feedback.md` |
-| 前端与后台 | 六/七/九/二十；`frontend-stack.md`、无前端用 `mc-ui-scaffold.md`、`frontend-interface-quality.md`、`ui-design-workflow.md`、配置化 |
+| 前端与后台 | 六/七/九/二十；页面加载 `frontend-delivery-loop.md`；`frontend-stack.md`、无前端/参考 mc-ui 用 `mc-ui-scaffold.md`、`frontend-interface-quality.md`、`ui-design-workflow.md`、配置 |
 | 前端交付 | 前端/接口/验证/Git；`frontend-delivery-loop.md` |
 | 视觉设计 | 前端/验证；`frontend-design-intelligence.md` |
 | UI视觉验证 | 前端/验证；`ui-visual-verification.md` |
@@ -46,15 +46,15 @@ node <技能目录>/scripts/read-rules.js --id 04-04
 
 ## 专项选择
 
-视觉设计：重新设计、精修、太丑、质感、不会美工、你看着弄。AI 定方向；纯提问/仅发图不写文件。尺寸/密度、跑版、溢出或参考图追加 UI视觉验证。普通按钮修复和严格原样迁移不加载重设计。
+视觉设计：重新设计、精修、太丑、质感、不会美工、你看着弄。AI 定方向；纯提问/仅发图不写文件。尺寸/密度、跑版、溢出或参考图追加 UI视觉验证；普通按钮修复和严格原样迁移不加载重设计。
 
-公开可索引前台新建/大改按需做轻量 SEO Guard；明确 SEO 才完整加载；后台不做全站审计。配置化区分启动连接与后台运营参数，前台文案沿用 i18n。上游同步只吸收已确认目标；完成条件见 bounded-completion，源文件不覆盖派生功能。
+公开可索引前台新建/大改按需做轻量 SEO Guard；明确 SEO 才完整加载；后台不做全站审计。配置化区分启动连接与运营参数，前台文案沿用 i18n。上游同步只吸收已确认目标；完成条件见 bounded-completion。
 
 代理、独立 reviewer 和 worktree 只在有实际价值且授权适用时使用。子代理给最小上下文，真正独立才并行；普通小改不增加这一层。安全和业务风险不因读取速度而降级。
 
 ## Git 按阶段读取
 
-原文第四章拆为 `04-00.md` 至 `04-10.md`：00 边界，01 提交，02 测试，03 分支/推送，04 中文提交格式，05 检查，06 远端风险，07 PR，08 回滚，09 CI，10 证据。按当前阶段读取，主线/合并/部署以明确授权为准，详见 `git-team-delivery.md`。
+原文第四章拆为 `04-00.md` 至 `04-10.md`：00 边界、01 提交、02 测试、03 分支/推送、04 中文提交格式、05 检查、06 远端风险、07 PR、08 回滚、09 CI、10 证据。按阶段读取，主线/合并/部署需授权，详见 `git-team-delivery.md`。
 
 生产日志是交付能力：失败路径无日志不能交付。每次启动新建带时间戳文件。写法只见 `observability-debugging.md`，不在这里再写一遍。
 

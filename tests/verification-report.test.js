@@ -37,3 +37,20 @@ test('安装说明列出验证报告且不把业务清单带进安装目录', ()
   assert.match(body, /references\/verification-report\.md/);
   assert.match(body, /不创建任何业务 `工作流程\.md`/);
 });
+
+test('入口统一工作流程触发条件，并把已有前端视觉优先级放在入口', () => {
+  const entry = read('SKILL.md');
+  const global = fs.readFileSync(path.join(root, 'global-AGENTS.example.md'), 'utf8');
+  const personal = fs.readFileSync(path.join(root, 'docs/personal-custom-instructions.md'), 'utf8');
+  const taskCard = read('references/task-card.md');
+  const quick = read('references/quick-core.md');
+  for (const body of [entry, global, personal, taskCard, quick]) {
+    assert.match(body, /跨.{0,4}文件/);
+    assert.match(body, /真实测试条件/);
+    assert.match(body, /交接/);
+    assert.match(body, /已有清单/);
+  }
+  assert.match(entry, /已有前端先沿用原框架、配色、字体、图标；无前端用 mc-ui/);
+  assert.match(quick, /改页面\/样式：打开真实路由看桌面\/手机布局、配色、字体、图标/);
+  assert.match(taskCard, /视觉基线来源|交接摘要/);
+});
