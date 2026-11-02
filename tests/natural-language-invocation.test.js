@@ -41,3 +41,33 @@ test('个性化文档中的模板与 global-AGENTS 完全一致', () => {
   assert.ok(match, '缺少个性化模板代码块');
   assert.equal(match[1].trim(), globalAgents);
 });
+
+test('目标提示词接入可发现入口，隐式调用先走只输出分支', () => {
+  const description = skill.match(/^description: (.*)$/m)?.[1];
+  assert.ok(description?.includes('目标提示词'), 'Skill 元数据应识别目标提示词');
+  for (const body of [globalAgents, personal]) assert.ok(body.includes('目标提示词'));
+  assert.match(globalAgents.split('\n').find(line => line.startsWith('- ')), /目标提示词只输出；实施前先选任务卡/);
+  const prompt = agent.match(/default_prompt: (.*)$/m)?.[1];
+  assert.match(prompt, /先按 SKILL\.md 判别“目标提示词”只输出分支/);
+  assert.match(prompt, /独立口令或明确要求生成才命中，讨论\/修改该约定不算/);
+  assert.match(prompt, /缺资料用【待补】模板，不追问/);
+  assert.match(prompt, /含必做、验收及完成即停/);
+  assert.match(prompt, /输出后停/);
+  assert.ok(prompt.indexOf('目标提示词') < prompt.indexOf('先评估'), '隐式提示不得先评估实施再判别只输出请求');
+});
+
+test('只要目标提示词时不被任务卡、清单、面板或执行流程抢先', () => {
+  const branch = skill.match(/\*\*目标提示词优先\*\*：[\s\S]*?(?=\n\n)/)?.[0];
+  assert.ok(branch, '入口缺少优先的目标提示词分支');
+  assert.match(branch, /独立口令或明确要生成“目标提示词”时/);
+  assert.match(branch, /已有上下文/);
+  assert.match(branch, /可复制、独立可用/);
+  assert.match(branch, /缺资料用【待补】模板，不追问/);
+  assert.match(branch, /含必做、验收及完成即停/);
+  assert.match(branch, /输出后停/);
+  assert.match(branch, /不启动目标、不执行代码\/改文件\/建清单\/开面板\/调用目标工具/);
+  assert.match(branch, /按需读 `references\/planning-persistence\.md`/);
+  assert.ok(skill.indexOf(branch) < skill.indexOf('**先分轻重**'), '只输出分支须先于任务卡分流');
+  assert.match(skill, /## 实施流程（记录收尾、目标提示词除外）/);
+  assert.ok(Buffer.byteLength(skill) <= 5000, '新增分支后不得放宽 SKILL.md 的 5000 bytes 预算');
+});

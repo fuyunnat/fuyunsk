@@ -31,6 +31,7 @@ const domains = {
   '模板二开': { topics: ['代码组织', '前端', '接口', '验证'], ids: ['06-00'], references: ['parallel-template-development.md', 'frontend-interface-quality.md', 'configuration-localization.md'] },
   '进度面板': { topics: ['续航', '报告'], references: ['workflow-progress-panel.md'] },
   '规划清单': { topics: ['续航', '报告'], references: ['planning-persistence.md', 'workflow-checklist.md', 'context-memory-continuity.md'] },
+  '目标提示词': { topics: ['通用', '适用方式', '报告'], references: ['planning-persistence.md'] },
   '代理执行': { topics: ['代码组织', '实现', '验证', 'Git评审', '续航'], references: ['agentic-execution.md', 'spec-review.md', 'context-memory-continuity.md'] },
   '续航': { topics: ['续航'], references: ['context-memory-continuity.md'] },
   '视觉设计': { topics: ['代码组织', '前端', '验证'], ids: ['06-00'], references: ['frontend-design-intelligence.md', 'frontend-interface-quality.md', 'ui-design-workflow.md', 'configuration-localization.md'] },
@@ -63,6 +64,7 @@ const standaloneFrontendFixTopics = new Set(['前端', '故障修复', '通用',
 
 function planBatch(stage, topics = [], references = []) {
   if (!Object.hasOwn(stages, stage)) throw new Error(`未知读取阶段：${stage}`);
+  if (topics.includes('目标提示词') && stage !== '只读') throw new Error('目标提示词只输出不执行，请使用只读阶段');
   if (stage === '小改' && topics.includes('整项目迁移')) throw new Error('整项目迁移不能使用小改阶段；先只读规划，再按实现阶段执行');
   // 记录阶段不是省略业务规则的通用开关；混合任务应换阶段，不能静默丢掉调用方显式请求的规则。
   if (stage === '记录收尾') {
