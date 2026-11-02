@@ -76,6 +76,7 @@ function parse(args) {
 function readBatch(opts, dir = base) {
   if (opts.stage && opts.source !== '原文') throw new Error('阶段批量读取仅使用最后上传原文');
   if (!opts.stage && opts.references.length) throw new Error('--reference 必须与 --stage 一起使用');
+  if (opts.stage === '记录收尾' && opts.ids.length) throw new Error('记录收尾不能追加 --id；需要其他条款时请改用适用阶段');
   const plan = opts.stage ? planBatch(opts.stage, opts.topics, opts.references) : null;
   const topics = JSON.parse(fs.readFileSync(path.join(dir, 'rule-topics.json'), 'utf8'));
   const ids = [...opts.ids, ...(plan?.ids || [])];
@@ -112,6 +113,8 @@ function main(args) {
 批量：read-rules.js --stage 实现 --topic 前端,接口 [--reference design-testing.md] [--json]
 阶段：${stages.join('、')}。--list 只列主题；所有方式均不执行工程操作。
 选择阶段前须判断只读、风险与授权；阶段只是读取清单，不能代替这些判断。
+记录收尾：仅更新已确认事实的现有进度、交接或测试回执；先确认相关实现未变且原证据有效。
+代码、配置、依赖或业务文档约定有变化、要求 Git 外部交付或证据失效/不明时改用适用阶段；不能混入领域专项或 --id。
 验证、提交等后续阶段用于已开始的任务；新任务从中途开始时追加 --topic 通用,适用方式。`);
     return;
   }

@@ -36,7 +36,12 @@ test('用户可见专项能力必须同时接到入口、路由、批量加载�
 
 test('Code Craft 不是独立自然语言领域，但必须从代码实现入口自动可达', () => {
   for (const body of [skill, routing, batch]) assert.ok(body.includes('code-craft.md') || body.includes('Code Craft'));
-  assert.match(skill, /规划清单\/模板二开\/别写死\/写代码.*code-craft\.md/);
+  // 表格标签可简写；实现入口必须保留完整领域连接。
+  const codeEntry = skill.split('\n').find(line => line.startsWith('| ') && line.includes('code-craft.md'));
+  assert.match(codeEntry, /代码/);
+  for (const ref of ['planning-persistence.md', 'parallel-template-development.md', 'configuration-localization.md', 'code-craft.md']) {
+    assert.ok(codeEntry.includes(ref), ref);
+  }
   assert.match(routing, /写代码默认应用专业代码工艺/);
   assert.match(batch, /codeCraftStages/);
 });

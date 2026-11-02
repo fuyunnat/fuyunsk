@@ -4,6 +4,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
+const { spawnSync } = require('node:child_process');
 
 const root = path.resolve(__dirname, '..');
 const skill = path.join(root, 'skills/production-engineering');
@@ -29,11 +30,26 @@ test('小白反问只问结果歧义，不把技术选择甩给用户', () => {
   assert.match(policy, /我建议 B/);
 });
 
-test('所有阶段自动加载小白反问规则', () => {
-  for (const stage of stages) {
+test('原有阶段自动加载小白反问规则，记录收尾只处理已确认事实', () => {
+  const originalStages = ['只读', '小改', '实现', '验证', '提交', '推送', '评审', '回滚'];
+  assert.ok(originalStages.every(stage => stages.includes(stage)));
+  for (const stage of originalStages) {
     const plan = planBatch(stage, []);
     assert.ok(plan.references.includes('novice-clarification.md'), `${stage} 未加载反问规则`);
   }
+  const record = planBatch('记录收尾');
+  assert.ok(!record.references.includes('novice-clarification.md'), '确认事实的记录回填不加载完整反问专项');
+  for (const file of ['source-policy.md', 'verification-report.md', 'workflow-checklist.md',
+    'bounded-completion.md', 'project-write-boundary.md']) assert.ok(record.references.includes(file), file);
+});
+
+test('记录收尾证据不明时需升级，CLI帮助不把阶段选择当授权', () => {
+  const result = spawnSync(process.execPath, [path.join(skill, 'scripts/read-rules.js'), '--help'], { encoding: 'utf8' });
+  assert.equal(result.status, 0, result.stderr);
+  assert.match(result.stdout, /记录收尾：仅更新已确认事实/);
+  assert.match(result.stdout, /相关实现未变且原证据有效/);
+  assert.match(result.stdout, /证据失效\/不明时改用适用阶段/);
+  assert.match(result.stdout, /阶段只是读取清单，不能代替这些判断/);
 });
 
 test('UI 重写与原样迁移不再因有源码而自动混淆', () => {

@@ -16,7 +16,7 @@ const run = args => spawnSync(process.execPath, [script, ...args], {
   encoding: 'utf8', maxBuffer: 4 * 1024 * 1024,
 });
 
-for (const stage of stages) test(`${stage}阶段：一次读取结果与原条款及专项文件逐字节相同`, () => {
+for (const stage of stages.filter(stage => stage !== '记录收尾')) test(`${stage}阶段：一次读取结果与原条款及专项文件逐字节相同`, () => {
   const result = run(['--stage', stage, '--topic', '前端,接口', '--json']);
   assert.equal(result.status, 0, result.stderr);
   const out = JSON.parse(result.stdout);
@@ -31,6 +31,58 @@ for (const stage of stages) test(`${stage}阶段：一次读取结果与原条�
     assert.equal(e.text, b.toString('utf8'));
     assert.equal(e.sha256, sha(b));
     assert.equal(e.bytes, b.length);
+  }
+});
+
+test('记录收尾从真实CLI只读取既有事实回填所需规则，不默认带业务实施或面板专项', () => {
+  const result = run(['--stage', '记录收尾', '--json']);
+  assert.equal(result.status, 0, result.stderr);
+  const out = JSON.parse(result.stdout);
+  assert.equal(out.stage, '记录收尾');
+  assert.deepEqual(new Set(out.references.map(e => e.file)), new Set([
+    'source-policy.md', 'verification-report.md', 'workflow-checklist.md',
+    'bounded-completion.md', 'project-write-boundary.md',
+  ]));
+  assert.ok(out.rules.some(e => e.id === '20-00'), '记录阶段仍保留真实验证要求');
+  assert.ok(out.rules.some(e => e.id === '22-00'), '记录阶段仍保留完成条件');
+  assert.ok(out.rules.some(e => e.id === '23-00'), '记录阶段仍保留证据报告');
+  assert.ok(!out.rules.some(e => /^(?:04|06|07|08|09|10|11|13|14|15|16|19)-/.test(e.id)));
+  for (const e of out.references) {
+    const bytes = fs.readFileSync(path.join(refs, e.file));
+    assert.equal(e.text, bytes.toString('utf8'));
+    assert.equal(e.sha256, sha(bytes));
+    assert.equal(e.bytes, bytes.length);
+  }
+  const repeated = run(['--stage', '记录收尾', '--topic', '通用,适用方式,验证,完成,报告,禁止行为',
+    '--reference', 'verification-report.md,workflow-checklist.md', '--json']);
+  assert.equal(repeated.status, 0, repeated.stderr);
+  assert.deepEqual(JSON.parse(repeated.stdout), out);
+});
+
+test('记录收尾显式拒绝代码、配置、依赖、业务文档、Git交付与面板等不适用组合', () => {
+  const extraArgs = [
+    ...['实现', '完整', '前端', '后端', '接口', '数据库', '配置化', '配置部署', '依赖',
+      '内容', '规划清单', '进度面板', '续航', '代理执行', 'Git交付', 'Git提交', 'Git推送',
+      'Git评审', 'Git回滚', '审计'].map(topic => ['--topic', topic]),
+    ...['code-craft.md', 'behavior-preservation.md', 'task-card.md', 'spec-review.md',
+      'git-team-delivery.md', 'configuration-localization.md', 'content-writing-quality.md',
+      'workflow-progress-panel.md'].map(file => ['--reference', file]),
+    ['--topic', '验证,接口'], ['--reference', 'verification-report.md,spec-review.md'],
+    ['--id', '04-04'], ['--id', '23'],
+  ];
+  for (const args of extraArgs) {
+    const result = run(['--stage', '记录收尾', ...args, '--json']);
+    assert.notEqual(result.status, 0, args.join(' '));
+    assert.equal(result.stdout, '', args.join(' '));
+    assert.match(result.stderr, /记录收尾(?:仅用于|不能)/, args.join(' '));
+  }
+});
+
+test('记录收尾帮助说明适用前提与升级边界，不把读取阶段当实现或授权判断', () => {
+  const result = run(['--help']);
+  assert.equal(result.status, 0, result.stderr);
+  for (const text of ['记录收尾', '进度', '交接', '测试回执', '代码', '配置', '依赖', '业务文档', 'Git', '证据']) {
+    assert.ok(result.stdout.includes(text), text);
   }
 });
 

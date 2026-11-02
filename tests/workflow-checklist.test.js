@@ -214,3 +214,23 @@ test('进入下一个逻辑事项前核对清单，标准状态与阶段范围�
   requireText(rules(), ['进入下一个逻辑事项前', '先补记录再写业务代码', '不需要每个工具调用写一次',
     '状态用标准标签', '阶段、隔离验收和保留未提交等备注放描述', '本轮不做不等于已取消']);
 });
+
+test('仅记录收尾复用未变规则与有效证据，不新建状态设施或重跑业务', () => {
+  const out = reader.readBatch(reader.parse(['--stage', '记录收尾']));
+  const files = out.references.filter(e => e.file === 'workflow-checklist.md');
+  assert.equal(files.length, 1);
+  assert.equal(files[0].text, rules());
+  requireText(files[0].text, ['--stage 记录收尾', '仅补现有进度/交接/测试回执',
+    '实现、环境和证据仍有效', '完整读过且未变的规则复用', '只核对受影响记录', '更新后重读',
+    '不为记录新建任务卡、快照或面板', '不重跑业务', 'Git交付', '转正常阶段']);
+  assert.ok(!out.references.some(e => ['task-card.md', 'workflow-progress-panel.md',
+    'code-craft.md', 'spec-review.md'].includes(e.file)));
+  assert.ok(Buffer.byteLength(rules()) <= 8500, '保持原有清单规则字节预算');
+});
+
+test('收尾有限核对相关旧未完ID，纠正旧状态有证据且不掩盖真实交付缺口', () => {
+  requireText(rules(), ['本轮相关旧未完 ID', '后续证据', '不全仓重扫历史', '不能只改最新任务',
+    '不能以“历史快照”掩盖真实未完', '缺上线/现场验收', '待条件', '下一步',
+    '证据不足', '未核实', '局部更新旧标题/状态/勾选', '注明依据',
+    '用户要求纠正旧状态的例外', '保留原日志/证据', '不得全部打勾', '不改锁定原稿']);
+});

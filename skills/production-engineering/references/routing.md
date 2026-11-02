@@ -1,19 +1,20 @@
 # 原文执行路由
 
-只选读取范围，不重复执行规则。阶段/领域已知时同批读取：
+只选范围，不重复执行规则；阶段/领域已知就同批读取：
 
 ```bash
 node <技能目录>/scripts/read-rules.js --stage 实现 --topic 前端,接口
 node <技能目录>/scripts/read-rules.js --id 04-04
 ```
 
-无 Node.js 直接读文件，不装依赖。旧主题/编号接口不变；第九章带 `frontend-stack.md`。仅内容缺失、截断或版本变化才重读。授权例外见 `source-policy.md`；读取器不扫项目、不写、不恢复任务。
+无Node.js读文件，不装依赖。旧主题/编号不变；第九章带 `frontend-stack.md`。规则已完整读到当前上下文且未变就复用；缺失、截断、版本/边界变化才补读相关部分。独立只读同批做并逐项看结果，依赖/写入顺序做；源码/Git/运行事实核实。例外见 `source-policy.md`；读取器不扫项目、不写、不恢复任务。
 
 ## 领域路由
 
 | 主题 | 原文范围；专项 |
 | --- | --- |
-| 快速小改以外会写项目文件 | 工作流程门禁；`preflight-decision.md`、`workflow-checklist.md`、`bounded-completion.md`、`project-write-boundary.md` |
+| 实施写入（仅补记录除外） | 工作流程门禁；`preflight-decision.md`、`workflow-checklist.md`、`bounded-completion.md`、`project-write-boundary.md` |
+| 仅补进度/交接/测试回执 | `--stage 记录收尾`；相关实现未变才用，见 `workflow-checklist.md` |
 | 通用/明确局部小改 | 零/一/二/三及六/七/二十适用部分 |
 | Bug、报错、功能异常且用户要求修复 | 六/七/二十；先 `bugfix-fast-loop.md`；只有升级条件才读 `diagnosis-feedback-loop.md` |
 | 二开/派生项目同步上游、官方修复或新功能 | 六/七/二十；`upstream-sync.md` |
@@ -48,14 +49,14 @@ node <技能目录>/scripts/read-rules.js --id 04-04
 
 视觉设计：重新设计、精修、太丑、质感、不会美工、你看着弄。AI 定方向；纯提问/仅发图不写文件。尺寸/密度、跑版、溢出或参考图追加 UI视觉验证；普通按钮修复和严格原样迁移不加载重设计。
 
-公开可索引前台新建/大改按需做轻量 SEO Guard；明确 SEO 才完整加载；后台不做全站审计。配置化区分启动连接与运营参数，前台文案沿用 i18n。上游同步只吸收已确认目标；完成条件见 bounded-completion。
+公开可索引前台新建/大改按需做轻量 SEO Guard；明确 SEO 才完整加载，后台不审计全站。配置化区分启动值/运营值，文案沿用 i18n；上游同步只吸收已确认目标，收尾见 bounded-completion。
 
-代理、独立 reviewer 和 worktree 只在有实际价值且授权适用时使用。子代理给最小上下文，真正独立才并行；普通小改不增加这一层。安全和业务风险不因读取速度而降级。
+代理/reviewer/worktree仅在有价值且授权适用时用，给最小上下文；真正独立才并行，普通小改不增加这一层。提速不降低安全和业务约束。
 
 ## Git 按阶段读取
 
-原文第四章拆为 `04-00.md` 至 `04-10.md`：00 边界、01 提交、02 测试、03 分支/推送、04 中文提交格式、05 检查、06 远端风险、07 PR、08 回滚、09 CI、10 证据。按阶段读取，主线/合并/部署需授权，详见 `git-team-delivery.md`。
+Git按阶段读原文第四章 `04-00.md` 至 `04-10.md`（含中文提交格式）；主线/合并/部署需授权，见 `git-team-delivery.md`。
 
-生产日志是交付能力：失败路径无日志不能交付。每次启动新建带时间戳文件。写法只见 `observability-debugging.md`，不在这里再写一遍。
+生产日志是交付能力：失败路径无日志不能交付。每次启动新建带时间戳文件。见 `observability-debugging.md`。
 
 原稿与授权见 source-policy；`rules-speed/01-01.md`、`01-02.md` 保留组织/回归补充。外部方法按需选 `design-testing.md`、`proven-engineering-methods.md`；来源维护才读 `upstream-notes.md`。

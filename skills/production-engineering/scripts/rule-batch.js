@@ -1,6 +1,10 @@
 'use strict';
 
 // 只把调用方已判定的阶段与领域组合成读取清单，不识别自然语言、不授权操作。
+const recordCloseout = {
+  topics: ['通用', '适用方式', '验证', '完成', '报告', '禁止行为'],
+  references: ['source-policy.md', 'verification-report.md', 'workflow-checklist.md', 'bounded-completion.md', 'project-write-boundary.md'],
+};
 const stages = {
   '只读': { topics: ['通用', '适用方式'], references: [] },
   '小改': { topics: ['通用', '适用方式', '小改', '实现', '验证', '完成', '报告'], references: ['preflight-decision.md'] },
@@ -13,6 +17,7 @@ const stages = {
   '推送': { topics: ['Git推送', '续航'], references: ['git-team-delivery.md'] },
   '评审': { topics: ['Git评审', '完成', '报告'], references: ['git-team-delivery.md', 'spec-review.md'] },
   '回滚': { topics: ['Git回滚', '灰度回滚', '验证', '报告'], references: ['git-team-delivery.md'] },
+  '记录收尾': recordCloseout,
 };
 
 // 对齐 routing.md 的领域并集。旧 --topic 仍为原有精确主题，不改变其含义。
@@ -59,12 +64,20 @@ const standaloneFrontendFixTopics = new Set(['前端', '故障修复', '通用',
 function planBatch(stage, topics = [], references = []) {
   if (!Object.hasOwn(stages, stage)) throw new Error(`未知读取阶段：${stage}`);
   if (stage === '小改' && topics.includes('整项目迁移')) throw new Error('整项目迁移不能使用小改阶段；先只读规划，再按实现阶段执行');
+  // 记录阶段不是省略业务规则的通用开关；混合任务应换阶段，不能静默丢掉调用方显式请求的规则。
+  if (stage === '记录收尾') {
+    const extraTopics = topics.filter(topic => !recordCloseout.topics.includes(topic));
+    const extraReferences = references.filter(file => !recordCloseout.references.includes(file));
+    if (extraTopics.length || extraReferences.length) {
+      throw new Error(`记录收尾仅用于既有进度、交接或测试回执；不能组合主题/专项：${[...extraTopics, ...extraReferences].join('、')}，请改用适用阶段`);
+    }
+  }
   const chosen = stages[stage];
   const result = {
     stage,
     topics: new Set(chosen.topics),
     ids: new Set(),
-    references: new Set(['source-policy.md', 'novice-clarification.md', ...chosen.references, ...(stage === '只读' ? [] : ['task-card.md', 'verification-report.md', 'behavior-preservation.md', 'workflow-checklist.md', 'bounded-completion.md', 'project-write-boundary.md', ...(stage === '小改' ? [] : ['workflow-progress-panel.md'])])]),
+    references: new Set(stage === '记录收尾' ? chosen.references : ['source-policy.md', 'novice-clarification.md', ...chosen.references, ...(stage === '只读' ? [] : ['task-card.md', 'verification-report.md', 'behavior-preservation.md', 'workflow-checklist.md', 'bounded-completion.md', 'project-write-boundary.md', ...(stage === '小改' ? [] : ['workflow-progress-panel.md'])])]),
   };
   for (const topic of topics) {
     const domain = Object.hasOwn(domains, topic) ? domains[topic] : { topics: [topic] };
