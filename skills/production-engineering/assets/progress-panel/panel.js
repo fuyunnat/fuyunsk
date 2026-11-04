@@ -1,6 +1,7 @@
 'use strict';
 const $ = id => document.getElementById(id);
-const state = { projects: [], project: '', task: '', filter: 'all', taskScope: 'all', query: '', followLatest: true, loading: false, snapshot: '' };
+const state = { projects: [], project: '', task: '', filter: 'all', taskScope: 'all', query: '', overviewPage: 0, followLatest: true, loading: false, snapshot: '' };
+const overviewPageSize = 10;
 const keys = { '待做': 'pending', '进行中': 'running', '待验证': 'verifying', '阻塞': 'blocked', '已完成': 'completed', '已取消': 'cancelled', '本轮不做': 'deferred', '未知': 'unknown' };
 const blankCounts = { total: 0, completed: 0, running: 0, verifying: 0, pending: 0, blocked: 0, eligible: 0, cancelled: 0, deferred: 0, unknown: 0 };
 function element(tag, className, text) { const node = document.createElement(tag); if (className) node.className = className; if (text !== undefined) node.textContent = text; return node; }
@@ -21,7 +22,47 @@ function projectSummary(project) {
   return `${project.tasks.length} 条记录 · ${count} 条未完成`;
 }
 function selectTask(id) {
-  const {project} = selection(); state.task = id; state.filter = 'all'; state.followLatest = id === project?.tasks.at(-1)?.id; render();
+  const {project} = selection(); state.task = id; state.filter = 'all'; state.followLatest = id === project?.tasks.at(-1)?.id;
+  const index = matchingTasks(project).findIndex(task => task.id === id);
+  if (index >= 0) state.overviewPage = Math.floor(index / overviewPageSize);
+  $('task-details').open = true; render();
+  $('task-details').querySelector?.('summary')?.focus?.();
+}
+function matchingTasks(project) {
+  return (project?.tasks || []).filter(t => (state.taskScope === 'all' || t.counts.completed < t.counts.eligible) && `${t.title} ${t.id} ${t.conversation}`.toLowerCase().includes(state.query.toLowerCase()));
+}
+function renderOverview(project) {
+  const focusedTask = document.activeElement?.dataset?.overviewTask;
+  const tasks = matchingTasks(project);
+  state.overviewPage = Math.min(state.overviewPage, Math.max(0, Math.ceil(tasks.length / overviewPageSize) - 1));
+  const start = state.overviewPage * overviewPageSize;
+  const rows = tasks.slice(start, start + overviewPageSize).map(task => {
+    const row = element('tr', 'overview-row'), c = task.counts;
+    row.setAttribute('aria-selected', String(task.id === state.task));
+    const stage = element('td', 'overview-stage', String(project.tasks.indexOf(task) + 1).padStart(2, '0'));
+    stage.title = task.id;
+    const content = element('td', 'overview-content'), button = element('button', 'overview-task-button', task.title);
+    button.dataset.overviewTask = task.id;
+    button.type = 'button'; button.title = task.title; button.setAttribute('aria-controls', 'task-details');
+    button.setAttribute('aria-expanded', String(task.id === state.task && $('task-details').open));
+    button.addEventListener('click', () => selectTask(task.id)); content.append(button);
+    if (task.goal) { const goal = element('small', 'overview-goal', task.goal); goal.title = task.goal; content.append(goal); }
+    const status = element('td', 'overview-status'); status.append(badge(taskStatus(task)));
+    if (task.warnings.length) status.append(element('small', 'overview-warning', '需核对'));
+    const progress = element('td', 'overview-progress'); progress.append(element('strong', '', `${c.completed} / ${c.eligible}`));
+    const excluded = [c.cancelled ? `${c.cancelled}项取消` : '', c.deferred ? `${c.deferred}项本轮不做` : ''].filter(Boolean);
+    if (excluded.length) progress.append(element('small', 'overview-excluded', excluded.join(' · ')));
+    const rounded = c.eligible ? Math.round(c.completed * 100 / c.eligible) : null;
+    const percent = rounded === null ? '—' : rounded === 100 && c.completed < c.eligible ? '<100%' : `${rounded}%`;
+    row.append(stage, content, status, progress, element('td', 'overview-percent', percent)); return row;
+  });
+  $('task-overview-body').replaceChildren(...rows); $('overview-empty').hidden = rows.length > 0;
+  if (focusedTask) rows.find(row => row.children[1].children[0].dataset.overviewTask === focusedTask)?.children[1].children[0].focus?.({ preventScroll: true });
+  $('overview-empty').textContent = project?.error || (project?.tasks.length ? '没有符合搜索或筛选条件的任务' : '尚未记录任务');
+  $('overview-count').textContent = String(tasks.length);
+  $('overview-summary').textContent = tasks.length ? `第 ${start + 1}–${Math.min(start + overviewPageSize, tasks.length)} 条，共 ${tasks.length} 条` : '共 0 条';
+  $('overview-prev').disabled = state.overviewPage === 0;
+  $('overview-next').disabled = start + overviewPageSize >= tasks.length;
 }
 function renderProjects() {
   $('project-count').textContent = state.projects.length;
@@ -29,14 +70,14 @@ function renderProjects() {
     const button = element('button', 'project-button'); button.type = 'button'; button.setAttribute('aria-current', String(project.id === state.project));
     const label = element('div', 'project-label'); label.append(element('strong', '', project.name), element('small', '', projectSummary(project)));
     button.append(element('span', 'project-initial', project.name.slice(0, 1)), label);
-    button.addEventListener('click', () => { state.project = project.id; state.task = ''; state.filter = 'all'; state.followLatest = true; state.query = ''; $('task-search').value = ''; render(); });
+    button.addEventListener('click', () => { if (project.id === state.project) return; state.project = project.id; state.task = ''; state.filter = 'all'; state.taskScope = 'all'; state.followLatest = true; state.query = ''; state.overviewPage = 0; $('task-search').value = ''; $('task-details').open = false; render(); });
     return button;
   }));
 }
 function renderTasks(project) {
   const tasks = project?.tasks || [], latest = tasks.at(-1)?.id;
   $('task-count').textContent = tasks.length;
-  const visible = [...tasks].reverse().filter(t => (state.taskScope === 'all' || t.counts.completed < t.counts.eligible) && `${t.title} ${t.id} ${t.conversation}`.toLowerCase().includes(state.query.toLowerCase()));
+  const visible = matchingTasks(project).reverse();
   const nodes = []; let group;
   for (const task of visible) {
     const nextGroup = task.id === latest ? '最近记录' : '历史记录';
@@ -126,7 +167,8 @@ function render() {
   $('project-title').textContent = project?.name || '暂无项目'; $('project-path').textContent = project?.root || '';
   $('task-title').textContent = task?.title || '暂无任务记录'; $('conversation').textContent = `${task?.conversation ? `对话：${task.conversation}` : '独立任务记录'} · ${task && task.id !== tasks.at(-1)?.id ? '正在查看历史任务' : '最近记录'}`;
   $('task-status').textContent = task ? taskStatus(task) : '暂无记录'; $('task-status').className = `status status-${keys[task ? taskStatus(task) : '未知']}`;
-  $('updated').textContent = `最后更新：${date(project?.updatedAt)}`; renderTasks(project);
+  $('updated').textContent = `最后更新：${date(project?.updatedAt)}`; renderTasks(project); renderOverview(project);
+  $('details-task-title').textContent = task?.title || '暂无任务记录';
   $('completed').textContent = counts.completed; $('active').textContent = counts.running + counts.verifying; $('pending').textContent = counts.pending + counts.blocked + counts.unknown;
   $('step-count').textContent = counts.total; $('progress').max = Math.max(1, counts.eligible); $('progress').value = counts.completed;
   $('progress-label').textContent = task ? `${counts.completed} / ${counts.eligible} 项已记录完成${counts.cancelled ? ` · ${counts.cancelled} 项取消` : ''}${counts.deferred ? ` · ${counts.deferred} 项本轮不做` : ''}` : '暂无清单';
@@ -147,10 +189,25 @@ async function refresh() {
     $('notice').textContent = '无法连接本机面板。当前显示上次读取的记录，请检查面板进程或刷新。';
   } finally { state.loading = false; $('refresh').disabled = false; }
 }
-$('task-search').addEventListener('input', event => { state.query = event.target.value; renderTasks(selection().project); });
-for (const scope of ['all', 'open']) $(`scope-${scope}`).addEventListener('click', () => { state.taskScope = scope; renderTasks(selection().project); });
+$('task-search').addEventListener('input', event => { state.query = event.target.value; state.overviewPage = 0; renderTasks(selection().project); renderOverview(selection().project); });
+for (const scope of ['all', 'open']) $(`scope-${scope}`).addEventListener('click', () => { state.taskScope = scope; state.overviewPage = 0; renderTasks(selection().project); renderOverview(selection().project); });
+for (const [id, delta] of [['overview-prev', -1], ['overview-next', 1]]) $(id).addEventListener('click', () => { state.overviewPage = Math.max(0, state.overviewPage + delta); renderOverview(selection().project); });
+$('task-details').addEventListener('toggle', () => renderOverview(selection().project));
+function applyTheme(value) {
+  const theme = ['light', 'dark'].includes(value) ? value : 'system';
+  document.documentElement?.setAttribute('data-theme', theme); $('theme-select').value = theme;
+}
+$('theme-select').addEventListener('change', event => {
+  applyTheme(event.target.value);
+  try { localStorage.setItem('production-panel-theme', event.target.value); } catch { /* 不依赖浏览器存储权限。 */ }
+});
+try { applyTheme(localStorage.getItem('production-panel-theme')); } catch { applyTheme('system'); }
 $('refresh').addEventListener('click', refresh);
 document.querySelectorAll('[data-filter]').forEach(button => button.addEventListener('click', () => { state.filter = button.dataset.filter; renderSteps(selection().task, currentItem(selection().task)); }));
 document.addEventListener('visibilitychange', () => { if (!document.hidden) refresh(); });
-if (typeof window !== 'undefined' && window.matchMedia?.('(max-width: 760px)').matches) $('task-browser').open = false;
+if (typeof window !== 'undefined' && window.matchMedia) {
+  const mobile = window.matchMedia('(max-width: 760px)');
+  if (mobile.matches) $('task-browser').open = false;
+  mobile.addEventListener?.('change', event => { if (event.matches) $('task-browser').open = false; });
+}
 refresh(); setInterval(() => { if (!document.hidden) refresh(); }, 4000);

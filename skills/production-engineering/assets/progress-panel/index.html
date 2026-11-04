@@ -20,10 +20,20 @@
       <div class="sidebar-note"><span class="connection-dot"></span><div>本机只读<small>进度来自工作流程.md</small></div></div>
     </aside>
     <main>
-      <header class="topbar"><div class="breadcrumb">工作台 <span>/</span><strong id="project-title">读取进度中</strong></div><div class="sync"><span id="connection" role="status">正在连接</span><button id="refresh" type="button">刷新</button></div></header>
+      <header class="topbar"><div class="breadcrumb">工作台 <span>/</span><strong id="project-title">读取进度中</strong></div><div class="sync"><select id="theme-select" aria-label="面板外观"><option value="system">跟随系统</option><option value="light">浅色</option><option value="dark">深色</option></select><span id="connection" role="status">正在连接</span><button id="refresh" type="button">刷新</button></div></header>
       <div id="notice" class="notice" role="status" hidden></div>
-      <section class="workspace" aria-labelledby="task-title">
-        <div class="project-heading"><div><p id="project-path" class="project-path"></p><div class="task-heading"><h1 id="task-title">等待读取任务</h1><span id="task-status" class="status"></span></div><p id="conversation" class="muted"></p></div><span class="readonly-badge">自动刷新 · 4 秒</span></div>
+      <section class="workspace" aria-labelledby="overview-title">
+        <div class="project-heading"><div><p id="project-path" class="project-path"></p><h1>项目进度</h1></div><span class="readonly-badge">自动刷新 · 4 秒</span></div>
+        <section class="overview-card" aria-labelledby="overview-title">
+          <div class="overview-heading"><div class="section-heading"><h2 id="overview-title">任务进度</h2><span id="overview-count" class="muted"></span></div><p class="overview-note">点击任务名称查看明细。取消和本轮不做不计入总数；窄屏可左右滑动表格。</p></div>
+          <div class="overview-table-wrap" role="region" aria-label="任务进度表，可横向滚动" tabindex="0">
+            <table class="overview-table"><caption class="sr-only">阶段、任务内容、状态、清单进度及完成率</caption><thead><tr><th scope="col">阶段</th><th scope="col">任务内容</th><th scope="col">状态</th><th scope="col">进度</th><th scope="col">完成率</th></tr></thead><tbody id="task-overview-body"></tbody></table>
+          </div>
+          <p id="overview-empty" class="empty" hidden></p>
+          <div class="overview-footer"><span id="overview-summary" class="muted"></span><div class="overview-pagination" aria-label="表格分页"><button id="overview-prev" type="button">上一页</button><button id="overview-next" type="button">下一页</button></div></div>
+        </section>
+        <details id="task-details" class="selected-details"><summary><strong>任务详情</strong><span id="details-task-title"></span></summary>
+        <div class="selected-task-heading"><div class="task-heading"><h2 id="task-title">等待读取任务</h2><span id="task-status" class="status"></span></div><p id="conversation" class="muted"></p></div>
         <div class="workbench">
           <div class="execution">
             <section class="focus" aria-labelledby="focus-title"><div class="focus-heading"><span id="focus-label" class="eyebrow">当前一步</span><span id="focus-status" class="status"></span></div><h2 id="focus-title">等待读取</h2><p id="next-step"></p></section>
@@ -54,6 +64,7 @@
             <section class="record-info"><span class="connection-dot"></span><div><strong>记录来源</strong><span>工作流程.md</span><span id="updated">最后更新：—</span></div></section>
           </aside>
         </div>
+        </details>
         <footer><span>本机只读 · 保留项目原有记录</span><span>已记录进度，不等于 AI 内部实时状态</span></footer>
       </section>
     </main>

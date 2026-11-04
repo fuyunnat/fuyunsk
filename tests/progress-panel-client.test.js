@@ -98,3 +98,112 @@ test('历史选择明示，退出本轮排除分母但保留阶段范围，不�
   assert.equal(get('focus-title').textContent, '任务本轮不做');
   assert.equal(get('task-count').textContent, '2');
 });
+
+function overviewRows(p) {
+  return (p.elements.get('task-overview-body')?.children || []).filter(row => row.tag === 'tr' && row.children[1]?.children[0]?.tag === 'button');
+}
+function overviewTitles(p) { return overviewRows(p).map(row => row.children[1].children[0].textContent); }
+
+test('任务总览按五列表格显示真实完成率，取消与本轮不做不进入分母', async () => {
+  const p = page(); await settled();
+  p.projects[0].tasks = parseWorkflow('## 任务：MIX — 范围核对\n- [x] M001【已完成】已验\n- [ ] M002【待做】待做\n- [ ] M003【已取消】取消\n- [ ] M004【本轮不做】下轮\n## 任务：ZERO — 无本轮范围\n- [ ] Z001【已取消】取消\n- [ ] Z002【本轮不做】下轮\n## 任务：DONE — 全部完成\n- [x] D001【已完成】已验');
+  p.timers[0](); await settled();
+  const rows = overviewRows(p);
+  assert.equal(rows.length, 3);
+  for (const row of rows) {
+    assert.equal(row.children.length, 5);
+    assert.ok(row.children.every(cell => cell.tag === 'td'));
+    assert.ok(row.children[0].textContent.trim(), '阶段列必须提供可读文本');
+  }
+  const rowFor = title => rows.find(row => row.children[1].children[0].textContent === title);
+  assert.equal(rowFor('范围核对').children[2].textContent, '待做');
+  assert.match(rowFor('范围核对').children[3].textContent, /1\s*\/\s*2/);
+  assert.equal(rowFor('范围核对').children[4].textContent.trim(), '50%');
+  assert.match(rowFor('无本轮范围').children[3].textContent, /0\s*\/\s*0/);
+  assert.equal(rowFor('无本轮范围').children[4].textContent.trim(), '—');
+  assert.equal(rowFor('全部完成').children[4].textContent.trim(), '100%');
+  assert.equal(p.elements.get('overview-count').textContent, '3');
+});
+
+test('任务总览未全部完成不会四舍五入成100%，特殊标题按纯文本显示', async () => {
+  const p = page(); await settled();
+  const unsafe = '<img src=x onerror=alert(1)><script>alert(2)</script>';
+  const completed = Array.from({ length: 200 }, (_, i) => `- [x] R${i + 1}【已完成】已验`).join('\n');
+  p.projects[0].tasks = parseWorkflow(`## 任务：RATIO — ${unsafe}\n${completed}\n- [ ] R999【待验证】最后一项`);
+  p.timers[0](); await settled();
+  const rows = overviewRows(p);
+  assert.equal(rows.length, 1);
+  const [row] = rows, button = row.children[1].children[0];
+  assert.equal(button.textContent, unsafe);
+  assert.equal(button.children.length, 0, '标题应由 textContent 写入，不能插入可执行标签');
+  assert.match(row.children[3].textContent, /200\s*\/\s*201/);
+  const percent = row.children[4].textContent.trim();
+  assert.ok(percent === '<100%' || (/^\d+(?:\.\d+)?%$/.test(percent) && Number.parseFloat(percent) < 100));
+  button.trigger('click');
+  assert.equal(p.elements.get('task-title').textContent, unsafe);
+  assert.equal(p.elements.get('task-details').open, true);
+});
+
+test('任务总览和原任务列表共享搜索及未完成范围，过滤不更改所选详情', async () => {
+  const p = page(); await settled(); const get = id => p.elements.get(id);
+  p.projects[0].tasks = parseWorkflow('## 任务：PAST — 已完成历史\n对话：共同词\n- [x] P001【已完成】完成\n## 任务：NEXT — 继续实施\n对话：共同词\n- [ ] N001【进行中】继续\n## 任务：LAST — 最新记录\n- [ ] L001【待做】等待');
+  p.timers[0](); await settled();
+  const sidebarTitles = () => get('tasks').children.filter(node => node.tag === 'button').map(node => node.attributes['aria-label']);
+  get('task-search').value = '共同词'; get('task-search').trigger('input');
+  assert.deepEqual(overviewTitles(p), ['已完成历史', '继续实施']);
+  assert.deepEqual(overviewTitles(p).sort(), sidebarTitles().sort());
+  assert.equal(get('overview-count').textContent, '2');
+  get('scope-open').trigger('click');
+  assert.deepEqual(overviewTitles(p), ['继续实施']);
+  assert.deepEqual(overviewTitles(p), sidebarTitles());
+  assert.equal(get('overview-count').textContent, '1');
+  assert.equal(get('task-title').textContent, '最新记录');
+  get('task-search').value = '无此任务'; get('task-search').trigger('input');
+  assert.equal(overviewRows(p).length, 0);
+  assert.deepEqual(sidebarTitles(), []);
+  assert.equal(get('overview-count').textContent, '0');
+  assert.equal(get('task-title').textContent, '最新记录');
+});
+
+test('任务总览每页十行，翻页和刷新保留历史详情，搜索与切项目重置页码', async () => {
+  const p = page(); await settled(); const get = id => p.elements.get(id);
+  p.projects[0].tasks = Array.from({ length: 23 }, (_, i) => parseWorkflow(`## 任务：T${i + 1} — 记录${i + 1}\n- [ ] S${i + 1}【待做】执行`)[0]);
+  p.projects[1].tasks = parseWorkflow('## 任务：B1 — 乙项目独立记录\n- [ ] B001【待做】执行');
+  p.projects[1].status = 'ready';
+  p.timers[0](); await settled();
+  assert.equal(overviewRows(p).length, 10);
+  assert.equal(get('overview-count').textContent, '23');
+  assert.equal(get('overview-prev').disabled, true);
+  assert.equal(get('overview-next').disabled, false);
+  assert.match(get('overview-summary').textContent, /1.*10.*23/);
+  get('overview-next').trigger('click');
+  assert.equal(overviewRows(p).length, 10);
+  assert.match(get('overview-summary').textContent, /11.*20.*23/);
+  const chosen = overviewRows(p)[0].children[1].children[0];
+  const chosenTitle = chosen.textContent; chosen.trigger('click');
+  assert.equal(get('task-details').open, true);
+  assert.equal(get('task-title').textContent, chosenTitle);
+  get('overview-next').trigger('click');
+  assert.equal(overviewRows(p).length, 3);
+  assert.equal(get('overview-next').disabled, true);
+  assert.equal(get('task-title').textContent, chosenTitle);
+  p.projects[0].tasks.push(parseWorkflow('## 任务：T24 — 新增记录24\n- [ ] S024【待做】执行')[0]);
+  p.timers[0](); await settled();
+  assert.equal(get('task-title').textContent, chosenTitle);
+  assert.match(get('conversation').textContent, /正在查看历史任务/);
+  get('task-search').value = 'T24'; get('task-search').trigger('input');
+  assert.deepEqual(overviewTitles(p), ['新增记录24']);
+  assert.equal(get('overview-prev').disabled, true);
+  assert.equal(get('task-title').textContent, chosenTitle);
+  get('task-search').value = ''; get('task-search').trigger('input');
+  assert.equal(overviewRows(p).length, 10);
+  get('overview-next').trigger('click');
+  get('projects').children[1].trigger('click');
+  assert.deepEqual(overviewTitles(p), ['乙项目独立记录']);
+  assert.equal(get('task-title').textContent, '乙项目独立记录');
+  assert.equal(get('overview-prev').disabled, true);
+  get('projects').children[0].trigger('click');
+  assert.equal(overviewRows(p).length, 10);
+  assert.equal(get('overview-prev').disabled, true);
+  assert.equal(get('task-title').textContent, '新增记录24');
+});
