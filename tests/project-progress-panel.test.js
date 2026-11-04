@@ -11,6 +11,23 @@ const { registerProjects, readProject, createPanelServer, parseArgs } = require(
 const { planBatch } = require(path.join(skill, 'scripts/rule-batch'));
 const fixture = () => fs.mkdtempSync(path.join(os.tmpdir(), 'progress-panel-'));
 
+test('明确的当前动作与下一步组合字段可读，不凭事项状态猜下一步', () => {
+  const [task] = parseWorkflow('## 任务：T — 当前\n当前动作/下一步：W001进行中；完成后做浏览器验证。\n- [ ] W001【进行中】实现');
+  assert.equal(task.current, 'W001进行中');
+  assert.equal(task.next, '完成后做浏览器验证。');
+  const [closed] = parseWorkflow('## 任务：C — 收尾\n当前动作/下一步：无，本轮结束。\n- [x] C001【已完成】已验证');
+  assert.equal(closed.current, '无，本轮结束。');
+  assert.equal(closed.next, '无，本轮结束。');
+});
+
+test('完整基准后中文句号可读，但不把任意文字清洗成有效提交', () => {
+  const sha = 'a'.repeat(40);
+  const [valid] = parseWorkflow(`## 任务：A — 改动\n基准：${sha}。\n- [ ] A001【进行中】实现`);
+  assert.equal(valid.base, sha);
+  const [invalid] = parseWorkflow(`## 任务：B — 改动\n基准：${sha}尚未核对。\n- [ ] B001【进行中】实现`);
+  assert.equal(invalid.base, sha + '尚未核对。');
+});
+
 test('按任务解析六种状态，代码块示例不计进度，取消不是完成', () => {
   const tasks = parseWorkflow('# 工作流程\n## 任务：A — 第一项\n当前项：W002；下一步：验证\n- [x] W001【已完成】实现；证据：局部检查\n- [ ] W002【进行中】验证\n- [ ] W003【待验证】页面\n- [ ] W004【阻塞】缺接口\n- [ ] W005【已取消】取消\n- [ ] W006【待做】交付\n```markdown\n- [x] FAKE【已完成】示例\n```\n## 任务：B — 第二项\n- [ ] B001【待做】另一任务');
   assert.equal(tasks.length, 2);

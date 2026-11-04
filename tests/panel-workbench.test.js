@@ -21,3 +21,14 @@ test('项目工作台任务直达可检索，阶段与证据区语义可访问�
   assert.doesNotMatch(js,/innerHTML|insertAdjacentHTML|eval\(/);assert.doesNotMatch(js,/method:\s*['"](?:POST|PUT|DELETE)/);
   const css=fs.readFileSync(path.join(assets,'panel.css'),'utf8');assert.match(css,/prefers-reduced-motion/);assert.match(css,/@media/);
 });
+
+test('默认页面先给简明进度，历史导航可展开，QA和长记录有独立分区',()=>{
+  const html=fs.readFileSync(path.join(assets,'index.html'),'utf8');
+  assert.match(html,/id="progress-summary"/);
+  assert.ok(html.indexOf('id="progress-summary"')<html.indexOf('id="task-overview-body"'));
+  assert.doesNotMatch(html,/<details[^>]*id="task-browser"[^>]*\sopen(?:\s|>)/);
+  for(const name of ['progress','proof','changes','records'])assert.match(html,new RegExp(`data-tool-tab="${name}"`));
+  for(const name of ['proof','changes','records'])assert.match(html,new RegExp(`id="tool-${name}"[^>]*hidden`));
+  assert.match(html,/所选任务/);assert.match(html,/下一步/);assert.match(html,/卡点/);
+  assert.match(html,/QA与验收/);assert.match(html,/完整记录/);
+});

@@ -16,11 +16,11 @@ class Element {
   addEventListener(name, callback) { this.events[name] = callback; }
   trigger(name, event = { target: this }) { this.events[name]?.(event); }
 }
-function page() {
+function page(projectsOverride) {
   const elements = new Map(), timers = [];
   const filters = ['all', 'open', 'blocked'].map(filter => { const node = new Element('button'); node.dataset.filter = filter; return node; });
   const document = { hidden: false, getElementById: id => { if (!elements.has(id)) elements.set(id, new Element()); return elements.get(id); }, createElement: tag => new Element(tag), createTextNode: text => ({ textContent: text }), querySelectorAll: () => filters, addEventListener() {} };
-  const projects = [
+  const projects = projectsOverride || [
     { id: 'a', name: '项目甲', root: '/project/a', updatedAt: '2026-10-06T00:00:00Z', status: 'ready', tasks: parseWorkflow('## 任务：OLD — 旧任务\n- [x] O001【已完成】旧记录\n## 任务：NOW — 当前任务\n当前项：W002；下一步：真实验证\n- [x] W001【已完成】实现\n- [ ] W002【进行中】调试\n- [ ] W003【阻塞】账号缺失') },
     { id: 'b', name: '项目乙', root: '/project/b', updatedAt: null, status: 'missing', tasks: [], error: '没有工作流程.md；面板不会创建清单' },
   ];
@@ -31,7 +31,7 @@ function page() {
 }
 const settled = () => new Promise(resolve => setImmediate(resolve));
 
-test('真正页面脚本选择最新任务，项目/任务切换及筛选不会混合历史', async () => {
+test('真正页面脚本选择默认任务，项目/任务切换及筛选不会混合历史', async () => {
   const p = page(); await settled(); const get = id => p.elements.get(id);
   assert.equal(get('project-title').textContent, '项目甲');
   assert.match(get('focus-title').textContent, /W002/);
@@ -42,7 +42,7 @@ test('真正页面脚本选择最新任务，项目/任务切换及筛选不会�
   get('projects').children[0].trigger('click'); assert.equal(get('progress-label').textContent, '1 / 3 项已记录完成');
 });
 
-test('任务搜索、未完成范围与最新记录跟随保留手动选择的历史', async () => {
+test('任务搜索、未完成范围与自动跟随保留手动选择的记录', async () => {
   const p = page(); await settled(); const get = id => p.elements.get(id);
   const titles = () => get('tasks').children.filter(n => n.tag === 'button').map(n => n.attributes['aria-label']);
   assert.deepEqual(titles(), ['当前任务', '旧任务']);
@@ -68,7 +68,7 @@ test('目标、证据与待验当前项使用实际清单，取消不算完成�
   assert.equal(get('constraints').textContent, '业务库不动'); assert.match(get('acceptance').textContent, /浏览器验收后停止/);
   assert.match(get('focus-title').textContent, /W002/); assert.equal(get('focus-status').textContent, '待验证');
   assert.match(get('progress-label').textContent, /1 \/ 2.*1 项取消/);
-  assert.match(get('blockers').textContent, /W002/); assert.match(get('evidence').textContent, /node --test 通过/);
+  assert.match(get('blockers').textContent, /W002/); assert.match(get('evidence').textContent, /1 条证据/); assert.match(get('steps').textContent, /node --test 通过/);
   p.filters[2].trigger('click'); assert.equal(get('steps').children.length, 0);
   get('flow').children[1].children[0].trigger('click'); assert.equal(get('steps').children.length, 3);
   assert.equal(p.filters[0].attributes['aria-pressed'], 'true');
@@ -81,10 +81,10 @@ test('自动刷新实际记录变化，断线保留上次数据并明确标识',
   p.offline(); p.timers[0](); await settled(); assert.equal(get('connection').textContent, '连接中断'); assert.equal(get('notice').hidden, false); assert.match(get('notice').textContent, /上次读取/); assert.equal(get('progress-label').textContent, '2 / 3 项已记录完成');
 });
 
-test('历史选择明示，退出本轮排除分母但保留阶段范围，不编造最新任务', async () => {
+test('手选任务明示，退出本轮排除分母但保留阶段范围，不编造最新任务', async () => {
   const p = page(); await settled(); const get = id => p.elements.get(id);
   get('tasks').children.find(node => node.attributes?.['aria-label'] === '旧任务').trigger('click');
-  assert.match(get('conversation').textContent, /正在查看历史任务/);
+  assert.match(get('conversation').textContent, /手选任务/);
   p.projects[0].tasks[1] = parseWorkflow('## 任务：NOW — 当前任务\n- 当前目标（已收尾）：只验本批\n- [x] W001【已完成隔离验收】隔离测试\n- [ ] W002【本轮不实施】后续范围')[0];
   get('tasks').children.find(node => node.attributes?.['aria-label'] === '当前任务').trigger('click');
   p.timers[0](); await settled();
@@ -190,7 +190,7 @@ test('任务总览每页十行，翻页和刷新保留历史详情，搜索与�
   p.projects[0].tasks.push(parseWorkflow('## 任务：T24 — 新增记录24\n- [ ] S024【待做】执行')[0]);
   p.timers[0](); await settled();
   assert.equal(get('task-title').textContent, chosenTitle);
-  assert.match(get('conversation').textContent, /正在查看历史任务/);
+  assert.match(get('conversation').textContent, /手选任务/);
   get('task-search').value = 'T24'; get('task-search').trigger('input');
   assert.deepEqual(overviewTitles(p), ['新增记录24']);
   assert.equal(get('overview-prev').disabled, true);
@@ -206,4 +206,46 @@ test('任务总览每页十行，翻页和刷新保留历史详情，搜索与�
   assert.equal(overviewRows(p).length, 10);
   assert.equal(get('overview-prev').disabled, true);
   assert.equal(get('task-title').textContent, '新增记录24');
+});
+
+test('简明进度与任务标题不铺技术日志，原始记录和真实卡点仍完整保留',async()=>{
+  const p=page();await settled();const get=id=>p.elements.get(id);
+  const log='实现说明'.repeat(100);
+  p.projects[0].tasks=parseWorkflow(`## 任务：READ — 阅读优化\n目标：简明进度\n当前项：R001；下一步：真实浏览器检查\n阻塞：测试账号待提供\n- [ ] R001【进行中】整理信息层级；实现说明：${log}；证据：仅静态检查\n- [ ] R002【待验证】浏览器验收；未验证：手机布局\n- [ ] R003【阻塞】账号检查；缺少条件：隔离测试账号`);
+  p.timers[0]();await settled();
+  assert.equal(get('focus-title').textContent,'R001 · 整理信息层级');
+  assert.equal(get('next-step').textContent,'真实浏览器检查');
+  assert.match(get('blockers-summary').textContent,/测试账号待提供/);
+  assert.doesNotMatch(get('checklist').textContent,/实现说明|仅静态检查/);
+  assert.equal(get('checklist').children.length,3);
+  assert.match(get('steps').textContent,new RegExp(log));
+  assert.equal(get('record-next').textContent,'真实浏览器检查');
+});
+
+test('自动选择按有效任务日期支持新任务在顶部，同日唯一进行中优先，不把文件末项说成最新',async()=>{
+  const tasks=parseWorkflow('## 任务：new-20261105 — 顶部新任务\n当前项：A001\n- [ ] A001【进行中】本轮实施\n## 任务：closed-20261105 — 同日已交付\n- [x] C001【已完成】已交付\n## 任务：old-20261030 — 底部旧任务\n当前项：O001\n- [ ] O001【待验证】历史外部条件');
+  const p=page([{id:'a',name:'日期项目',status:'ready',tasks}]);await settled();const get=id=>p.elements.get(id);
+  assert.equal(get('task-title').textContent,'顶部新任务');assert.match(get('focus-title').textContent,/A001/);
+  assert.match(get('focus-label').textContent,/所选任务/);assert.doesNotMatch(get('focus-label').textContent,/正在做/);
+  assert.doesNotMatch(get('conversation').textContent,/最近记录|最新任务/);
+  p.projects[0].tasks.push(...parseWorkflow('## 任务：future-invalid-20261350 — 无效日期不能冒充最新\n- [ ] I001【进行中】无效日期'));
+  p.timers[0]();await settled();assert.equal(get('task-title').textContent,'顶部新任务');
+  p.projects[0].tasks.push(...parseWorkflow('## 任务：APPEND — 新日期任务 2026-11-06\n- [ ] N001【待做】明确新日期'));
+  p.timers[0]();await settled();assert.equal(get('task-title').textContent,'新日期任务 2026-11-06');
+  p.projects[0].tasks.unshift(...parseWorkflow('## 任务：import-20261001 — 导入旧日期记录\n- [ ] H001【进行中】历史记录'));
+  p.timers[0]();await settled();assert.equal(get('task-title').textContent,'新日期任务 2026-11-06');
+});
+
+test('前插和追加的新记录均能自动跟随，手选其他任务后轮询只更新数据不抢选择',async()=>{
+  const p=page();await settled();const get=id=>p.elements.get(id);
+  p.projects[0].tasks.unshift(...parseWorkflow('## 任务：TOP — 前插记录\n- [ ] T001【进行中】前插任务'));
+  p.timers[0]();await settled();assert.equal(get('task-title').textContent,'前插记录');
+  get('tasks').children.find(node=>node.attributes?.['aria-label']==='旧任务').trigger('click');
+  p.projects[0].tasks.push(...parseWorkflow('## 任务：BOTTOM — 追加记录\n- [ ] B001【进行中】追加任务'));
+  p.timers[0]();await settled();assert.equal(get('task-title').textContent,'旧任务');assert.match(get('conversation').textContent,/手选/);
+  get('tasks').children.find(node=>node.attributes?.['aria-label']==='追加记录').trigger('click');
+  p.projects[0].tasks.unshift(...parseWorkflow('## 任务：HEAD — 再次前插\n- [ ] H001【待做】新任务'));
+  p.timers[0]();await settled();assert.equal(get('task-title').textContent,'再次前插');
+  p.projects[0].tasks.push(...parseWorkflow('## 任务：TAIL — 再次追加\n- [ ] L001【待做】新任务'));
+  p.timers[0]();await settled();assert.equal(get('task-title').textContent,'再次追加');
 });

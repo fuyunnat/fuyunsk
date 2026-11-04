@@ -2,10 +2,10 @@
 
 const crypto = require('node:crypto');
 const fs = require('node:fs');
-const os = require('node:os');
 const path = require('node:path');
-const { spawnSync } = require('node:child_process');
 const { labels, reverse, valueOut, valueIn } = require('./task-state-language');
+const { runGit } = require('./task-state-git');
+const { codexHome, externalStatePath, validateStatePath, assertSafeFile, readPrivateText, writePrivateText, directoryChain } = require('./task-state-storage');
 
 const FIELD_ORDER = [
   'Task ID',
@@ -62,41 +62,6 @@ function now() {
   return new Date().toISOString();
 }
 
-function codexHome() {
-  return path.resolve(process.env.CODEX_HOME || path.join(os.homedir(), '.codex'));
-}
-
-function ensureDirectory(directory) {
-  fs.mkdirSync(directory, { recursive: true });
-}
-
-function writePrivateText(file, content) {
-  ensureDirectory(path.dirname(file));
-  fs.writeFileSync(file, content, { encoding: 'utf8', mode: 0o600 });
-  if (process.platform !== 'win32') {
-    try {
-      fs.chmodSync(file, 0o600);
-    } catch (error) {
-      if (!['ENOSYS', 'ENOTSUP', 'EOPNOTSUPP', 'EPERM'].includes(error.code)) {
-        throw error;
-      }
-    }
-  }
-}
-
-function runGit(repo, args, allowFailure = false) {
-  const result = spawnSync('git', ['-C', repo, ...args], {
-    encoding: 'utf8',
-    maxBuffer: 64 * 1024 * 1024,
-  });
-
-  if (result.status !== 0 && !allowFailure) {
-    const detail = (result.stderr || result.stdout || '').trim();
-    throw new Error(`Git 命令失败：git ${args.join(' ')}${detail ? `\n${detail}` : ''}`);
-  }
-  return result;
-}
-
 function isGitRepository(candidate) {
   return runGit(candidate, ['rev-parse', '--is-inside-work-tree'], true).status === 0;
 }
@@ -129,7 +94,7 @@ function registryRecordPath(repo) {
 function readJsonFile(file, label) {
   let parsed;
   try {
-    parsed = JSON.parse(fs.readFileSync(file, 'utf8'));
+    parsed = JSON.parse(readPrivateText(file));
   } catch (error) {
     throw new Error(`${label} 不是有效 JSON：${file}\n${error.message}`);
   }
@@ -138,7 +103,7 @@ function readJsonFile(file, label) {
 
 function readLegacyRegistry() {
   const file = legacyRegistryPath();
-  if (!fs.existsSync(file)) {
+  if (!assertSafeFile(file)) {
     return { version: 1, projects: {} };
   }
 
@@ -151,32 +116,38 @@ function readLegacyRegistry() {
 
 function readRegistryRecord(repo) {
   const file = registryRecordPath(repo);
-  if (fs.existsSync(file)) {
+  if (assertSafeFile(file)) {
     const record = readJsonFile(file, '任务状态索引记录');
     if (!record || record.version !== 1 || record.repository !== repo || typeof record.statePath !== 'string') {
       throw new Error(`任务状态索引记录格式不支持：${file}`);
     }
+    validateStatePath(repo, record.statePath);
     return record;
   }
-  return readLegacyRegistry().projects[repo] || null;
+  const record = readLegacyRegistry().projects[repo] || null;
+  if (record) validateStatePath(repo, record.statePath);
+  return record;
 }
 
 function readAllRegistryRecords() {
   const records = { ...readLegacyRegistry().projects };
   const directory = registryDirectory();
+  directoryChain(directory);
   if (!fs.existsSync(directory)) {
     return records;
   }
 
   for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
-    if (!entry.isFile() || !entry.name.endsWith('.json')) {
+    if (!entry.name.endsWith('.json')) {
       continue;
     }
     const file = path.join(directory, entry.name);
     const record = readJsonFile(file, '任务状态索引记录');
-    if (!record || record.version !== 1 || typeof record.repository !== 'string' || typeof record.statePath !== 'string') {
+    if (!record || record.version !== 1 || typeof record.repository !== 'string' || typeof record.statePath !== 'string' ||
+        !path.isAbsolute(record.repository) || record.repository !== path.resolve(record.repository)) {
       throw new Error(`任务状态索引记录格式不支持：${file}`);
     }
+    if (file !== registryRecordPath(record.repository)) throw new Error(`任务状态索引文件与项目身份不一致：${file}`);
     records[record.repository] = record;
   }
   return records;
@@ -201,25 +172,21 @@ function isIgnored(repo, relativePath) {
   return runGit(repo, ['check-ignore', '-q', '--', relativePath], true).status === 0;
 }
 
-function externalStatePath(repo) {
-  const key = crypto.createHash('sha256').update(repo).digest('hex').slice(0, 16);
-  return path.join(codexHome(), 'task-states', key, 'task-state.md');
-}
-
 function locateState(repo, forInitialization = false) {
   const registered = readRegistryRecord(repo)?.statePath;
-  if (registered && (fs.existsSync(registered) || forInitialization)) {
-    return path.resolve(registered);
+  const registeredPath = registered ? validateStatePath(repo, registered) : null;
+  if (registeredPath && (assertSafeFile(registeredPath) || forInitialization)) {
+    return registeredPath;
   }
 
   const local = path.join(repo, 'work', 'task-state.md');
-  if (fs.existsSync(local)) {
+  if (assertSafeFile(local)) {
     return local;
   }
   if (forInitialization && isIgnored(repo, 'work/task-state.md')) {
     return local;
   }
-  return externalStatePath(repo);
+  return validateStatePath(repo, externalStatePath(repo));
 }
 
 function parseState(content) {
@@ -253,11 +220,13 @@ function readState(repo, forInitialization = false) {
   }
   return {
     statePath,
-    fields: parseState(fs.readFileSync(statePath, 'utf8')),
+    fields: parseState(readPrivateText(statePath)),
   };
 }
 
 function writeState(repo, statePath, fields) {
+  statePath = validateStatePath(repo, statePath);
+  assertSafeFile(registryRecordPath(repo));
   fields['Updated at'] = now();
   fields['Repository/path'] = repo;
   writePrivateText(statePath, renderState(fields));
@@ -277,15 +246,18 @@ function registeredUnfinishedStates(scope) {
   const candidates = [];
 
   for (const [repository, record] of Object.entries(readAllRegistryRecords())) {
+    if (!path.isAbsolute(repository) || repository !== path.resolve(repository)) throw new Error(`任务状态索引项目路径必须是明确的绝对路径：${repository}`);
     const candidateRepo = path.resolve(repository);
     if (candidateRepo === scope || !pathIsWithin(scope, candidateRepo)) {
       continue;
     }
-    if (!record || typeof record.statePath !== 'string' || !fs.existsSync(record.statePath)) {
+    if (fs.existsSync(candidateRepo) && fs.realpathSync(candidateRepo) !== candidateRepo) throw new Error(`任务状态索引项目路径不可为链接：${candidateRepo}`);
+    if (!record || typeof record.statePath !== 'string') {
       continue;
     }
-
-    const fields = parseState(fs.readFileSync(record.statePath, 'utf8'));
+    const statePath = validateStatePath(candidateRepo, record.statePath);
+    if (!assertSafeFile(statePath)) continue;
+    const fields = parseState(readPrivateText(statePath));
     const status = (fields['Task status'] || record.status || '').toLowerCase();
     if (status !== 'active' && status !== 'blocked') {
       continue;
@@ -294,7 +266,7 @@ function registeredUnfinishedStates(scope) {
     candidates.push({
       repository: candidateRepo,
       repositoryExists: fs.existsSync(candidateRepo),
-      statePath: path.resolve(record.statePath),
+      statePath,
       fields,
       updatedAt: fields['Updated at'] || record.updatedAt || '',
     });
@@ -314,12 +286,27 @@ function gitSummary(repo) {
 
   const branch = runGit(repo, ['branch', '--show-current'], true).stdout.trim() || '(detached)';
   const head = runGit(repo, ['rev-parse', 'HEAD']).stdout.trim();
-  const changed = runGit(repo, ['status', '--porcelain=v1', '--untracked-files=all']).stdout.trim();
+  const changed = runGit(repo, ['status', '--porcelain=v1', '--untracked-files=all', '--ignore-submodules=dirty']).stdout.trim();
+  const nestedChanges = submodulePaths(repo).some(relativePath => {
+    const nested = path.join(repo, relativePath);
+    return isNestedGitRepository(nested) && gitSummary(nested).changes !== '没有改动；工作区干净';
+  });
   return {
     branch,
     head,
-    changes: changed ? '存在改动；编辑前检查具体状态' : '没有改动；工作区干净',
+    changes: changed || nestedChanges ? '存在改动；编辑前检查具体状态' : '没有改动；工作区干净',
   };
+}
+
+function submodulePaths(repo) {
+  return runGit(repo, ['ls-files', '--stage', '-z']).stdout.split('\0')
+    .filter(entry => entry.startsWith('160000 ')).map(entry => entry.slice(entry.indexOf('\t') + 1));
+}
+
+function isNestedGitRepository(directory) {
+  const stat = fs.lstatSync(directory, { throwIfNoEntry: false });
+  if (!stat?.isDirectory() || stat.isSymbolicLink() || !isGitRepository(directory)) return false;
+  return fs.realpathSync(runGit(directory, ['rev-parse', '--show-toplevel']).stdout.trim()) === fs.realpathSync(directory);
 }
 
 function hashFileContent(file) {
@@ -361,7 +348,7 @@ function workingTreeDescriptor(repo, relativePath) {
   if (stat.isFile()) {
     return `${relativePath}:file:${mode}:${stat.size}:${hashFileContent(fullPath)}`;
   }
-  if (stat.isDirectory() && isGitRepository(fullPath)) {
+  if (stat.isDirectory() && isNestedGitRepository(fullPath)) {
     return `${relativePath}:submodule:${fingerprint(fullPath)}`;
   }
   return `${relativePath}:other:${mode}:${stat.size}`;
@@ -375,9 +362,11 @@ function fingerprint(repo) {
   const head = runGit(repo, ['rev-parse', 'HEAD']).stdout.trim();
   const changedPaths = runGit(repo, [
     'diff',
+    '--no-ext-diff',
+    '--no-textconv',
     '--name-only',
     '--no-renames',
-    '--ignore-submodules=none',
+    '--ignore-submodules=all',
     '-z',
     'HEAD',
     '--',
@@ -388,13 +377,14 @@ function fingerprint(repo) {
     '--exclude-standard',
     '-z',
   ]).stdout.split('\0').filter(Boolean);
-  const status = runGit(repo, ['status', '--porcelain=v1', '-z', '--untracked-files=all']).stdout;
+  // 禁止 Git 内部递归到未单独清理配置的子模块；下面以同一安全入口递归计算。
+  const status = runGit(repo, ['status', '--porcelain=v1', '-z', '--untracked-files=all', '--ignore-submodules=all']).stdout;
   const statusEntries = status.split('\0').filter(Boolean);
   const conflictCodes = new Set(['DD', 'AU', 'UD', 'UA', 'DU', 'AA', 'UU']);
   const conflictStatus = statusEntries
     .filter((entry) => conflictCodes.has(entry.slice(0, 2)))
     .join('\0');
-  const descriptors = [...new Set([...changedPaths, ...untrackedPaths])]
+  const descriptors = [...new Set([...changedPaths, ...untrackedPaths, ...submodulePaths(repo)])]
     .sort()
     .map((relativePath) => workingTreeDescriptor(repo, relativePath));
 
@@ -425,17 +415,16 @@ function safeName(value) {
   return `${readable}-${suffix}`;
 }
 
-function archiveCompletedState(statePath, fields) {
+function archiveCompletedState(statePath, fields, repo) {
   const status = (fields['Task status'] || '').toLowerCase();
   if (status !== 'complete') {
     return;
   }
-
+  statePath = validateStatePath(repo, statePath);
   const historyDir = path.join(path.dirname(statePath), 'task-history');
-  ensureDirectory(historyDir);
   const suffix = now().replace(/\D/g, '').slice(0, 17);
-  const destination = path.join(historyDir, `${safeName(fields['Task ID'])}-${suffix}.md`);
-  fs.copyFileSync(statePath, destination, fs.constants.COPYFILE_EXCL);
+  const destination = path.join(historyDir, `${safeName(fields['Task ID'])}-${suffix}-${crypto.randomBytes(4).toString('hex')}.md`);
+  writePrivateText(destination, readPrivateText(statePath));
 }
 
 function appendEvidence(fields, entry) {

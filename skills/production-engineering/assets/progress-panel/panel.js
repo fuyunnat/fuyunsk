@@ -1,6 +1,6 @@
 'use strict';
 const $ = id => document.getElementById(id);
-const state = { projects: [], project: '', task: '', filter: 'all', taskScope: 'all', query: '', overviewPage: 0, followLatest: true, loading: false, snapshot: '' };
+const state = { projects: [], project: '', task: '', autoTask: '', filter: 'all', taskScope: 'all', query: '', overviewPage: 0, followLatest: true, loading: false, snapshot: '' };
 const overviewPageSize = 10;
 const keys = { '待做': 'pending', '进行中': 'running', '待验证': 'verifying', '阻塞': 'blocked', '已完成': 'completed', '已取消': 'cancelled', '本轮不做': 'deferred', '未知': 'unknown' };
 const blankCounts = { total: 0, completed: 0, running: 0, verifying: 0, pending: 0, blocked: 0, eligible: 0, cancelled: 0, deferred: 0, unknown: 0 };
@@ -8,6 +8,22 @@ function element(tag, className, text) { const node = document.createElement(tag
 function badge(status) { return element('span', `status status-${keys[status] || 'unknown'}`, status); }
 function date(value) { return value ? new Date(value).toLocaleString('zh-CN', { hour12: false }) : '—'; }
 function selection() { const project = state.projects.find(p => p.id === state.project); return { project, task: project?.tasks.find(t => t.id === state.task) }; }
+function taskDate(task) {
+  const dates = [...`${task.id} ${task.title}`.matchAll(/(?:^|[^A-Za-z0-9])(20\d{2})-?(\d{2})-?(\d{2})(?=$|[^A-Za-z0-9])/g)].map(match => {
+    const [, year, month, day] = match, value = `${year}-${month}-${day}`, parsed = new Date(`${value}T00:00:00Z`);
+    return Number.isFinite(parsed.getTime()) && parsed.toISOString().startsWith(value) ? Number(`${year}${month}${day}`) : 0;
+  });
+  return Math.max(0, ...dates);
+}
+function automaticTask(project, previous, rememberedId = '') {
+  const tasks = project?.tasks || [], latestDate = Math.max(0, ...tasks.map(taskDate));
+  const candidates = latestDate ? tasks.filter(task => taskDate(task) === latestDate) : tasks;
+  const added = previous ? candidates.filter(task => !previous.tasks.some(old => old.id === task.id)) : [];
+  if (added.length === 1) return added[0];
+  const running = candidates.filter(task => task.counts.running > 0);
+  if (latestDate && running.length === 1) return running[0];
+  return candidates.find(task => task.id === rememberedId) || (latestDate ? candidates[0] : candidates.at(-1));
+}
 function taskStatus(task) {
   const c = task.counts;
   if (c.blocked) return '阻塞'; if (c.running) return '进行中'; if (c.verifying) return '待验证';
@@ -22,7 +38,7 @@ function projectSummary(project) {
   return `${project.tasks.length} 条记录 · ${count} 条未完成`;
 }
 function selectTask(id) {
-  const {project} = selection(); state.task = id; state.filter = 'all'; state.followLatest = id === project?.tasks.at(-1)?.id;
+  const {project} = selection(); state.task = id; state.filter = 'all'; state.followLatest = id === state.autoTask;
   const index = matchingTasks(project).findIndex(task => task.id === id);
   if (index >= 0) state.overviewPage = Math.floor(index / overviewPageSize);
   $('task-details').open = true; render();
@@ -70,17 +86,17 @@ function renderProjects() {
     const button = element('button', 'project-button'); button.type = 'button'; button.setAttribute('aria-current', String(project.id === state.project));
     const label = element('div', 'project-label'); label.append(element('strong', '', project.name), element('small', '', projectSummary(project)));
     button.append(element('span', 'project-initial', project.name.slice(0, 1)), label);
-    button.addEventListener('click', () => { if (project.id === state.project) return; state.project = project.id; state.task = ''; state.filter = 'all'; state.taskScope = 'all'; state.followLatest = true; state.query = ''; state.overviewPage = 0; $('task-search').value = ''; $('task-details').open = false; render(); });
+    button.addEventListener('click', () => { if (project.id === state.project) return; state.project = project.id; state.task = ''; state.autoTask = ''; state.filter = 'all'; state.taskScope = 'all'; state.followLatest = true; state.query = ''; state.overviewPage = 0; $('task-search').value = ''; $('task-details').open = false; render(); });
     return button;
   }));
 }
 function renderTasks(project) {
-  const tasks = project?.tasks || [], latest = tasks.at(-1)?.id;
+  const tasks = project?.tasks || [];
   $('task-count').textContent = tasks.length;
-  const visible = matchingTasks(project).reverse();
+  const visible = matchingTasks(project).reverse().sort((a, b) => Number(b.id === state.autoTask) - Number(a.id === state.autoTask));
   const nodes = []; let group;
   for (const task of visible) {
-    const nextGroup = task.id === latest ? '最近记录' : '历史记录';
+    const nextGroup = task.id === state.autoTask ? '默认记录' : '其他记录';
     if (group !== nextGroup) { nodes.push(element('span', 'task-group', nextGroup)); group = nextGroup; }
     const button = element('button', 'task-button'); button.type = 'button'; button.setAttribute('aria-current', String(task.id === state.task)); button.setAttribute('aria-label', task.title); button.title = task.title;
     const status = taskStatus(task), label = element('div', 'task-label');
@@ -95,6 +111,7 @@ function recordParts(item) {
   const parts = item.description.split(/(?:[；;]\s*)?证据[：:]/);
   return { title: parts[0].split(/[；;。]/)[0] || item.id, full: item.description, evidence: parts.length > 1 ? parts.slice(1).join('证据：') : '' };
 }
+function brief(value, limit = 100) { const text = value.replace(/\s+/g, ' ').trim(); return text.length > limit ? `${text.slice(0, limit)}…` : text; }
 function currentItem(task) {
   const id = task?.current.match(/^[\w.-]+/)?.[0];
   return task?.items.find(i => i.id === id) || ['进行中', '阻塞', '待验证', '待做', '未知'].map(s => task?.items.find(i => i.status === s)).find(Boolean);
@@ -102,16 +119,32 @@ function currentItem(task) {
 function renderFocus(task, project) {
   const counts = task?.counts || blankCounts, current = currentItem(task); let status;
   if (current) {
-    $('focus-label').textContent = current.status === '阻塞' ? '当前阻塞' : '当前一步';
-    $('focus-title').textContent = `${current.id} · ${recordParts(current).title}`;
-    $('next-step').textContent = task.next ? `下一步：${task.next}` : current.status === '阻塞' ? task.blocker || '清单记录为阻塞，需补齐条件后继续。' : '当前项来自清单；完整记录见下方执行流程。'; status = current.status;
+    $('focus-label').textContent = '所选任务 · 清单当前项';
+    $('focus-title').textContent = `${current.id} · ${brief(recordParts(current).title)}`; status = current.status;
   } else {
     $('focus-label').textContent = '记录状态';
     $('focus-title').textContent = task ? counts.eligible && counts.completed === counts.eligible ? '清单事项已记录完成' : counts.eligible === 0 ? counts.deferred ? '任务本轮不做' : '任务已取消' : '状态需要核实' : '暂无可显示的任务';
-    $('next-step').textContent = task ? '完成状态以清单为准，验证证据单独展示。' : project?.error || 'AI 更新项目清单后，这里会显示任务。'; status = task ? taskStatus(task) : '暂无记录';
+    status = task ? taskStatus(task) : '暂无记录';
   }
+  $('focus-title').title = current ? `${current.id} · ${recordParts(current).title}` : $('focus-title').textContent;
+  $('next-step').textContent = task?.next ? brief(task.next, 140) : task ? '未记录下一步。' : project?.error || 'AI 更新项目清单后显示。';
+  $('next-step').title = task?.next || '';
+  const blocked = (task?.items || []).filter(item => item.status === '阻塞');
+  const blocker = task?.blocker || blocked.map(item => `${item.id} · ${recordParts(item).title}`).join('；');
+  $('blockers-summary').textContent = blocker ? brief(blocker, 140) : '清单未记录卡点。'; $('blockers-summary').title = blocker;
+  $('blockers-summary').className = blocker ? 'has-blocker' : '';
   $('focus-status').textContent = status; $('focus-status').className = `status status-${keys[status] || 'unknown'}`;
   return current;
+}
+function renderChecklist(task) {
+  const items = (task?.items || []).map((item, index) => {
+    const row = element('li', 'compact-step'), button = element('button', 'compact-step-link'); button.type = 'button';
+    button.append(element('span', 'step-id', item.id), element('span', 'compact-step-title', brief(recordParts(item).title, 120)));
+    button.title = recordParts(item).title; button.setAttribute('aria-label', `${item.id}，${recordParts(item).title}，查看完整记录`);
+    button.addEventListener('click', () => { if(typeof PanelTools !== 'undefined')PanelTools.show('records'); state.filter = 'all'; renderSteps(task, currentItem(task)); $(`step-${index}`)?.scrollIntoView?.({ block: 'nearest' }); });
+    row.append(button, badge(item.status)); return row;
+  });
+  $('checklist').replaceChildren(...(items.length ? items : [element('li', 'empty', '暂无事项记录。')]));
 }
 function renderFlow(task, current) {
   $('flow').replaceChildren(...(task?.items || []).map((item, index) => {
@@ -145,27 +178,26 @@ function renderContext(task) {
   $('goal').textContent = task?.goal || '此任务尚未单独记录目标。';
   $('constraints').textContent = task?.constraints || '此任务尚未单独记录保留项与边界。';
   $('acceptance').textContent = task?.acceptance || '此任务尚未单独记录验收与停止条件。';
+  $('record-current').textContent = task?.current || '未记录'; $('record-next').textContent = task?.next || '未记录'; $('record-blocker').textContent = task?.blocker || '未记录';
   const attention = (task?.items || []).filter(i => ['阻塞', '待验证', '未知'].includes(i.status));
-  const alerts = attention.map(item => { const node = element('div', 'attention-item'); node.append(badge(item.status), element('strong', '', item.id), element('p', '', recordParts(item).full)); return node; });
+  const alerts = attention.map(item => { const node = element('details', 'attention-item'); const summary = element('summary'); summary.append(badge(item.status), element('strong', '', `${item.id} · ${recordParts(item).title}`)); node.append(summary, element('p', '', recordParts(item).full)); return node; });
   if (task?.blocker) alerts.unshift(element('p', 'blocker-note', task.blocker));
   $('blockers').replaceChildren(...(alerts.length ? alerts : [element('p', 'context-empty', '清单未记录阻塞或待验证项。')]));
   $('attention-count').textContent = attention.length + (task?.blocker ? 1 : 0);
   const records = (task?.items || []).map(item => ({ item, evidence: recordParts(item).evidence })).filter(r => r.evidence);
   $('evidence-count').textContent = records.length;
-  const evidence = records.map(({item,evidence}) => { const detail = element('details', 'evidence-item'); detail.append(element('summary', '', `${item.id} · ${item.status}`), element('p', '', evidence)); return detail; });
-  if (!evidence.length) evidence.push(element('p', 'context-empty', '清单尚未附具体验证证据。'));
   const noProof = (task?.items || []).filter(i => i.status === '已完成' && !recordParts(i).evidence).length;
-  if (noProof) evidence.push(element('p', 'context-note', `${noProof} 项标记完成，未单独附证据。`));
-  $('evidence').replaceChildren(...evidence);
+  $('evidence').textContent = `${records.length ? `清单已登记 ${records.length} 条证据。` : '证据未记录。'}${noProof ? `${noProof} 项标记完成，未单独附证据。` : ''}`;
 }
 function render() {
-  if (!state.projects.some(p => p.id === state.project)) { state.project = state.projects[0]?.id || ''; state.task = ''; state.followLatest = true; }
+  if (!state.projects.some(p => p.id === state.project)) { state.project = state.projects[0]?.id || ''; state.task = ''; state.autoTask = ''; state.followLatest = true; }
   const project = state.projects.find(p => p.id === state.project); renderProjects();
   const tasks = project?.tasks || [];
-  if (state.followLatest || !tasks.some(t => t.id === state.task)) state.task = tasks.at(-1)?.id || '';
+  if (!tasks.some(t => t.id === state.autoTask)) state.autoTask = automaticTask(project)?.id || '';
+  if (state.followLatest || !tasks.some(t => t.id === state.task)) state.task = state.autoTask;
   const task = tasks.find(t => t.id === state.task), counts = task?.counts || blankCounts;
   $('project-title').textContent = project?.name || '暂无项目'; $('project-path').textContent = project?.root || '';
-  $('task-title').textContent = task?.title || '暂无任务记录'; $('conversation').textContent = `${task?.conversation ? `对话：${task.conversation}` : '独立任务记录'} · ${task && task.id !== tasks.at(-1)?.id ? '正在查看历史任务' : '最近记录'}`;
+  $('task-title').textContent = task?.title || '暂无任务记录'; $('conversation').textContent = `${task?.conversation ? `对话：${task.conversation}` : '独立任务记录'} · ${state.followLatest ? '默认选择 · 仅展示清单记录' : '手选任务 · 刷新保留选择'}`;
   $('task-status').textContent = task ? taskStatus(task) : '暂无记录'; $('task-status').className = `status status-${keys[task ? taskStatus(task) : '未知']}`;
   $('updated').textContent = `最后更新：${date(project?.updatedAt)}`; renderTasks(project); renderOverview(project);
   $('details-task-title').textContent = task?.title || '暂无任务记录';
@@ -173,16 +205,20 @@ function render() {
   $('step-count').textContent = counts.total; $('progress').max = Math.max(1, counts.eligible); $('progress').value = counts.completed;
   $('progress-label').textContent = task ? `${counts.completed} / ${counts.eligible} 项已记录完成${counts.cancelled ? ` · ${counts.cancelled} 项取消` : ''}${counts.deferred ? ` · ${counts.deferred} 项本轮不做` : ''}` : '暂无清单';
   $('warnings').hidden = !task?.warnings.length; $('warnings').textContent = task?.warnings.join('；') || '';
-  const current = renderFocus(task, project); renderFlow(task, current); renderSteps(task, current); renderContext(task);
+  const current = renderFocus(task, project); renderChecklist(task); renderFlow(task, current); renderSteps(task, current); renderContext(task);
   if(typeof PanelTools!=='undefined')PanelTools.select(project,task);
-  else { const message=$('tools-message');if(message)message.textContent='工具模块未加载。技能更新后需重启本项目面板；原有任务进度仍可查看。'; }
+  else { const message=$('tools-message');if(message){message.hidden=false;message.textContent='工具模块未加载。技能更新后需重启本项目面板；任务进度与下方完整记录仍可查看。';} $('tool-records').hidden=false; }
 }
 async function refresh() {
   if (state.loading) return; state.loading = true; $('refresh').disabled = true;
   try {
     const response = await fetch('/api/projects', { cache: 'no-store' }); if (!response.ok) throw new Error('读取失败');
     const data = await response.json(), snapshot = JSON.stringify(data.projects);
-    if (snapshot !== state.snapshot) { state.projects = data.projects; state.snapshot = snapshot; render(); }
+    if (snapshot !== state.snapshot) {
+      const previous = state.projects.find(project => project.id === state.project), project = data.projects.find(project => project.id === state.project);
+      if (project) state.autoTask = automaticTask(project, previous, state.autoTask)?.id || '';
+      state.projects = data.projects; state.snapshot = snapshot; render();
+    }
     $('connection').textContent = `已连接 · ${new Date(data.observedAt).toLocaleTimeString('zh-CN', { hour12: false })}`; $('notice').hidden = true;
   } catch {
     $('connection').textContent = '连接中断'; $('notice').hidden = false;

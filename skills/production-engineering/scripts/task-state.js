@@ -5,6 +5,7 @@ const fs = require('node:fs');
 const crypto = require('node:crypto');
 const path = require('node:path');
 const { spawnSync } = require('node:child_process');
+const { readPrivateText } = require('./task-state-storage');
 const {
   FIELD_ORDER,
   OPTION_TO_FIELD,
@@ -113,7 +114,7 @@ function commandResume(repo, options) {
     const result = resumeResult(repo, exact.statePath, exact.fields);
     output(result);
     if (!options.json) {
-      process.stdout.write(fs.readFileSync(exact.statePath, 'utf8'));
+      process.stdout.write(readPrivateText(exact.statePath));
     }
     return;
   }
@@ -129,7 +130,7 @@ function commandResume(repo, options) {
     );
     output(result);
     if (!options.json) {
-      process.stdout.write(fs.readFileSync(candidate.statePath, 'utf8'));
+      process.stdout.write(readPrivateText(candidate.statePath));
     }
     return;
   }
@@ -158,7 +159,7 @@ function commandResume(repo, options) {
     const result = resumeResult(repo, exact.statePath, exact.fields);
     output(result);
     if (!options.json) {
-      process.stdout.write(fs.readFileSync(exact.statePath, 'utf8'));
+      process.stdout.write(readPrivateText(exact.statePath));
     }
     return;
   }
@@ -180,7 +181,7 @@ function commandInit(repo, options) {
     if (status === 'active' || status === 'blocked') {
       throw new Error(`${existing.statePath} 已有未完成任务，请先恢复并确认，不得覆盖。`);
     }
-    archiveCompletedState(existing.statePath, existing.fields);
+    archiveCompletedState(existing.statePath, existing.fields, repo);
   }
 
   const summary = gitSummary(repo);

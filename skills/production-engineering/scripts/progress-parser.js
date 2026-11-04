@@ -9,7 +9,7 @@ const statusAliases = new Map([
   ['已完成／只读审查', '已完成'], ['已完成隔离验收', '已完成'], ['已完成静态验证', '已完成'],
 ]);
 const clean = value => value.trim().replace(/\*\*([^*]+)\*\*/g, '$1').replace(/`([^`]+)`/g, '$1');
-const metadata = [['当前项', 'current'], ['下一步', 'next'], ['目标', 'goal'], ['当前目标', 'goal'], ['保留', 'constraints'], ['禁改/禁止', 'constraints'], ['验收与停止', 'acceptance'], ['验收', 'acceptance'], ['停止条件', 'acceptance'], ['对话', 'conversation'], ['阻塞', 'blocker'], ['基准', 'base']];
+const metadata = [['当前动作', 'current'], ['当前项', 'current'], ['下一步', 'next'], ['目标', 'goal'], ['当前目标', 'goal'], ['保留', 'constraints'], ['禁改/禁止', 'constraints'], ['验收与停止', 'acceptance'], ['验收', 'acceptance'], ['停止条件', 'acceptance'], ['对话', 'conversation'], ['阻塞', 'blocker'], ['基准', 'base']];
 const metadataNames = metadata.map(([prefix]) => prefix).join('|');
 const annotation = '(?:[（(][^）)\\r\\n]*[）)])?';
 
@@ -62,7 +62,16 @@ function parseWorkflow(source) {
     }
     for (const [prefix, field] of metadata) {
       const match = line.match(new RegExp(`(?:^|[；;])\\s*(?:-\\s*)?${prefix}${annotation}[：:]\\s*(.*?)(?=[；;]\\s*(?:-\\s*)?(?:${metadataNames})${annotation}[：:]|$)`));
-      if (match) task[field] = clean(match[1]);
+      if (match) {
+        const value = clean(match[1]);
+        task[field] = field === 'base' && /^(?:[a-f0-9]{40}|[a-f0-9]{64})。$/i.test(value) ? value.slice(0, -1) : value;
+      }
+    }
+    const combined = line.match(/^\s*(?:-\s*)?当前动作\/下一步[：:]\s*(.+)$/);
+    if (combined) {
+      const parts = clean(combined[1]).split(/[；;]/);
+      task.current = parts[0].trim();
+      task.next = parts.length > 1 ? parts.slice(1).join('；').trim() : task.current;
     }
     if (line.trim().startsWith('|')) {
       const cells = line.trim().replace(/^\||\|$/g, '').split('|').map(clean);

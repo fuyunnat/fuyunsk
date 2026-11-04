@@ -11,8 +11,8 @@
       <div class="brand"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span><div>项目工作台<small>AI 工作进度</small></div></div>
       <div class="sidebar-label">项目 <span id="project-count">—</span></div>
       <nav id="projects" aria-label="选择项目"></nav>
-      <details id="task-browser" class="task-browser" open>
-        <summary>任务记录 <span id="task-count">—</span></summary>
+      <details id="task-browser" class="task-browser">
+        <summary>查找任务记录 <span id="task-count">—</span></summary>
         <label class="search-field" for="task-search"><span aria-hidden="true">⌕</span><input id="task-search" type="search" aria-label="搜索任务或对话" placeholder="搜索任务或对话" autocomplete="off"></label>
         <div class="task-scope" role="group" aria-label="任务范围"><button id="scope-all" type="button" data-scope="all" aria-pressed="true">全部</button><button id="scope-open" type="button" data-scope="open" aria-pressed="false">未完成</button><span id="task-scope"></span></div>
         <nav id="tasks" aria-label="选择任务记录"></nav><p id="task-empty" class="navigation-empty" hidden>没有匹配的任务</p>
@@ -24,6 +24,11 @@
       <div id="notice" class="notice" role="status" hidden></div>
       <section class="workspace" aria-labelledby="overview-title">
         <div class="project-heading"><div><p id="project-path" class="project-path"></p><h1>项目进度</h1></div><span class="readonly-badge">自动刷新 · 4 秒</span></div>
+        <section id="progress-summary" class="progress-summary" aria-label="所选任务简明进度">
+          <div class="summary-current"><div class="focus-heading"><span id="focus-label" class="eyebrow">所选任务 · 清单当前项</span><span id="focus-status" class="status"></span></div><h2 id="focus-title">等待读取</h2></div>
+          <div><h2 class="summary-label">下一步</h2><p id="next-step">等待读取</p></div>
+          <div><h2 class="summary-label">卡点</h2><p id="blockers-summary">等待读取</p></div>
+        </section>
         <section class="overview-card" aria-labelledby="overview-title">
           <div class="overview-heading"><div class="section-heading"><h2 id="overview-title">任务进度</h2><span id="overview-count" class="muted"></span></div><p class="overview-note">点击任务名称查看明细。取消和本轮不做不计入总数；窄屏可左右滑动表格。</p></div>
           <div class="overview-table-wrap" role="region" aria-label="任务进度表，可横向滚动" tabindex="0">
@@ -32,38 +37,36 @@
           <p id="overview-empty" class="empty" hidden></p>
           <div class="overview-footer"><span id="overview-summary" class="muted"></span><div class="overview-pagination" aria-label="表格分页"><button id="overview-prev" type="button">上一页</button><button id="overview-next" type="button">下一页</button></div></div>
         </section>
-        <details id="task-details" class="selected-details"><summary><strong>任务详情</strong><span id="details-task-title"></span></summary>
+        <details id="task-details" class="selected-details"><summary><strong>查看任务详情与QA</strong><span id="details-task-title"></span></summary>
         <div class="selected-task-heading"><div class="task-heading"><h2 id="task-title">等待读取任务</h2><span id="task-status" class="status"></span></div><p id="conversation" class="muted"></p></div>
-        <div class="workbench">
-          <div class="execution">
-            <section class="focus" aria-labelledby="focus-title"><div class="focus-heading"><span id="focus-label" class="eyebrow">当前一步</span><span id="focus-status" class="status"></span></div><h2 id="focus-title">等待读取</h2><p id="next-step"></p></section>
-            <section class="flow-section" aria-label="清单流程概览"><div class="section-heading"><h2>流程概览</h2><span class="muted">按清单顺序</span></div><ol id="flow" class="flow"></ol></section>
-            <section class="steps-card" aria-labelledby="steps-title">
-              <div class="section-heading"><h2 id="steps-title">执行流程 <span id="step-count"></span></h2><span id="progress-label" class="muted"></span></div>
+        <section class="tools-card task-workspace" aria-label="所选任务分区">
+          <div class="task-view-toolbar"><div class="tool-tabs" role="group" aria-label="选择任务分区"><button type="button" data-tool-tab="progress" aria-pressed="true" aria-controls="tool-progress">进度</button><button type="button" data-tool-tab="proof" aria-pressed="false" aria-controls="tool-proof">QA与验收 <span id="proof-count">—</span></button><button type="button" data-tool-tab="changes" aria-pressed="false" aria-controls="tool-changes">代码改动 <span id="change-count">—</span></button><button type="button" data-tool-tab="records" aria-pressed="false" aria-controls="tool-records">完整记录</button></div><button type="button" class="subtle-button prompt-shortcut" data-tool-tab="prompts" aria-pressed="false" aria-controls="tool-prompts">快捷提示词</button></div>
+          <div class="insight-actions"><p id="tools-message" class="tools-message" role="status" hidden>选择任务后读取项目记录。</p><button id="reload-insights" class="subtle-button" type="button" hidden>重新读取</button></div>
+          <div id="tool-progress">
+            <section aria-labelledby="checklist-title"><div class="section-heading"><h2 id="checklist-title">当前任务清单</h2><span id="progress-label" class="muted"></span></div>
               <progress id="progress" value="0" max="1" aria-label="清单勾选进度"></progress>
-              <div class="metrics" aria-label="清单状态"><span>已完成 <strong id="completed">—</strong></span><span>进行中 / 待验证 <strong id="active">—</strong></span><span>待做 / 阻塞 / 未知 <strong id="pending">—</strong></span></div>
-              <div class="steps-toolbar"><div class="filters" role="group" aria-label="步骤筛选"><button data-filter="all" aria-pressed="true">全部</button><button data-filter="open" aria-pressed="false">未完成</button><button data-filter="blocked" aria-pressed="false">阻塞</button></div><span id="filter-summary" class="muted"></span></div>
-              <div id="warnings" class="warnings" hidden></div><ol id="steps"></ol><p id="empty" class="empty" hidden></p>
-            </section>
-            <section class="tools-card" aria-labelledby="tools-title">
-              <div class="section-heading"><h2 id="tools-title">改动与验收</h2><button id="reload-insights" class="subtle-button" type="button">重新读取</button></div>
-              <div class="tool-tabs" role="group" aria-label="选择工作台工具"><button type="button" data-tool-tab="changes" aria-pressed="true">改动地图 <span id="change-count">—</span></button><button type="button" data-tool-tab="proof" aria-pressed="false">验收证据 <span id="proof-count">—</span></button><button type="button" data-tool-tab="prompts" aria-pressed="false">快捷提示词</button></div>
-              <p id="tools-message" class="tools-message" role="status">选择任务后读取项目记录。</p>
-              <div id="tool-changes"><div class="change-source"><strong id="changes-source">等待 Git 记录</strong><span id="changes-time"></span></div><div id="change-categories" class="change-categories"></div><p id="changes-note" class="tools-note"></p><ul id="change-list" class="change-list"></ul>
-                <section id="diff-view" class="diff-view" hidden aria-labelledby="diff-title"><div class="diff-heading"><h3 id="diff-title"></h3><button id="close-diff" class="subtle-button" type="button">收起差异</button></div><p id="diff-note" class="tools-note"></p><pre id="diff-text" tabindex="0" aria-label="只读文本差异"></pre></section>
-              </div>
-              <div id="tool-proof" hidden><p class="tools-note">状态来自清单；图片和日志只打开明确登记的本项目附件。</p><div id="proof-list" class="proof-list"></div></div>
-              <div id="tool-prompts" hidden><div id="prompt-choices" class="prompt-choices" role="group" aria-label="选择快捷提示词"></div><label for="prompt-text" class="prompt-label">可直接复制到当前任务对话</label><textarea id="prompt-text" readonly rows="7"></textarea><div class="prompt-footer"><span id="prompt-message" role="status"></span><button id="copy-prompt" type="button">复制提示词</button></div></div>
+              <div class="metrics" aria-label="清单状态"><span>已记录完成 <strong id="completed">—</strong></span><span>进行中 / 待验证 <strong id="active">—</strong></span><span>待做 / 阻塞 / 未知 <strong id="pending">—</strong></span></div>
+              <p class="context-note">这里只看事项与状态。测试结果在“QA与验收”，原文在“完整记录”。</p><ol id="checklist" class="compact-checklist"></ol>
             </section>
           </div>
-          <aside class="context" aria-label="任务目标与验收">
-            <section class="context-section"><div class="section-heading"><h2>本轮目标</h2><span class="section-index">01</span></div><p id="goal" class="context-body"></p><details id="constraint-details"><summary>保留与边界</summary><p id="constraints" class="context-body"></p></details></section>
-            <section class="context-section"><div class="section-heading"><h2>阻塞与待验证</h2><span id="attention-count" class="count-badge">0</span></div><div id="blockers"></div></section>
-            <section class="context-section"><div class="section-heading"><h2>验证证据</h2><span id="evidence-count" class="count-badge">0</span></div><div id="evidence"></div><p class="context-note">仅展示清单记录，不替代实际验收。</p></section>
+          <div id="tool-proof" hidden>
+            <div class="section-heading"><h2>QA与验收记录</h2></div><p id="qa-summary" class="qa-summary">QA结果未记录。</p><div id="qa-records" class="qa-records"></div>
             <section class="context-section"><div class="section-heading"><h2>完成与停止条件</h2><span class="section-index">04</span></div><p id="acceptance" class="context-body"></p></section>
-            <section class="record-info"><span class="connection-dot"></span><div><strong>记录来源</strong><span>工作流程.md</span><span id="updated">最后更新：—</span></div></section>
-          </aside>
-        </div>
+            <details class="qa-attention"><summary>待验证与异常 <span id="attention-count" class="count-badge">0</span></summary><div id="blockers"></div></details>
+            <section class="context-section"><div class="section-heading"><h2>验证证据</h2><span id="evidence-count" class="count-badge">0</span></div><p id="evidence" class="context-note"></p><div id="proof-list" class="proof-list"></div></section>
+            <p class="context-note">仅展示清单明确记录的文字和附件；勾选完成不等于测试通过。</p>
+          </div>
+          <div id="tool-changes" hidden><div class="section-heading"><h2>代码改动</h2></div><div class="change-source"><strong id="changes-source">等待 Git 记录</strong><span id="changes-time"></span></div><div id="change-categories" class="change-categories"></div><p id="changes-note" class="tools-note"></p><ul id="change-list" class="change-list"></ul>
+            <section id="diff-view" class="diff-view" hidden aria-labelledby="diff-title"><div class="diff-heading"><h3 id="diff-title"></h3><button id="close-diff" class="subtle-button" type="button">收起差异</button></div><p id="diff-note" class="tools-note"></p><pre id="diff-text" tabindex="0" aria-label="只读文本差异"></pre></section>
+          </div>
+          <div id="tool-records" hidden>
+            <details class="record-metadata"><summary>目标、边界与任务原文</summary><section class="context-section"><h2>本轮目标</h2><p id="goal" class="context-body"></p></section><section class="context-section"><h2>保留与边界</h2><p id="constraints" class="context-body"></p></section><dl class="record-fields"><dt>当前项</dt><dd id="record-current"></dd><dt>下一步</dt><dd id="record-next"></dd><dt>阻塞</dt><dd id="record-blocker"></dd></dl></details>
+            <details class="flow-section"><summary>清单顺序导航</summary><ol id="flow" class="flow"></ol></details>
+            <section class="steps-card" aria-labelledby="steps-title"><div class="section-heading"><h2 id="steps-title">执行流程原文 <span id="step-count"></span></h2></div><div class="steps-toolbar"><div class="filters" role="group" aria-label="步骤筛选"><button data-filter="all" aria-pressed="true">全部</button><button data-filter="open" aria-pressed="false">未完成</button><button data-filter="blocked" aria-pressed="false">阻塞</button></div><span id="filter-summary" class="muted"></span></div><div id="warnings" class="warnings" hidden></div><ol id="steps"></ol><p id="empty" class="empty" hidden></p></section>
+            <section class="record-info"><span class="connection-dot"></span><div><strong>记录来源 · 工作流程.md</strong><span id="updated">最后更新：—</span></div></section>
+          </div>
+          <div id="tool-prompts" hidden><div class="section-heading"><h2>快捷提示词</h2></div><div id="prompt-choices" class="prompt-choices" role="group" aria-label="选择快捷提示词"></div><label for="prompt-text" class="prompt-label">可直接复制到当前任务对话</label><textarea id="prompt-text" readonly rows="7"></textarea><div class="prompt-footer"><span id="prompt-message" role="status"></span><button id="copy-prompt" type="button">复制提示词</button></div></div>
+        </section>
         </details>
         <footer><span>本机只读 · 保留项目原有记录</span><span>已记录进度，不等于 AI 内部实时状态</span></footer>
       </section>

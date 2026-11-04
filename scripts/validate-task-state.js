@@ -9,6 +9,8 @@ const root = path.resolve(__dirname, '..');
 const files = {
   cli: 'skills/production-engineering/scripts/task-state.js',
   core: 'skills/production-engineering/scripts/task-state-core.js',
+  git: 'skills/production-engineering/scripts/task-state-git.js',
+  storage: 'skills/production-engineering/scripts/task-state-storage.js',
 };
 
 function read(relPath) {

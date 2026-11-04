@@ -9,7 +9,7 @@ const PanelTools = (() => {
     ['展示差异','只展示当前项目的 Git 差异、影响和验证状态；区分原有改动与当前任务，有记录基准就按基准核对，没有基准就明确说明不能归属本轮。不继续改文件、不启动业务服务或操作数据库，展示后停止。'],
     ['暂停收尾','暂停当前任务，保留已有代码、清单和测试证据，不回滚已完成成果。简短说明做到哪一步、测试结果、未覆盖项和阻塞，更新同一份工作流程后停止。收到新指令前不继续修改或自行追加下一轮任务。']
   ];
-  let project,task,key='',record='',promptRecord='',tab='changes',promptIndex=0,epoch=0,diffEpoch=0,data=null,loading=false;
+  let project,task,key='',record='',promptRecord='',tab='progress',promptIndex=0,epoch=0,diffEpoch=0,data=null,loading=false;
   const endpoint=(kind,id)=>`/api/${kind}/${encodeURIComponent(project.id)}/${encodeURIComponent(task.id)}${id?`/${encodeURIComponent(id)}`:''}`;
   function renderPrompt() {
     $('prompt-choices').replaceChildren(...prompts.map(([label],index)=>{
@@ -57,13 +57,18 @@ const PanelTools = (() => {
   function renderProof() {
     const attachments=data?.attachments||[],records=task?.items||[];
     $('proof-count').textContent=records.filter(item=>/证据[：:]/.test(item.description)).length;
-    const cards=records.map(item=>{
-      const card=node('article','proof-card'),heading=node('div','proof-heading');heading.append(node('strong','',item.id),node('span','proof-state',item.status));
-      const text=item.description.split(/证据[：:]/).slice(1).join('证据：');card.append(heading,node('p','proof-text',text||'未单独附证据；状态标记不等于验收通过。'));
+    const fields=records.flatMap(item=>[...item.description.matchAll(/(?:^|[；;。\n])\s*(QA结果|QA结论|测试结果|验收结果|已测试|未测试|未验证|缺少条件|缺失条件|测试|验收|QA)[：:]\s*([^；;。\n]+)/g)].map(match=>({id:item.id,label:match[1],text:match[2].trim()})));
+    const hasResult=fields.some(field=>['QA结果','QA结论','测试结果','验收结果'].includes(field.label));
+    $('qa-summary').textContent=fields.length?`${hasResult?'':'测试/验收结果未记录。'}以下内容摘自清单明确字段，保留原文，不推断通过或失败。`:'QA结果未记录。完成勾选和事项名称不能说明测试是否通过。';
+    $('qa-records').replaceChildren(...fields.map(field=>{const row=node('div','qa-record');row.append(node('strong','',`${field.label} · ${field.id}`),node('p','',field.text));return row;}));
+    const evidence=records.filter(item=>/证据[：:]/.test(item.description)||attachments.some(file=>file.item===item.id));
+    const cards=evidence.map(item=>{
+      const title=item.description.split(/[；;。]/)[0],card=node('details','proof-card'),heading=node('summary','proof-heading');heading.append(node('strong','',`${item.id} · ${title.length>100?`${title.slice(0,100)}…`:title}`),node('span','proof-state',`清单状态：${item.recordedStatus||item.status}`));
+      const text=item.description.split(/证据[：:]/).slice(1).join('证据：');card.append(heading,node('p','proof-text',text||'文字证据未记录；状态标记不等于验收通过。'));
       const files=attachments.filter(file=>file.item===item.id);
       if(files.length){const group=node('div','proof-attachments');group.append(...files.map(attachment));card.append(group);}return card;
     });
-    $('proof-list').replaceChildren(...(cards.length?cards:[node('p','context-empty','没有任务证据记录。')]));
+    $('proof-list').replaceChildren(...(cards.length?cards:[node('p','context-empty','验证证据未记录。')]));
   }
   function attachment(file) {
     const link=node('a','proof-attachment');link.href=endpoint('evidence',file.id);link.target='_blank';link.rel='noopener noreferrer';
@@ -75,8 +80,9 @@ const PanelTools = (() => {
     link.append(node('span','',file.kind==='log'?`查看日志 · ${file.label}`:file.label));return link;
   }
   function setTab(next) {
-    tab=next;for(const name of ['changes','proof','prompts'])$(`tool-${name}`).hidden=name!==tab;
+    tab=['progress','proof','changes','records','prompts'].includes(next)?next:'progress';for(const name of ['progress','proof','changes','records','prompts'])$(`tool-${name}`).hidden=name!==tab;
     document.querySelectorAll('[data-tool-tab]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.toolTab===tab)));
+    const insights=['proof','changes'].includes(tab);$('tools-message').hidden=!insights;$('reload-insights').hidden=!insights;
     if(tab==='proof')renderProof();
   }
   async function load() {
@@ -91,7 +97,7 @@ const PanelTools = (() => {
   function select(nextProject,nextTask) {
     const nextKey=`${nextProject?.id||''}:${nextTask?.id||''}:${nextTask?.base||''}`,nextRecord=JSON.stringify(nextTask||null),changed=nextKey!==key;
     project=nextProject;task=nextTask;
-    if(changed){key=nextKey;epoch++;diffEpoch++;data=null;loading=false;$('diff-view').hidden=true;$('diff-text').textContent='';$('change-categories').replaceChildren();renderChanges();}
+    if(changed){key=nextKey;epoch++;diffEpoch++;data=null;loading=false;$('diff-view').hidden=true;$('diff-text').textContent='';$('change-categories').replaceChildren();renderChanges();setTab('progress');}
     const nextPromptRecord=JSON.stringify([project?.name,task?.title,task?.goal,task?.constraints,task?.acceptance]);
     if(changed||nextPromptRecord!==promptRecord){promptRecord=nextPromptRecord;renderPrompt();}
     $('reload-insights').disabled=!task||loading;
@@ -102,5 +108,6 @@ const PanelTools = (() => {
   document.querySelectorAll('[data-tool-tab]').forEach(button=>button.addEventListener('click',()=>setTab(button.dataset.toolTab)));
   $('reload-insights').addEventListener('click',()=>{if(!loading)load();});$('copy-prompt').addEventListener('click',copyPrompt);
   $('close-diff').addEventListener('click',()=>{diffEpoch++;$('diff-view').hidden=true;});
-  return {select};
+  setTab('progress');
+  return {select,show:setTab};
 })();

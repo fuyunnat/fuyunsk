@@ -49,13 +49,15 @@ node scripts/doctor.js --json
 
 仅安装了单份技能时，执行 `node "<实际技能目录>/scripts/doctor.js" --json`。需要检查另一份本机用户目录时，可显式传 `--home` 与 `--codex-home` 的绝对路径（只读，不查整台电脑）。
 
-诊断只检查已知用户级候选目录、所需文件、原稿锁值、与当前运行脚本的主要版本差异，以及个人 `AGENTS.md` 与实际覆盖文件 `AGENTS.override.md` 的短调度标记。不同真实目录的同名 Skill 会提示重复，同一个目标的符号链接不误计；旧长版、重复标记、缺失文件会给出异常。**不会自动修改、迁移、删除或备份任何配置，也不触碰业务 `工作流程.md`。**
+诊断只检查已知用户级候选目录、所需文件、原稿锁值、与当前运行脚本的主要版本差异，以及个人 `AGENTS.md` 与实际覆盖文件 `AGENTS.override.md` 的短调度标记。必要文件统一以技能内的 `references/installation-manifest.json` 为准，覆盖全部分发专项、规则切片、脚本、模板和面板资产；同时检查诊断源与安装版各自清单声明的文件。清单缺失、损坏、版本不支持或含重复、绝对、穿越路径时直接报错，不退回局部名单。不同真实目录的同名 Skill 会提示重复，同一个目标的符号链接不误计；旧长版、重复标记、缺失文件会给出异常。**不会自动修改、迁移、删除或备份任何配置，也不触碰业务 `工作流程.md`。**
+
+清单只记录必要文件路径，不对全部文件做字节校验；专项正文定制和额外本机文件不会因此判坏。原稿仍按 `references/source-lock.json` 验证，主要入口和清单版本差异单独提示；发现差异先保留并比较用户定制，不能借诊断结果直接覆盖。
 
 诊断只能说明当前文件事实：**不能证明 Codex 已发现技能、真正自动调用、桌面 UI 刷新或远端版本为最新。** 有异常时先核对生效路径和个人修改，遵循前述备份/冲突处理流程；不要运行诊断命令后就宣称安装升级已完成。
 
 ## 四、分开验证文件与实际调用
 
-**文件验证**：确认有效技能目录包含 `SKILL.md`、`agents/openai.yaml`、`references/task-card.md`、`templates/task-card.example.md`、`references/source-original.md`、`references/source-speed.md`、`references/source-lock.json`、`references/rules/`、`references/rules-speed/`、`references/rules-manifest.json`、`references/rules-index.md` 、`references/frontend-stack.md`、`scripts/rule-batch.js` 和 `scripts/read-rules.js`；与本次固定提交的对应文件校验一致。确认短块写入位置、稳定技能名、覆盖关系、无机器绝对路径和重复副本处理结果；技能真实路径另行核实但不写进短块。
+**文件验证**：按本次固定提交的 `references/installation-manifest.json` 逐项核对有效技能目录的全部分发文件，不能仅检查入口或几个专项。原稿与 `references/source-lock.json` 逐一校验，其他差异先比较并保留用户定制。确认短块写入位置、稳定技能名、覆盖关系、无机器绝对路径和重复副本处理结果；技能真实路径另行核实但不写进短块。
 
 有 Node.js 时，先检查脚本再执行只读验证：
 
@@ -65,6 +67,8 @@ node "<技能目录>/scripts/read-rules.js" --id 00-00 --json
 ```
 
 在下载的完整仓库根目录可运行 `node scripts/validate-skill.js`，主自检已经包含原文重建等检查，不必再重复跑一遍。正常使用不运行生成器；安装时无 Node.js 可直接读文件并比较校验值，标记脚本未执行，不因此安装无关依赖。
+
+维护者增删 `skills/production-engineering/` 内的分发文件后，在完整仓库根目录运行 `node scripts/build-installation-manifest.js`，核对清单差异，再用 `node scripts/build-installation-manifest.js --check` 验证。生成器按当前分发目录自动列全正规文件，清单自身只列路径，没有递归内容哈希；正文修改无需重生成。主自检包含清单一致性测试，漏列未来新增专项或脚本会失败。生成器只供仓库维护，不在安装目录运行，也不把仓库外的测试夹具、业务清单或本机文件加入分发清单。
 
 **实际调用验证**：刷新客户端；必要时请求用户保存工作后退出重开，不强杀应用。使用安装后的同一配置，在全新会话或独立 CLI 会话中执行少量只读测试。测试不提技能名、不临时注入调度规则，避免把显式提示当成自动调用证据。
 

@@ -8,17 +8,8 @@ const path = require('node:path');
 const crypto = require('node:crypto');
 
 const name = 'production-engineering';
-const required = [
-  'SKILL.md', 'agents/openai.yaml',
-  'references/source-original.md', 'references/source-speed.md',
-  'references/full-production-engineering.md', 'references/source-lock.json',
-  'references/rules-manifest.json', 'references/rules-index.md',
-  'references/frontend-stack.md', 'references/workflow-checklist.md',
-  'scripts/rule-batch.js', 'scripts/read-rules.js',
-  'scripts/progress-panel-service.js', 'scripts/doctor.js',
-  'templates/workflow.example.md',
-];
-const versionFiles = ['SKILL.md', 'agents/openai.yaml', 'references/source-lock.json', 'scripts/read-rules.js'];
+const manifestPath = 'references/installation-manifest.json';
+const versionFiles = ['SKILL.md', 'agents/openai.yaml', 'references/source-lock.json', 'scripts/read-rules.js', manifestPath];
 const markers = ['<!-- production-engineering:auto:start -->', '<!-- production-engineering:auto:end -->'];
 const oldSignatures = ['# 全局 Codex 工作规则', '## 自动使用生产工程技能', '本机兜底路径', '## 小白优先沟通', '## 轻任务优先'];
 const sha256 = content => crypto.createHash('sha256').update(content).digest('hex');
@@ -39,6 +30,47 @@ function readable(file, limit = 2 * 1024 * 1024) {
   const stat = fs.statSync(file);
   if (!stat.isFile() || stat.size > limit) throw new Error('文件不可读或超过安全检查大小');
   return fs.readFileSync(file);
+}
+function validateInstallationManifest(manifest) {
+  if (!manifest || manifest.schemaVersion !== 1 || !Array.isArray(manifest.files) || !manifest.files.length) {
+    throw new Error('安装清单格式、版本或非空文件列表无效');
+  }
+  const files = manifest.files;
+  if (files.some(file => typeof file !== 'string' || !file || file.includes('\0') || file.includes('\\')
+    || path.posix.isAbsolute(file) || path.win32.isAbsolute(file) || /^[A-Za-z]:/.test(file)
+    || file.split('/').some(part => !part || part === '.' || part === '..'))) {
+    throw new Error('安装清单只能包含技能内的正规相对文件路径');
+  }
+  if (new Set(files).size !== files.length) throw new Error('安装清单存在重复路径');
+  if (!files.includes(manifestPath)) throw new Error('安装清单必须包含自身路径');
+  return files;
+}
+function readInstallationManifest(root) {
+  let manifest;
+  try { manifest = JSON.parse(readable(path.join(root, manifestPath)).toString('utf8')); }
+  catch { throw new Error('安装清单 ' + manifestPath + ' 缺失、不可读或 JSON 损坏'); }
+  return validateInstallationManifest(manifest);
+}
+function checkInstallation(installed, skillRoot) {
+  if (!installed.length) return mark('installation', 'error', '候选用户级目录中未发现技能；不等于已证明所有自定义位置也不存在');
+  let required;
+  try { required = readInstallationManifest(skillRoot); }
+  catch (error) { return mark('installation', 'error', '诊断源' + error.message); }
+  const missing = new Set(), invalid = [];
+  for (const loc of installed) {
+    let candidateFiles = [];
+    try { candidateFiles = readInstallationManifest(loc.realPath); }
+    catch (error) { invalid.push(error.message); }
+    for (const relative of new Set([...required, ...candidateFiles])) {
+      try { if (!fs.statSync(path.join(loc.realPath, relative)).isFile()) missing.add(relative); }
+      catch { missing.add(relative); }
+    }
+  }
+  const details = [];
+  if (missing.size) details.push('已安装候选存在缺失内容：' + [...missing].sort().join('、'));
+  if (invalid.length) details.push([...new Set(invalid)].join('；'));
+  return mark('installation', details.length ? 'error' : 'ok',
+    details.length ? details.join('；') : '已按安装清单核对候选目录中全部分发文件存在；未要求定制内容逐字一致');
 }
 function folderCandidates(home, codexHome) {
   return [...new Set([
@@ -96,19 +128,7 @@ function diagnose(options = {}) {
   const actual = [...new Set(installed.map(x => x.realPath))];
   const checks = [];
 
-  const missing = [];
-  for (const loc of installed) {
-    for (const rel of required) {
-      try { if (!fs.statSync(path.join(loc.realPath, rel)).isFile()) missing.push(rel); }
-      catch { missing.push(rel); }
-    }
-    for (const rel of ['references/rules', 'references/rules-speed']) {
-      if (!directory(path.join(loc.realPath, rel))) missing.push(rel);
-    }
-  }
-  if (!installed.length) checks.push(mark('installation', 'error', '候选用户级目录中未发现技能；不等于已证明所有自定义位置也不存在'));
-  else if (missing.length) checks.push(mark('installation', 'error', '已安装候选存在缺失内容：' + [...new Set(missing)].join('、')));
-  else checks.push(mark('installation', 'ok', '已核对候选目录中的技能入口、规则和脚本文件存在'));
+  checks.push(checkInstallation(installed, skillRoot));
 
   checks.push(mark('duplicates', actual.length > 1 ? 'warning' : 'ok',
     actual.length > 1 ? '不同真实目录存在多份同名技能，须核对客户端实际发现结果' : '未发现多个不同真实目录的同名候选技能'));
@@ -177,4 +197,4 @@ if (require.main === module) {
   try { main(process.argv.slice(2)); }
   catch (error) { process.stderr.write('诊断失败：' + error.message + '\n'); process.exitCode = 2; }
 }
-module.exports = { diagnose, parse, main };
+module.exports = { diagnose, parse, main, manifestPath, validateInstallationManifest, readInstallationManifest };

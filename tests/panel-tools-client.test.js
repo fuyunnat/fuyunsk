@@ -11,7 +11,7 @@ class Element {
 }
 function page(options={}){
   const html=fs.readFileSync(path.join(assets,'index.html'),'utf8');const elements=new Map([...html.matchAll(/id="([^"]+)"/g)].map(match=>[match[1],new Element()]));
-  const tabs=['changes','proof','prompts'].map(name=>{const button=new Element('button');button.dataset.toolTab=name;return button;});
+  const tabs=['changes','proof','prompts','progress','records'].map(name=>{const button=new Element('button');button.dataset.toolTab=name;return button;});
   const calls=[],clipboard=[];
   const document={getElementById:id=>elements.get(id),createElement:tag=>new Element(tag),querySelectorAll:()=>tabs};
   const response={changes:{status:'ready',source:'项目未提交改动（未归属本轮）',baseline:'a'.repeat(40),total:1,hidden:1,files:[{id:'f'.repeat(24),path:'web/<x>.tsx',category:'前端',status:'修改',preview:true}],observedAt:'2026-10-06T07:00:00Z'},attachments:[{id:'e'.repeat(24),item:'W002',label:'截图',kind:'image',path:'work/view.png'}]};
@@ -61,4 +61,39 @@ test('同一任务改目标后复制最新范围，收敛交付不会继续扫�
 test('正常完成提示词保留完整已授权范围并限制扫描扩项',async()=>{
   const p=page();p.select(project,task);await settled();await p.get('copy-prompt').trigger('click');
   assert.match(p.clipboard[0],/不得自行缩减/);assert.match(p.clipboard[0],/固定.*清单/);assert.match(p.clipboard[0],/不.*全历史/);
+});
+
+test('默认进度与QA、代码、完整记录互不铺满，切任务返回进度，迟到读取不跳分区',async()=>{
+  const p=page();p.select(project,task);await settled();
+  assert.equal(p.get('tool-progress').hidden,false);
+  for(const name of ['proof','changes','records','prompts'])assert.equal(p.get(`tool-${name}`).hidden,true,name);
+  p.tabs.find(button=>button.dataset.toolTab==='proof').trigger('click');
+  assert.equal(p.get('tool-proof').hidden,false);assert.equal(p.get('tool-progress').hidden,true);
+  p.select(project,{...task,id:'B'});await settled();
+  assert.equal(p.get('tool-progress').hidden,false);assert.equal(p.get('tool-proof').hidden,true);
+  p.tabs.find(button=>button.dataset.toolTab==='records').trigger('click');
+  assert.equal(p.get('tool-records').hidden,false);assert.equal(p.get('tool-changes').hidden,true);
+});
+
+test('QA只摘录明确字段，完成勾选和测试关键词不能推成验收通过',async()=>{
+  const p=page();p.select(project,{...task,items:[{id:'Q001',status:'已完成',description:'完成测试与浏览器验收'}]});await settled();p.tabs[1].trigger('click');
+  assert.match(p.get('qa-summary').textContent,/未记录/);
+  assert.match(p.get('proof-list').textContent,/未记录/);
+  assert.doesNotMatch(p.get('qa-summary').textContent,/已通过|验收通过|全部通过/);
+  p.select(project,{...task,items:[{id:'Q001',status:'已完成',description:'页面调整；测试结果：单元测试 3/3；未验证：真实支付；缺少条件：测试账号；证据：[日志](work/test.log)'}]});await settled();p.tabs[1].trigger('click');
+  assert.match(p.get('qa-records').textContent,/单元测试 3\/3/);
+  assert.match(p.get('qa-records').textContent,/真实支付/);
+  assert.match(p.get('qa-records').textContent,/测试账号/);
+  assert.match(p.get('proof-list').textContent,/清单状态：已完成/);
+});
+
+test('QA显式字段支持中文句号边界，测试结果与未测试条件分别展示',async()=>{
+  const p=page();p.select(project,{...task,items:[{id:'Q001',status:'已完成',description:'实现与验证已结束。测试结果：单元测试 3/3。未测试：真实支付。未验证：手机布局；缺少条件：测试账号；证据：[日志](work/test.log)'}]});await settled();p.tabs[1].trigger('click');
+  const rows=p.get('qa-records').children;
+  assert.equal(rows.length,4);
+  assert.equal(rows[0].textContent,'测试结果 · Q001单元测试 3/3');
+  assert.equal(rows[1].textContent,'未测试 · Q001真实支付');
+  assert.equal(rows[2].textContent,'未验证 · Q001手机布局');
+  assert.equal(rows[3].textContent,'缺少条件 · Q001测试账号');
+  assert.doesNotMatch(p.get('qa-summary').textContent,/结果未记录/);
 });

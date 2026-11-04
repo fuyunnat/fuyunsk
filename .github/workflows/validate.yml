@@ -1,15 +1,24 @@
 name: 中文工程技能自检
 
 on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
   contents: read
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   validate:
     name: ${{ matrix.os }} / Node.js ${{ matrix.node }}
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
     strategy:
       fail-fast: false
       matrix:
@@ -31,6 +40,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 2
+          persist-credentials: false
       - name: 安装 Node.js
         uses: actions/setup-node@v4
         with:

@@ -21,6 +21,7 @@
 - 新增专项必须检查 `SKILL.md`、`routing.md`、`rule-batch.js`、`agents/openai.yaml` 和必要的全局 dispatcher 是否接通；只加 reference 文件不算完成。
 - 高频入口保持字节预算和按需加载；引用专项名称，不用强制内联整份大文件制造上下文浪费。
 - 无法实际运行模型行为测试时，明确区分“静态规则测试通过”和“真实代理行为未验证”，不能冒充等价。
+- 关键行为修改和发布按影响使用 `docs/agent-evaluation.md` 的固定夹具与独立代理实测，保留实际调用记录和可重放证据；`scripts/agent-eval.js verify` 不等于已调用AI。普通业务小改不增加这套技能维护评测。
 
 ## 交付与验证
 
