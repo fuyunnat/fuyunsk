@@ -22,7 +22,7 @@ node <技能目录>/scripts/read-rules.js --id 04-04
 | 前端模板并行二开 | 六/七/九/二十；`parallel-template-development.md` |
 | 进度面板 | `workflow-progress-panel.md`，复杂或需要续作的工程任务才自动确保运行并打开一次 |
 | 快速小改 | 只读 `quick-core.md` |
-| 写入后测试与收尾 | `verification-report.md`；真实验收、缺条件和五项交付报告 |
+| QA/测试与收尾 | `verification-report.md`；复杂或高风险读 `qa-acceptance.md` |
 | 先列清单、字段盘点/目标提示词 | 二/六/二十；`planning-persistence.md` |
 | 后台可调业务参数/配置化 | 十五及实现/验证；`configuration-localization.md` |
 | 打包/发布产物 | `release-packaging.md` |

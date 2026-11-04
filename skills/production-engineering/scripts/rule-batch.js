@@ -12,7 +12,7 @@ const stages = {
     topics: ['通用', '适用方式', '完整', '实现', '验证', '完成', '报告'],
     references: ['task-lanes.md', 'preflight-decision.md'],
   },
-  '验证': { topics: ['验证', '完成', '报告', '禁止行为'], references: [] },
+  '验证': { topics: ['验证', '完成', '报告', '禁止行为'], references: ['qa-acceptance.md'] },
   '提交': { topics: ['Git提交', '验证', '续航'], references: ['git-team-delivery.md'] },
   '推送': { topics: ['Git推送', '续航'], references: ['git-team-delivery.md'] },
   '评审': { topics: ['Git评审', '完成', '报告'], references: ['git-team-delivery.md', 'spec-review.md'] },
@@ -32,6 +32,7 @@ const domains = {
   '进度面板': { topics: ['续航', '报告'], references: ['workflow-progress-panel.md'] },
   '规划清单': { topics: ['续航', '报告'], references: ['planning-persistence.md', 'workflow-checklist.md', 'context-memory-continuity.md'] },
   '目标提示词': { topics: ['通用', '适用方式', '报告'], references: ['planning-persistence.md'] },
+  'QA': { topics: ['验证', '完成', '报告'], references: ['qa-acceptance.md', 'verification-report.md'] },
   '代理执行': { topics: ['代码组织', '实现', '验证', 'Git评审', '续航'], references: ['agentic-execution.md', 'spec-review.md', 'context-memory-continuity.md'] },
   '续航': { topics: ['续航'], references: ['context-memory-continuity.md'] },
   '视觉设计': { topics: ['代码组织', '前端', '验证'], ids: ['06-00'], references: ['frontend-design-intelligence.md', 'frontend-interface-quality.md', 'ui-design-workflow.md', 'configuration-localization.md'] },
@@ -56,10 +57,10 @@ const referenceNames = new Set([
   'novice-clarification.md', 'preflight-decision.md', 'behavior-preservation.md', 'database-upgrade-safety.md', 'bugfix-fast-loop.md', 'upstream-sync.md', 'seo-engineering.md', 'parallel-template-development.md', 'planning-persistence.md', 'agentic-execution.md', 'frontend-design-intelligence.md', 'code-craft.md', 'proven-engineering-methods.md', 'configuration-localization.md', 'task-lanes.md', 'context-memory-continuity.md', 'frontend-interface-quality.md', 'ui-design-workflow.md',
   'wrapped-workspace-ui.md', 'mc-ui-scaffold.md', 'observability-debugging.md', 'performance-baseline.md', 'release-packaging.md', 'delivery-feedback.md', 'design-testing.md', 'diagnosis-feedback-loop.md',
   'code-risk-review.md', 'content-writing-quality.md', 'spec-review.md', 'git-team-delivery.md', 'frontend-delivery-loop.md', 'ui-visual-verification.md',
-  'project-understanding.md', 'source-policy.md', 'project-migration.md', 'workflow-checklist.md', 'bounded-completion.md', 'project-write-boundary.md', 'workflow-progress-panel.md', 'task-card.md', 'verification-report.md',
+  'project-understanding.md', 'source-policy.md', 'project-migration.md', 'workflow-checklist.md', 'bounded-completion.md', 'project-write-boundary.md', 'workflow-progress-panel.md', 'task-card.md', 'verification-report.md', 'qa-acceptance.md',
 ]);
 const codeCraftStages = new Set(['小改', '实现']);
-const nonCodeDomains = new Set(['内容', '规划清单', '进度面板']);
+const nonCodeDomains = new Set(['内容', '规划清单', '进度面板', 'QA']);
 const standaloneFrontendFixTopics = new Set(['前端', '故障修复', '通用', '适用方式']);
 
 function planBatch(stage, topics = [], references = []) {
