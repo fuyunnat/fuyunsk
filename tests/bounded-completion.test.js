@@ -14,7 +14,7 @@ const cases = require('./bounded-completion-cases.json');
 const policy = () => read('references/bounded-completion.md');
 
 test('压力场景同时保留完整目标、必要遗漏与停止边界', () => {
-  assert.equal(new Set(cases.map(c => c.id)).size, 15);
+  assert.equal(new Set(cases.map(c => c.id)).size, 19);
   assert.ok(cases.every(c => c.user && c.facts && c.expected.length >= 2));
   assertAgentDelegates(read('agents/openai.yaml'));
   for (const s of ['固定验收范围', '必要缺口', '非阻塞建议', '不缩减', '恢复条件']) assert.ok(policy().includes(s), s);

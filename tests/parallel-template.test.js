@@ -130,6 +130,21 @@ test('模板台账检查器允许全部 verified + 合法不适用 SEO 的私有
   assert.equal(result.ok, true, result.errors.join('\n'));
   assert.equal(result.counts.total, 1);
   assert.equal(result.counts.verified, 1);
+
+  // 局部能力结项与整体交付分别记账：其他能力缺外部条件时保留已验结果。
+  inventory.features.push({
+    id: 'external-mail', name: '邮件', sourceLocations: ['v1/mail'], behavior: '真实隔离邮件成功',
+    states: ['normal'], dependencies: ['隔离邮件服务'], requiredChecks: ['mail-real-success'],
+    targetLocations: ['v2/mail'], status: 'implemented', evidence: [], approvalSource: null,
+    note: '请求字段本机已测；真实成功缺隔离账号与回调入口，条件到位后验证服务回执',
+  });
+  fs.writeFileSync(path.join(repo, 'inventory.json'), JSON.stringify(inventory, null, 2));
+  const partial = checkInventory(repo, 'inventory.json');
+  assert.equal(partial.ok, false, '外部成功未测，整体不能完成');
+  assert.equal(partial.counts.total, 2);
+  assert.equal(partial.counts.verified, 1, '保留无关能力已验结果');
+  assert.equal(partial.counts.implemented, 1);
+  assert.equal(partial.counts.unresolved, 1);
 });
 
 test('模板台账检查器拒绝 implemented 冒充完成和无授权省略', () => {
