@@ -55,3 +55,17 @@ test('所有前端规则读取路径继续自动附带最新 frontend-stack', ()
     assert.equal(frontend.amendments[0].text, policy);
   }
 });
+
+test('原样迁移、现有页面参考与独立新模板的业务和视觉基准分开', () => {
+  const out = reader.readBatch(reader.parse(['--stage', '实现', '--topic', '前端']));
+  const rules = Array.isArray(out) ? out : out.rules;
+  const loaded = rules.find(e => e.id === '09-00').amendments.find(e => e.file === 'frontend-stack.md').text;
+  const independent = loaded.split(/\n\s*\n/).filter(p => /独立.{0,25}(?:新模板|新前端)|新模板|新前端/.test(p)).join('\n');
+  assert.ok(independent, '读取到的规则应先识别独立新模板，而不是一律继承旧视觉');
+  for (const concept of [/业务|功能/, /API|接口/, /字段/, /权限/]) assert.ok(concept.test(independent), '旧源码仍是业务契约依据');
+  assert.ok(/(?:指定|新|参考|mc-ui|MC-UI)[\s\S]{0,100}(?:视觉|设计|布局|样式)/.test(independent), '新模板视觉应以指定参考为准');
+  assert.ok(/(?:不|禁止)[\s\S]{0,80}(?:照搬|继承|复用|嵌入)[\s\S]{0,80}(?:布局|样式|组件|CSS)|(?:布局|样式|组件)[\s\S]{0,60}(?:不照搬|不继承|不复用)/.test(independent), '不能把旧视觉组件当新模板业务复用');
+  assert.ok(/(?:保留|不改|不动|隔离)[\s\S]{0,50}(?:旧|原)(?:模板|前端)|(?:旧|原)(?:模板|前端)[\s\S]{0,60}(?:保留|不改|不动|隔离)/.test(independent), '独立新模板不能改坏旧模板');
+  assert.ok(/原样迁移|原样保留，只换框架/.test(loaded), '原样迁移仍受原貌保护');
+  for (const concept of [/配色|颜色/, /字体/, /图标/]) assert.ok(concept.test(loaded), '普通已有前端参考仍保护原视觉');
+});

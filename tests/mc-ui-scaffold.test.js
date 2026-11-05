@@ -68,3 +68,16 @@ test('前端读取自动带上 mc-ui 专项，单纯前端故障修复不额外�
   assert.ok(read('SKILL.md').includes('mc-ui-scaffold.md'));
   assert.ok(read('references/routing.md').includes('mc-ui-scaffold.md'));
 });
+
+test('明确授权的独立新模板是已有前端不并存默认的例外', () => {
+  assert.ok(planBatch('实现', ['前端']).references.includes('mc-ui-scaffold.md'));
+  const scaffold = read('references/mc-ui-scaffold.md');
+  const independent = scaffold.split(/\n\s*\n/).filter(p => /独立.{0,25}(?:新模板|新前端)|新模板|新前端/.test(p)).join('\n');
+  assert.ok(independent, '应在选路时明确独立新模板的授权例外');
+  assert.ok(/明确|授权|用户指定/.test(independent), '例外必须来自用户明确的新模板要求');
+  assert.ok(/例外|不适用|不能.{0,20}(?:一律|禁止)|允许/.test(independent), '不能让已有前端默认禁止覆盖独立模板授权');
+  assert.ok(/mc-ui|MC-UI/.test(independent) && /布局|样式|视觉|组件/.test(independent), '独立模板采用明确指定的设计参考');
+  assert.ok(/业务|功能/.test(independent) && /API|接口/.test(independent), '继续复用旧业务契约');
+  assert.ok(/旧模板|原模板|旧前端/.test(independent) && /保留|隔离|不动|不改/.test(independent), '旧模板应保留');
+  assert.ok(scaffold.includes('不并存第二套组件库'), '普通已有前端参考的默认保护继续保留');
+});

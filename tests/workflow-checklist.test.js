@@ -228,6 +228,14 @@ test('仅记录收尾复用未变规则与有效证据，不新建状态设施�
   assert.ok(Buffer.byteLength(rules()) <= 8500, '保持原有清单规则字节预算');
 });
 
+test('清单按本批结果收口，补充说明不自动推翻小改例外', () => {
+  const body = rules();
+  assert.match(body, /本批(?:范围|目标|结果|交付)/);
+  assert.match(body, /bounded-completion/);
+  assert.doesNotMatch(body, /用户中途补充了第二件事，也视为升级/);
+  requireText(body, ['验证通过才打勾', '父项必须等适用子项均通过', '不能把未测项勾完成']);
+});
+
 test('收尾有限核对相关旧未完ID，纠正旧状态有证据且不掩盖真实交付缺口', () => {
   requireText(rules(), ['本轮相关旧未完 ID', '后续证据', '不全仓重扫历史', '不能只改最新任务',
     '不能以“历史快照”掩盖真实未完', '缺上线/现场验收', '待条件', '下一步',

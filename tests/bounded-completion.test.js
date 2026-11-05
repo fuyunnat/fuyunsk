@@ -14,7 +14,8 @@ const cases = require('./bounded-completion-cases.json');
 const policy = () => read('references/bounded-completion.md');
 
 test('压力场景同时保留完整目标、必要遗漏与停止边界', () => {
-  assert.equal(new Set(cases.map(c => c.id)).size, 19);
+  assert.equal(new Set(cases.map(c => c.id)).size, cases.length);
+  assert.ok(cases.length >= 23, '保留原19例并覆盖本批收尾缺口');
   assert.ok(cases.every(c => c.user && c.facts && c.expected.length >= 2));
   assertAgentDelegates(read('agents/openai.yaml'));
   for (const s of ['固定验收范围', '必要缺口', '非阻塞建议', '不缩减', '恢复条件']) assert.ok(policy().includes(s), s);
@@ -32,7 +33,28 @@ test('实现、验证、交付读取同一停止规则，纯只读不自动附�
 });
 
 test('规则限制失效范围、无进展循环与重复审查', () => {
-  for (const s of ['相关代码、配置、测试或环境', '两轮没有新增有效证据或验收进展', '一次有边界诊断', '停止同一路径修改和复跑', '一次范围内最终复核', '不重开整分支审查', '状态回填']) assert.ok(policy().includes(s), s);
+  for (const s of ['相关代码、配置、测试或环境', '一次有边界诊断', '停止同一路径修改和复跑', '一次范围内最终复核', '不重开整分支审查', '状态回填']) assert.ok(policy().includes(s), s);
+  assert.match(policy(), /两轮[^\n。]*(?:实质进展|验收进展|验收推进)/);
+});
+
+test('收尾以本批可交付结果为边界，新增要求不遗失且不默默扩大', () => {
+  const body = policy();
+  assert.match(body, /本批(?:范围|目标|结果|交付)/);
+  for (const concept of [/纠错|更正/, /替换|取代/, /追加|新增需求/, /影响[^\n。]*(?:交付|工作量|范围)|(?:交付|工作量|范围)[^\n。]*影响/]) {
+    assert.match(body, concept);
+  }
+  assert.doesNotMatch(body, /以下两条优先于本文件其他|用户中途补充的要求一律是当前任务的必做项|不另开一轮/);
+  assert.ok(cases.some(c => c.id === '补充说明保持小改'));
+  assert.ok(cases.some(c => c.id === '本批需求替换与追加'));
+});
+
+test('增加日志截图不等于验收推进，诊断预算不能变成假通过', () => {
+  const body = policy();
+  assert.match(body, /(?:截图[^\n。]*日志|日志[^\n。]*截图)/);
+  assert.match(body, /(?:不算|不等于|不能算|不视为)[^\n。]*(?:实质进展|验收进展|验收推进)|(?:实质进展|验收进展|验收推进)[^\n。]*(?:不算|不等于|不能算|不视为)/);
+  assert.match(body, /(?:耗时|时间|预算|检查点)[^\n。]*(?:交付|结果|卡点)|(?:交付|结果|卡点)[^\n。]*(?:耗时|时间|预算|检查点)/);
+  for (const id of ['截图日志不重置重试', '测试脚本与产品分账']) assert.ok(cases.some(c => c.id === id), id);
+  for (const s of ['产品缺陷', '测试定位/预期错误', '环境或数据不匹配', '不能删除失败用例']) assert.ok(body.includes(s), s);
 });
 
 test('保留历史并只维护一个当前状态，缺历史版本不能编造恢复', () => {
