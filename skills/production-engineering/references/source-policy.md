@@ -87,6 +87,8 @@
 
 用户要求：写日志就写到文件 log 中，每次启动新建带时间戳的日志文件。据此：默认写入项目根目录 `log/`（项目已有日志目录则沿用），每次进程启动新建如 `log/app-YYYYMMDD-HHMMSS.log`，不追加到上次启动文件；目录加入 `.gitignore`；完成后告知用户本次日志文件路径。细则只在 `observability-debugging.md`。
 
+2026-11-08 用户要求加强日志输出。沿用上述目录和启动规则，补上本次运行定位、同一操作关联、子进程失败诊断、脱敏与实际落盘验收。按本次改动影响选必要路径，文案或样式小改不自动扩成日志改造。细则集中于 `observability-debugging.md`。
+
 ## 交付与排查的通用原则补充（2026-10-18）
 
 用户授权从真实使用反馈里提炼规则，要求保持通用、不写死某一业务。发布产物见 `release-packaging.md`；现场排查见 `observability-debugging.md`；优化不改原来的结果见 `performance-baseline.md`；并行新前端功能不全先回功能分母见 `parallel-template-development.md`。细则不在这里再写一遍。不扩大 Git 或部署授权。

@@ -19,7 +19,7 @@ test('修 Bug 先复现、看懂根因再改、亲自验证，旧的读取次数
 test('日志要能定位问题，缺日志就补，前端也记录', () => {
   const obs = read('references/observability-debugging.md');
   for (const s of ['入口', '关键分支', '外部调用', '堆栈', 'request_id', '项目缺日志就补上', '不需要用户另外要求', '前端也要记', '保留下来', '本次启动的日志文件完整路径']) assert.ok(obs.includes(s), s);
-  assert.match(read('references/quick-core.md'), /项目没有日志就顺手补一个统一入口/);
+  assert.match(read('references/quick-core.md'), /本次关键路径缺日志时补统一入口/);
 });
 
 test('日志默认写到 log 目录，每次启动新建带时间戳的文件', () => {
@@ -37,6 +37,23 @@ test('线上报错先分清 CDN、代理还是源站，不擅自改 CDN 配置',
 test('脱敏要求保持', () => {
   const obs = read('references/observability-debugging.md');
   for (const s of ['密码', '完整令牌', 'Cookie', '授权头']) assert.ok(obs.includes(s), s);
+});
+
+test('运行日志验收覆盖真实落盘、跨阶段关联和可控故障', () => {
+  const obs = read('references/observability-debugging.md');
+  assert.match(obs, /绝对路径[\s\S]{0,160}工作目录/);
+  assert.match(obs, /同一操作编号[\s\S]{0,230}失败阶段/);
+  assert.match(obs, /可控失败[\s\S]{0,300}实际[\s\S]{0,120}日志文件/);
+  assert.match(obs, /重启[\s\S]{0,100}旧文件/);
+  assert.match(obs, /假密钥[\s\S]{0,110}不出现/);
+});
+
+test('子进程协议与故障诊断分流，退出信息和脱敏证据齐全', () => {
+  const obs = read('references/observability-debugging.md');
+  assert.match(obs, /子进程[\s\S]{0,180}stdout[\s\S]{0,180}stderr/);
+  assert.match(obs, /退出码[\s\S]{0,160}信号[\s\S]{0,160}超时/);
+  assert.match(obs, /原始错误[\s\S]{0,140}脱敏/);
+  assert.match(obs, /文案[\s\S]{0,100}样式[\s\S]{0,130}日志/);
 });
 
 test('写代码和修 Bug 的读取都带上日志与排查规则，只读不额外加载', () => {
