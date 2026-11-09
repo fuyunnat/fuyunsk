@@ -15,6 +15,7 @@ const { planBatch } = require(path.join(skillDir, 'scripts/rule-batch.js'));
 const { checkInventory } = require(path.join(skillDir, 'scripts/template-inventory-check.js'));
 
 const rules = read(path.join(refs, 'parallel-template-development.md'));
+const frontend = read(path.join(refs, 'frontend-stack.md'));
 const routing = read(path.join(refs, 'routing.md'));
 const agent = read(path.join(skillDir, 'agents/openai.yaml'));
 const globalAgents = read(path.join(root, 'global-AGENTS.example.md')).trim();
@@ -87,6 +88,28 @@ test('视觉完成不冒充业务完成，用户明确功能优先时遵从', ()
     '视觉阶段通过不能计为真实业务通过');
   assert.match(rules, /(?:用户明确|明确要求)[\s\S]{0,120}(?:功能优先|先接功能|先接接口|先完成业务)[\s\S]{0,160}(?:遵从|执行|优先|按用户)/,
     '用户明确指定功能优先时不能强制视觉优先');
+});
+
+test('仅交办看样子时先交可操作预览，已有认可样板先原样运行', () => {
+  for (const body of [frontend, rules]) {
+    assert.match(body, /(?:认可|确认)[^。\n]{0,55}(?:完整)?(?:模板|样板)[^。\n]{0,55}原样(?:运行|跑)/,
+      '有认可的样板时，应先用原貌建立预览');
+    assert.match(body, /可(?:访问|打开)[^。\n]{0,28}(?:预览)?(?:地址|入口)/,
+      '用户需要能实际打开的预览地址');
+  }
+  assert.match(rules, /浏览器[^。\n]{0,75}(?:实际|亲手)[^。\n]{0,65}(?:点击|点开)[^。\n]{0,70}(?:填写|填表)/,
+    '有表单和交互时要亲自点击和填写，避免只给截图');
+});
+
+test('逐页接入后用真实接口和测试数据复测同页，再按证据收尾', () => {
+  assert.match(frontend, /逐页[^。\n]{0,65}(?:真实接口|真实数据)[^。\n]{0,90}(?:复测|再测)/,
+    '常规前端入口也应读到接入节奏和第二轮测试');
+  assert.match(rules, /真实接口[^。\n]{0,45}测试数据[^。\n]{0,80}浏览器[^。\n]{0,45}复测/,
+    '验收须在测试环境使用真实接口和测试数据重新操作');
+  assert.match(rules, /布局[^。\n]{0,100}(?:首次打开|加载)[^。\n]{0,45}(?:切换|提交)/,
+    '接入后既要回归布局，也要实际观察加载和操作响应');
+  assert.match(rules, /缺[^。\n]{0,70}条件[^。\n]{0,80}(?:未验证|待验证)/,
+    '缺真实条件时要如实留下验证缺口');
 });
 
 test('模板二开专项按需加载，普通前端和 Bug 不自动变重', () => {
