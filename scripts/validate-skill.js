@@ -17,7 +17,7 @@ includes(skill+'references/frontend-stack.md',['最新用户要求','新建前�
 includes('README.md',['原文','中文','验证','不等于','仅维护本技能','--stage','## 团队 Git 交付','git-team-delivery.md']);
 includes(skill+'references/git-team-delivery.md',['逻辑单元提交','直接进入主线只接受明确授权','远端主线 HEAD','是否已经进入稳定主线']);
 includes(skill+'SKILL.md',['--stage 实现','业务任务跑业务项目测试','输出截断必须续读']);
-includes(skill+'references/task-lanes.md',['同一仓库写操作不并行','退出码','之前的测试证据']);
+includes(skill+'references/task-lanes.md',['同一文件和共享资源写入仍须串行','Git 索引、分支和提交操作由协调者统一处理','退出码','之前的测试证据']);
 includes(skill+'references/project-migration.md',['旧功能对照','恢复演练','不等于','只读','shadcn/ui + Tailwind CSS']);
 includes(skill+'SKILL.md',['整项目迁移','迁移台账','工作流程.md']);
 budget(skill+'references/workflow-checklist.md',8500);

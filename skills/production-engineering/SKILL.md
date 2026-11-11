@@ -17,7 +17,7 @@ description: "实现/修复/调试/UI/SEO/Git/数据库/部署/打包/迁移/规
 1. **目标**：先读用户源码，列目录不算已读；明确改变、保留和依据。源码可查不反问；结果歧义暂停，用人话给 2–3 个选项和推荐，见 `novice-clarification.md`。
 2. **边界**：所有写入遵守 `references/project-write-boundary.md`。核实当前聊天关联 `PROJECT_ROOT`，非 Codex/技能目录；保护用户改动和原业务逻辑、API、数据、配置、权限、副作用、流程；重构/优化/UI/换栈不擅改结果。
 3. **工作**：清单门禁见 `workflow-checklist.md`。跨文件/多步/缺真实测试条件/需交接/已有清单/要进度/复杂/需续作/优化时，先读/建/更新 `PROJECT_ROOT/工作流程.md`，首项标“进行中”；单步小改用任务卡；续作先读，补充按本批范围处理。
-4. **验证**：未变规则复用，独立只读同批做；Bug 先复现、看懂再改、亲自验证。按 `bounded-completion.md` 固定本批范围与检查点，两次最小修复失败再深入诊断；按影响回归与真实验收，复用有效证据，缺条件单列。
+4. **验证**：未变规则复用；Bug 先复现、看懂再改、亲自验证。按 `bounded-completion.md` 固定本批范围与检查点，两次最小修复失败再深入诊断；按影响回归与真实验收，复用有效证据，缺条件单列。
 5. **收尾**：先核对清单收尾；当前范围验收交付完成即停，缺口如实列。用人话说改好了什么、用户现在能做什么；按 `verification-report.md` 报做了啥、没做完啥、怎么测的、没测啥、缺啥；无证据不说通过。
 
 ## 读取
@@ -34,7 +34,7 @@ description: "实现/修复/调试/UI/SEO/Git/数据库/部署/打包/迁移/规
 | 二开上游同步 | `upstream-sync.md` |
 | SEO/收录 | `seo-engineering.md` |
 | 整项目迁移 | `project-migration.md`；迁移台账逐项验收 |
-| 长任务 | `context-memory-continuity.md`、`agentic-execution.md`、`spec-review.md` |
+| 长任务/独立任务主动开子智能体 | `context-memory-continuity.md`、`agentic-execution.md`、`spec-review.md` |
 | Git/回滚/发布包 | 原文第四章、`git-team-delivery.md`、`release-packaging.md` |
 | 后端/接口/数据库 | `references/routing.md` |
 

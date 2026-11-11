@@ -85,6 +85,28 @@ test('代理执行只按需加载，普通 Bug 与小改不会常驻读取', () 
   assert.ok(!frontend.references.includes('agentic-execution.md'));
 });
 
+test('多任务主动分工在技能入口和实现读取链均可发现', () => {
+  const entry = read('skills/production-engineering/SKILL.md');
+  const lanes = readRef('task-lanes.md');
+  for (const body of [entry, lanes]) {
+    assert.ok(/独立[^。\n]{0,80}主动[^。\n]{0,30}子(?:代理|智能体)/.test(body),
+      '多项独立工作应主动评估并委派，不能只在长任务专项里写可选能力');
+    assert.ok(body.includes('agentic-execution.md'));
+  }
+  assert.ok(planBatch('实现', ['后端']).references.includes('task-lanes.md'));
+});
+
+test('共享工作区分工保护文件责任和 Git 状态，最终统一验收', () => {
+  const lanes = readRef('task-lanes.md');
+  assert.ok(/同一工作区[^。\n]{0,100}(?:不重叠|互不重叠)[^。\n]{0,80}并行/.test(agentic),
+    '独立文件任务应允许在同一工作区分工');
+  assert.ok(/(?:索引|分支)[^。\n]{0,90}(?:串行|顺序|统一)/.test(lanes),
+    'Git 索引与分支操作须由协调者顺序处理');
+  assert.ok(/(?:汇总|集成)[^。\n]{0,100}(?:回归|测试|验收)/.test(agentic),
+    '协调者需要核实组合后的结果');
+  assert.ok(!lanes.includes('同一仓库写操作不并行'), '不能把整个仓库当作一把写锁');
+});
+
 test('路由接到复杂代理专项，普通任务不强制加载', () => {
   requireText(routing, ['大型多阶段/独立复核', '`agentic-execution.md`', '`spec-review.md`', '普通小改不增加这一层']);
   assertAgentDelegates(agent);
