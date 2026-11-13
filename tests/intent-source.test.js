@@ -37,6 +37,8 @@ for (const stage of ['只读', '小改', '实现']) {
     const quality = out.references.find(e => e.file === 'frontend-interface-quality.md');
     assert.ok(quality, '批量输出须包含验收说明，不要求额外读取一层');
     requireRules(quality.text, [/迁移前源码及其可复现结果/, /不得用新截图覆盖旧基准/, /视觉一致性未验证/]);
+    assert.doesNotMatch(quality.text, /新建所有页面统一|已有不兼容项目先确认迁移/,
+      '已有项目新增页不应被另一份已加载规则要求默认换栈');
     assert.ok(!out.references.some(e => e.file === 'project-migration.md'), '单页源码适配不能升级成整项目迁移');
   });
 }

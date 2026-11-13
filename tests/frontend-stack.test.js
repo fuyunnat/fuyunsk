@@ -59,7 +59,11 @@ test('缺失选型修改文件时拒绝退回旧默认', () => {
 test('当前入口、模板和专项都指向同一前端选型', () => {
   for (const file of ['SKILL.md', 'references/frontend-interface-quality.md', 'references/frontend-stack.md']) {
     const s = fs.readFileSync(path.join(skill, file), 'utf8');
-    assert.match(s, /shadcn\/ui \+ Tailwind CSS/);
+    if (file === 'references/frontend-interface-quality.md') {
+      assert.match(s, /选型与视觉边界统一按 `frontend-stack\.md`/);
+    } else {
+      assert.match(s, /shadcn\/ui \+ Tailwind CSS/);
+    }
     assert.doesNotMatch(s, /新后台默认 Vue/);
   }
   for (const file of ['README.md']) {
