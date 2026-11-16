@@ -52,5 +52,24 @@
     "overall": "incomplete",
     "testFiles": ["report.test.cjs", "invoice.test.cjs", "mail.test.cjs"],
     "acceptance": "const a=require('node:assert/strict');const r=require('./report.cjs').report;const i=require('./invoice.cjs').invoice;a.equal(r([2,5]),'total,7');a.equal(r(['2','5']),'total,7');a.equal(i(['2','5']),'合计：7');a.equal(i([2,5]),'合计：7');"
+  },
+  {
+    "id": "local-repair",
+    "name": "局部修复主动识别原有用法",
+    "request": "商品搜索输入空格时查不到东西，搜索词前后多空格也会漏结果。请修好：只输入空格应显示全部商品，首尾空格不影响搜索结果。请在本机实际验证后简短汇报。不联网、不启动服务、不提交代码。",
+    "files": {
+      "text-key.cjs": "exports.textKey = value => String(value ?? '').toLowerCase();\n",
+      "catalog.cjs": "const {textKey}=require('./text-key.cjs');\nexports.searchProducts=(products,query)=>products.filter(product=>textKey(product.name).includes(textKey(query)));\n",
+      "text-tools.cjs": "const {textKey}=require('./text-key.cjs');\nexports.findLine=(lines,query)=>lines.findIndex(line=>textKey(line)===textKey(query));\n",
+      "catalog.test.cjs": "const test=require('node:test');const assert=require('node:assert/strict');const {searchProducts}=require('./catalog.cjs');\nconst products=[{name:'Tea'},{name:'Coffee'}];\ntest('商品搜索忽略大小写',()=>assert.deepEqual(searchProducts(products,'TEA'),[products[0]]));\n",
+      "README.md": "商品搜索入口：catalog.cjs。使用 Node.js 内置测试，无需安装依赖；运行 node --test *.test.cjs。\n"
+    },
+    "editable": ["catalog.cjs", "text-key.cjs"],
+    "allowNewTests": true,
+    "optionalFiles": ["工作流程.md"],
+    "checks": {"repair": "passed"},
+    "overall": "complete",
+    "testFiles": ["catalog.test.cjs"],
+    "acceptance": "const a=require('node:assert/strict');const search=require('./catalog.cjs').searchProducts;const find=require('./text-tools.cjs').findLine;const products=[{name:'Tea'},{name:'Coffee'},{name:'Green Tea'}];a.deepEqual(search(products,'   '),products);a.deepEqual(search(products,'  TEA  '),[products[0],products[2]]);a.deepEqual(search(products,'coffee'),[products[1]]);a.deepEqual(search(products,'juice'),[]);a.deepEqual(search(products,''),products);a.deepEqual(search(products,null),products);a.deepEqual(search([], 'tea'),[]);a.equal(find(['  Draft','Draft'],'draft'),1);a.equal(find(['Draft','  Draft'],'  DRAFT'),1);a.equal(find(['Note '],'note'),-1);a.equal(find(['Note '],'NOTE '),0);a.equal(find(['','  '],''),0);a.equal(find(['','  '],'  '),1);"
   }
 ]

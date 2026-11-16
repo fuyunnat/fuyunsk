@@ -75,6 +75,7 @@ function verify(id, project) {
   const item = scenario(id), root = fs.realpathSync(project), errors = [];
   const files = filesIn(root);
   const additionalTests = item.allowNewTests ? files.filter(name => !Object.hasOwn(item.files, name) && /^[\w.-]+\.test\.cjs$/.test(name)) : [];
+  const optionalFiles = new Set(item.optionalFiles || []);
   let receipt;
   try { receipt = JSON.parse(fs.readFileSync(regularPath(root, 'evaluation-receipt.json'), 'utf8')); }
   catch { errors.push('缺少可解析的实际评测回执'); }
@@ -84,7 +85,7 @@ function verify(id, project) {
     if (!item.editable.includes(name) && fs.readFileSync(regularPath(root, name), 'utf8') !== value) errors.push(`修改了受保护文件：${name}`);
   }
   for (const name of files) {
-    if (!Object.hasOwn(item.files, name) && !['AGENT_TASK.md', 'evaluation-receipt.json'].includes(name) && !(name.startsWith('evidence/') && evidenceFile(name)) && !evidencePaths.has(name) && !additionalTests.includes(name)) errors.push(`出现范围外文件：${name}`);
+    if (!Object.hasOwn(item.files, name) && !['AGENT_TASK.md', 'evaluation-receipt.json'].includes(name) && !(name.startsWith('evidence/') && evidenceFile(name)) && !evidencePaths.has(name) && !additionalTests.includes(name) && !optionalFiles.has(name)) errors.push(`出现范围外文件：${name}`);
   }
   if (id === 'small-edit' && files.includes('工作流程.md')) errors.push('单文件小改不应新增业务清单');
   if (receipt) {

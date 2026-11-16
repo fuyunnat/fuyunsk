@@ -29,13 +29,25 @@ test('原有行为锁覆盖常见擅改逻辑场景', () => {
   ]) assert.ok(policy.includes(value), `缺少原有行为保护规则：${value}`);
 });
 
-test('所有会写或交付的阶段自动加载行为保护，纯只读不强制加载', () => {
+test('批量读取的写入和交付阶段加载行为保护，纯只读不强制加载', () => {
   for (const stage of ['小改', '实现', '验证', '提交', '推送', '评审', '回滚']) {
     const out = reader.readBatch(reader.parse(['--stage', stage, '--topic', '接口']));
     assert.ok(out.references.some(r => r.file === 'behavior-preservation.md'), `${stage} 未加载行为保护`);
   }
   const readOnly = reader.readBatch(reader.parse(['--stage', '只读', '--topic', '接口']));
   assert.ok(!readOnly.references.some(r => r.file === 'behavior-preservation.md'), '纯只读无需增加行为保护读取成本');
+});
+
+test('小改直读入口自带关联检查、原正常用法对照与报告证据', () => {
+  // SKILL 的小改入口不调用批量读取器，单独核对实际会读的文件。
+  assert.match(skill, /快速小改只读 `references\/quick-core\.md`/);
+  const quick = fs.readFileSync(path.join(refs, 'quick-core.md'), 'utf8');
+  assert.match(quick, /直接调用方/);
+  assert.match(quick, /原本正常用法/);
+  assert.match(quick, /改前.*改后/);
+  assert.match(quick, /修复结果.*原有功能.*未测/);
+  assert.match(quick, /不扫全仓/);
+  assert.ok(Buffer.byteLength(quick) <= 3500);
 });
 
 test('Skill 和隐式调用入口明确禁止重构/UI 重写擅改业务结果', () => {
