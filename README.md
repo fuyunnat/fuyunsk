@@ -2,7 +2,7 @@
 
 **你只管说想要什么，剩下的交给 AI。**
 
-这是一个装在 Codex / Cursor 里的 AI 技能（`production-engineering`）。装好以后，你用大白话说“这个按钮没反应”“页面太丑了”“帮我加个功能”，AI 会自己去看代码、动手修改、检查结果，再用人话告诉你改好了什么。
+这是一个可以安装到 Codex、Cursor 和 Google Antigravity 的 AI 技能（`production-engineering`）。装好以后，你用大白话说“这个按钮没反应”“页面太丑了”“帮我加个功能”，AI 会自己去看代码、动手修改、检查结果，再用人话告诉你改好了什么。
 
 不需要懂专业名词，不需要记命令，也不要求你每次手写技能名。
 
@@ -49,7 +49,7 @@ AI 会按事情大小自动选择做法：
 
 ## 让 AI 自动安装（复制这段）
 
-把下面这段发给**你电脑上的 AI**（Codex 或 Cursor 都可以），它会自己完成安装，不用你找目录：
+把下面这段发给**你电脑上的 AI**（Codex、Cursor 或 Antigravity），它会按客户端选择安装位置：
 
 ```text
 请在当前这台电脑安装或原位更新：
@@ -57,23 +57,25 @@ https://github.com/fuyunnat/fuyunsk
 
 先读取仓库 main 的 README.md 和 docs/ai-installation.md，按同一提交完成安装。
 本次授权你备份并更新本技能，以及个人全局指令中与本技能有关的自动调用部分。
-必须同时完成：完整技能安装、个性化 / Codex 说明的短规则接入、旧规则冲突检查和验证。
-使用 docs/personal-custom-instructions.md 与 global-AGENTS.example.md 的同一短模板，
-由你直接合并到当前生效的个人规则中；不要让我自己复制粘贴。
-短模板只绑定 `$production-engineering` 技能名，不写入 `SKILL.md` 绝对路径；
-另外检查 CODEX_HOME、实际技能发现结果和 AGENTS.override.md。
+必须同时完成：完整技能安装、当前客户端的短规则接入、旧规则冲突检查和验证。
+由你把 global-AGENTS.example.md 的标记块按教程接入当前客户端，不要让我自己复制粘贴。
+短规则只写技能名，不写 SKILL.md 绝对路径。
+如果是 Codex：检查个性化 / Codex 说明、CODEX_HOME、实际技能发现结果和 AGENTS.override.md。
+Codex 短模板只绑定 `$production-engineering` 技能名。
 如果是 Cursor：技能装到 ~/.cursor/skills/production-engineering，
 短模板写成 ~/.cursor/rules/production-engineering.mdc（alwaysApply: true）。
-保留我的其他指令和本机定制；同名技能只留一份有效安装，旧副本移到扫描目录外备份。
+如果是 Antigravity：按教程的「Google Antigravity 安装」一节执行，
+默认装到 ~/.gemini/config/skills/production-engineering，并合并 Antigravity 的短规则。
+保留我的其他指令和本机定制；当前客户端只留一份有效的同名技能，重复副本移到扫描目录外备份。
 不要把完整工程规范塞回个性化，也不要要求我每次输入 $production-engineering。
-安装或升级阶段不要在 ~/.codex、~/.cursor、CODEX_HOME、Skill 目录或任意业务项目中创建 `工作流程.md`。
+安装或升级阶段不要在客户端配置目录、Skill 目录或任意业务项目中创建 `工作流程.md`。
 不要更改 API Key、模型、MCP、插件、记忆、沙箱、审批或其他无关配置。
 文件安装和自动调用要分别验证，不能只说“已启用”。每完成一个阶段给我简短进度。
 遇到必须由我批准的权限或无法确认的冲突，只问那一个阻塞点；其他步骤由你完成。
 最后用中文报告来源提交、安装路径、个人规则文件、备份位置、验证结果和剩余待办。
 ```
 
-装好后重启一下 Cursor / Codex，或者开一个新对话就能用。想确认技能已经生效，可以在对话框输入 `/production-engineering`。
+装好后开一个新对话确认。Antigravity 用户可按教程查看技能列表，再做一次只读调用测试。详见 [Google Antigravity 安装](docs/ai-installation.md#google-antigravity-安装)。
 
 只能访问 GitHub、碰不到你电脑文件的远端 AI 没法替你安装；它说“装好了”也不算数。
 
@@ -112,15 +114,15 @@ https://github.com/fuyunnat/fuyunsk
 ## 自动调用是怎么接上的
 
 ```text
-个性化 / Codex 说明（或 Cursor 规则）里的一小段调度规则
+当前客户端里的一小段调度规则
     → 遇到工程类请求时自动调用本机技能
     → 读技能入口 SKILL.md
     → 按事情大小只读需要的规则
 ```
 
-调度规则很短，只写技能名，不写死安装路径；完整规则都在技能里。默认位置是 `~/.codex/AGENTS.md`（Codex）或 `~/.cursor/rules/production-engineering.mdc`（Cursor）；如果存在 `AGENTS.override.md`，安装时也会同步。详见 [安装教程](docs/ai-installation.md)、[个性化模板](docs/personal-custom-instructions.md)、[旧版个性化迁移](docs/legacy-personalization-migration.md)。
+调度规则只写技能名，完整规则放在技能里。Codex 用 `~/.codex/AGENTS.md`，已有生效的 `AGENTS.override.md` 时也同步。Cursor 用 `~/.cursor/rules/production-engineering.mdc`。Antigravity 全局安装默认用 `~/.gemini/GEMINI.md`。详见 [安装教程](docs/ai-installation.md)、[个性化模板](docs/personal-custom-instructions.md)、[旧版个性化迁移](docs/legacy-personalization-migration.md)。
 
-自动调用由客户端和模型判断，不能保证每句话都命中；没调用到时，在开头加 `/production-engineering` 就行。
+自动调用由客户端和模型判断。需要手动指定时，可以直接在对话里说“请使用 production-engineering 技能”，或从客户端的菜单选择它。
 
 ## 团队 Git 交付
 

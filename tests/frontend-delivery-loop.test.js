@@ -61,3 +61,15 @@ test('新模板的视觉阶段不反向要求现有页面小改解绑业务', ()
   assertRule(reference, /(?:不必|无需|不得|不要求|不应|不强制)[\s\S]{0,80}(?:解绑|拆掉|断开|改成模拟|改为模拟)/,
     '视觉优先规则不能要求现有已接页面先解绑或退回模拟数据');
 });
+
+test('后端、接口与前端交付读到同一份交接规则，普通小改维持轻量', () => {
+  const file = 'delivery-feedback.md';
+  for (const topic of ['后端', '接口', '前端', '前端交付']) {
+    assert.ok(batch.planBatch('实现', [topic]).references.includes(file), topic);
+  }
+  assert.ok(!batch.planBatch('小改').references.includes(file));
+  const handoff = read('skills/production-engineering/references/' + file);
+  assert.match(handoff, /只有用户明确指定[^\n]*模型[^\n]*编辑器/);
+  assert.match(handoff, /接口已测[^\n]*页面已接[^\n]*联调已验/);
+  assert.match(reference, /联调[^\n]*delivery-feedback\.md/);
+});

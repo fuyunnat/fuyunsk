@@ -2,6 +2,24 @@
 
 本教程交给**运行在目标电脑、具备本地文件权限的 AI**执行。默认交付是“本机技能 + 个性化短指令 + 验证”，不是只下载一个目录。具备写权限时，AI 必须自己完成个性化文件的备份与合并，不能把模板丢给用户手工粘贴。仅有 GitHub 访问权限的远端会话不能代替本机安装。用户明确要求只装技能时，不改个性化并标记该步骤未执行。
 
+Google Antigravity 用户从下节开始。后文的文件备份、完整性检查和恢复步骤通用。各客户端按自己的目录和设置安装。
+
+## Google Antigravity 安装
+
+在 Antigravity 里开一个对话，把 README 的「让 AI 自动安装」整段发给它。支持 Antigravity App 和独立 IDE，默认安装到所有项目可用的位置。如果用户只想在一个项目用，就选项目级安装。
+
+| 安装范围 | 技能文件夹 | 短规则默认位置 |
+| --- | --- | --- |
+| 所有项目 | `~/.gemini/config/skills/production-engineering/` | `~/.gemini/GEMINI.md` |
+| 当前项目 | `<项目根目录>/.agents/skills/production-engineering/` | `<项目根目录>/.agents/AGENTS.md` |
+
+1. **确认位置并备份。** 确认当前客户端、实际使用的配置和授权范围。只检查目标客户端能读到的同名副本，包括独立 IDE 支持的旧目录 `~/.gemini/antigravity/skills/` 和项目旧目录 `.agent/skills/`。发现同时生效的副本时，先核对它们是否指向同一份文件。升级优先沿用已验证的有效目录。确需迁移时，把重复副本备份到扫描范围外，并保留其他客户端依赖的安装。
+2. **安装整份技能。** 按第二节用同一个 main 提交的文件，复制完整的 `skills/production-engineering/`。最终目录中应直接看到 `SKILL.md`，以及 `references/`、`scripts/` 等配套目录。已有本机定制先比较再合并。
+3. **接入短规则。** 在已生效且同范围的 `GEMINI.md` 或 `AGENTS.md` 里合并本技能的标记块。首次接入可用表里的默认位置。沿用第三节的备份、去重和保留其他规则办法。只把模板里的技能名写法 `$production-engineering` 换成普通文本技能名 `production-engineering`，作为触发时查找该技能的指令。Antigravity 接入用这里指定的规则位置，Codex 的覆盖文件和自动调用设置由 Codex 自己管理。
+4. **分开检查文件、发现和实际调用。** 按第四节逐项检查安装清单与原稿校验值。有 Node.js 时实际运行技能的读取脚本。独立 IDE 可在 AI 侧栏的 **Customizations** 查看是否列出技能，Antigravity App 可在新对话中查看 `/production-engineering` 是否出现。随后用一个无敏感信息的测试项目开新对话，先发“你好”，再发“请检查这个测试项目的页面结构，只读，不改文件”，都不提技能名。检查实际记录应能看到工程请求读取了技能，问候没有进入工程流程。手动指定技能只能验证手动使用。缺界面、模型访问或可核对的记录时，在第五节报告里分别说明已验证到哪一步。
+
+安装和升级只处理对应技能与短规则。工作流程、面板等业务操作由后续工程请求触发。文件清单和本地读取检查适用于 Antigravity，后文的 `doctor.js` 诊断针对 Codex。客户端相关能力以当前版本实际提供的工具为准。参见 [Google 的技能路径与发现说明](https://antigravity.google/docs/skills) 和 [规则位置说明](https://antigravity.google/docs/rules/)。
+
 ## 一、先确认范围与真实位置
 
 读取仓库 `README.md`、本教程和[个性化模板](personal-custom-instructions.md)。先简短报告准备改什么，安装、接入、验证各完成一阶段就报告实际结果；不要长时间无反馈，也不要输出密钥或完整配置。
